@@ -1,0 +1,15 @@
+- ## Get Started
+    - [Overview](/docs/{{version}}/overview)
+    - [Installation](/docs/{{version}}/installation)
+    - [Configurations](/docs/{{version}}/configurations)
+- ## Features
+    - [MarkDown Support](/docs/{{version}}/markdown-support)
+    - [Vue Components](/docs/{{version}}/vue-components-support)
+    - [Artisan Commands](/docs/{{version}}/artisan-commands)
+    - [Keyboard Shortcuts](/docs/{{version}}/keyboard-shortcuts)
+- ## Customization
+    - [Vue Components](/docs/{{version}}/vue-components-customization)
+    - [Custom CSS And JS](/docs/{{version}}/custom-css-and-js)
+- ## Usage Examples
+    - [API Docs](/docs/{{version}}/example-api-docs)
+    - [Project Tracking](/docs/{{version}}/example-project-tracking)

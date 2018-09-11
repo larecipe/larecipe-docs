@@ -35,6 +35,11 @@ Writing documentation is boring? Hah, let's see.
 </larecipe-card>
 
 <larecipe-card>
+    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-bar-chart"></larecipe-badge> Google Analytics
+    <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
+</larecipe-card>
+
+<larecipe-card>
     <larecipe-badge type="success" circle class="mr-3" icon="fa fa-bookmark"></larecipe-badge> Caching
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
@@ -46,6 +51,11 @@ Writing documentation is boring? Hah, let's see.
 
 <larecipe-card>
     <larecipe-badge type="success" circle class="mr-3" icon="fa fa-lock"></larecipe-badge> Authentication
+    <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
+</larecipe-card>
+
+<larecipe-card>
+    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-address-card"></larecipe-badge> Authorization
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 

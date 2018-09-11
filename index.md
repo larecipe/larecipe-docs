@@ -2,9 +2,11 @@
     - [Overview](/docs/{{version}}/overview)
     - [Installation](/docs/{{version}}/installation)
     - [Configurations](/docs/{{version}}/configurations)
+    - [Upgrade](/docs/{{version}}/upgrade)
 - ## Features
     - [MarkDown Support](/docs/{{version}}/markdown-support)
     - [Vue Components](/docs/{{version}}/vue-components-support)
+    - [Authorization](/docs/{{version}}/authorization)
     - [Artisan Commands](/docs/{{version}}/artisan-commands)
     - [Keyboard Shortcuts](/docs/{{version}}/keyboard-shortcuts)
 - ## Customization

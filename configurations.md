@@ -67,14 +67,15 @@ return [
 <a name="settings"></a>
 ## Settings
 
-These options configure the additional behaviors of your documentation where you can limit the access to only authenticated users in your system, see an [example](/docs/{{version}}/example-project-tracking).
+These options configure the additional behaviors of your documentation where you can limit the access to only authenticated users in your system. Moreover, you can setup Google Analytics service by adding your `ga_id`.
 
 > {info} When you set the auth to true, LaRecipe will activate Laravel's web auth middleware on the entire docs.
 
 ```php
 return [
     'settings' => [
-        'auth' => false
+        'auth'  => false,
+        'ga_id' => ''
     ]
 ];
 ```
@@ -104,7 +105,7 @@ This is an optional configuration you can set in order to show the external link
 return [
     'repository'   => [
         'provider' => 'github',
-        'url'      => 'https://github.com/saleem-hadad/LaRecipe'
+        'url'      => 'https://github.com/saleem-hadad/larecipe'
     ]
 ];
 ```
@@ -119,8 +120,9 @@ Here you can add configure the appearance of your docs. For example, you can cha
 ```php
 return [
     'ui'                 => [
-        'logo'           => '/logo.svg',
-        'fav'            => '/fav.png',
+        'show_app_name'  => true,
+        'logo'           => '', // e.g.: /images/logo.svg
+        'fav'            => '', // e.g.: /fav.png
         'theme'          => 'light',
         'back_to_top'    => true,
         'additional_css' => [

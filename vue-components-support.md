@@ -1,4 +1,4 @@
-# Vue Components Suuport
+# Vue Components Support
 
 Because LaRecipe renders the documentations in the back-end of Laravel application, it's pretty cool to leverage custom VueJs components.
 

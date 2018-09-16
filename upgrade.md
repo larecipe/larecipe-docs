@@ -15,7 +15,7 @@ No actual core breaking changes from `v1.0` to `v1.1`. However, there are some c
 
 ##### <i class="fa fa-bar-chart"></i> Google Analytics Support
 
-Yeah! now you can track your docs easilly by integrating Google Analytics in one step. See [**configuration**](/docs/{{version}}/configurations#settings) page for more details.
+Yeah! now you can track your docs easily by integrating Google Analytics in one step. See [**configuration**](/docs/{{version}}/configurations#settings) page for more details.
 
 ##### <i class="fa fa-address-card"></i> Authorization
 

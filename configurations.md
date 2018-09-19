@@ -9,6 +9,7 @@ In this file, you can find various options to change the configuration of your L
 - [Versions](#versions)
 - [Settings](#settings)
 - [Cache](#cache)
+- [Search](#search)
 - [Repository](#repository)
 - [Appearance](#ui)
 - [SEO](#seo)
@@ -92,6 +93,30 @@ return [
     'cache'       => [
         'enabled' => false,
         'period'  => 5
+    ]
+];
+```
+
+<a name="search"></a>
+## Search
+
+Here you can add configure the search functionality of your docs. You can choose the default engine of your search from the list. However, you can also enable/disable the search's visibility. Supported Search Engines: `algolia`
+
+> {warning} [`Algolia DocSearch`](https://community.algolia.com/docsearch/) requires you to submit your site to them for indexing before it starts working.
+
+For more information, refer to Algolia DocSearch's [`documentation`](https://community.algolia.com/docsearch/what-is-docsearch.html)
+
+```php
+return [
+    'search'            => [
+        'enabled'       => false,
+        'default'       => 'algolia',
+        'engines'       => [
+            'algolia'   => [
+                'key'   => '',
+                'index' => ''
+            ]
+        ]
     ]
 ];
 ```

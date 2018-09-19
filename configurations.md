@@ -138,7 +138,7 @@ return [
 <a name="ui"></a>
 ## Appearance
 
-Here you can add configure the appearance of your docs. For example, you can change the default logo, nav and control the visibility of the back-to-top button. Moreover, you can add your own CSS and JS files if you like.
+Here you can add configure the appearance of your docs. For example, you can change the default logo, control the visibility of the back-to-top button and many more. However, you can add your own CSS and JS files if you like.
 
 > {primary} Currently Supported Themes: `light`, `dark`
 
@@ -149,7 +149,14 @@ return [
         'logo'           => '', // e.g.: /images/logo.svg
         'fav'            => '', // e.g.: /fav.png
         'theme'          => 'light',
+        'code'           => 'dark',
         'back_to_top'    => true,
+        'show_side_bar'  => true,
+        'colors'         => [
+            'primary'    => '#787AF6',
+            'secondary'  => '#2b9cf2',
+            'selection'  => '#f4f5f7'
+        ],
         'additional_css' => [
             //'css/custom.css',
         ],
@@ -163,14 +170,21 @@ return [
 <a name="seo"></a>
 ## SEO
 
-These options configure the SEO settings of your docs. You can set the author, the description, and the keywords. Also, LaRecipe by default sets the canonical link to the viewed page's link automatically.
+These options configure the SEO settings of your docs. However, LaRecipe by default sets the canonical link to the viewed page's link automatically.
 
 ```php
 return [
-    'seo'             => [
-        'author'      => 'Binary Torch Sdn. Bhd.',
-        'description' => 'Write gorgeous docs for your products using Markdown inside your Laravel app.',
-        'keywords'    => 'Laravel, docs, api-docs, vue docs'
+    'seo'                 => [
+        'author'          => '',
+        'description'     => '',
+        'keywords'        => '',
+        'og'              => [
+            'title'       => '',
+            'type'        => 'article',
+            'url'         => '',
+            'image'       => '',
+            'description' => '',
+        ]
     ]
 ];
 ```

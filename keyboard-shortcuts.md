@@ -5,6 +5,7 @@ LaRecipe comes with multiple keyboard shortcuts if you don't like using 🐁.
 ---
 
 - [Toggle Sidebar](#toggle-sidebar)
+- [Search Box](#search-box)
 - [Dark Theme](#dark-theme)
 - [Light Theme](#light-theme)
 - [Scroll to Top](#scroll-to-top)
@@ -14,6 +15,13 @@ LaRecipe comes with multiple keyboard shortcuts if you don't like using 🐁.
 ## Toggle Sidebar:
 
 ### Press <larecipe-badge type="primary">/</larecipe-badge> key.
+
+---
+
+<a name="search-box"></a>
+## Search Box:
+
+### Press <larecipe-badge type="primary">s</larecipe-badge> key.
 
 ---
 

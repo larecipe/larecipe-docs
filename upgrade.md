@@ -11,40 +11,87 @@ We attempt to document every possible breaking change. Moreover, you can find mo
 <a name="features"></a>
 ## Features
 
-No actual core breaking changes from `v1.0` to `v1.1`. However, there are some cool features added to `v1.1`:
+No actual core breaking changes from `v1.1` to `v1.2`. However, there are some cool features and enhancements added to `v1.2`:
 
-##### <i class="fa fa-bar-chart"></i> Google Analytics Support
+##### <i class="fa fa-search"></i> Algolia Search Support
 
-Yeah! now you can track your docs easily by integrating Google Analytics in one step. See [**configuration**](/docs/{{version}}/configurations#settings) page for more details.
-
-##### <i class="fa fa-address-card"></i> Authorization
-
-A simple way to authorize user access against a given documentation. See [**authorization**](/docs/{{version}}/authorization) page for more details.
+You can now use Algolia DocSearch directly in your docs simply by passing your key and index. See [**configuration**](/docs/{{version}}/configurations#search) page for more details.
 
 <a name="config"></a>
 ## Config
 
-Few enhancements have been added to `v1.1`
+Few enhancements have been added to `v1.2`
 
-1. Google Analitics Id: `ga_id` key has been added to the `settings` array.
+
+1. Search Support : `search` array section has been added to the config.
 
 ```php
 return [
-    'settings' => [
-        'auth'  => false,
-        'ga_id' => ''
+    'search'            => [
+        'enabled'       => false,
+        'default'       => 'algolia',
+        'engines'       => [
+            'algolia'   => [
+                'key'   => '',
+                'index' => ''
+            ]
+        ]
     ]
 ];
 ```
 
-2. Allow to opt out app name in navbar: `show_app_name` key has has been added to the `ui` array.
+2. Dynamic color palette : `colors` array has been added to the `ui` array.
 
 ```php
 return [
     'ui'                 => [
-        'show_app_name'  => true,
         ...
-    ],
+        'colors'         => [
+            'primary'    => '#787AF6',
+            'secondary'  => '#2b9cf2',
+            'selection'  => '#f4f5f7'
+        ],
+        ...
+    ]
+];
+```
+
+3. Sidebar visibility can be configured: `show_side_bar` has been added to the `ui` array.
+
+```php
+return [
+    'ui'                 => [
+        ...
+        'show_side_bar'  => true,
+    ]
+];
+```
+
+4. Dark/Light code theme: `code` has been added to the `ui` array.
+
+```php
+return [
+    'ui'                 => [
+        ...
+        'code'           => 'dark',
+    ]
+];
+```
+
+5. Better SEO support: `og` array has been added to the `seo` array.
+
+```php
+return [
+    'seo'                 => [
+        ...
+        'og'              => [
+            'title'       => '',
+            'type'        => 'article',
+            'url'         => '',
+            'image'       => '',
+            'description' => '',
+        ]
+    ]
 ];
 ```
 
@@ -59,7 +106,9 @@ php artisan vendor:publish --tag=larecipe_config --force
 <a name="ui"></a>
 ## UI
 
-There are some new enhancements and fixes added to `v1.1`. In order to apply them you can run:
+There are some new enhancements and fixes added to `v1.2`. In order to apply them you can run:
+
+> {info} You might notice when run this command the `fonts` folder is added again to the `public/vendor/binarytorch/assets`, see [`#23`](https://github.com/saleem-hadad/larecipe/pull/23). Therefor, you can now delete the old `public/fonts` manually if you want.
 
 ```php
 php artisan vendor:publish --tag=larecipe_assets --force

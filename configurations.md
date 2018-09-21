@@ -13,6 +13,7 @@ In this file, you can find various options to change the configuration of your L
 - [Repository](#repository)
 - [Appearance](#ui)
 - [SEO](#seo)
+- [Fourm](#fourm)
 
 <a name="routing"></a>
 ## Routing
@@ -184,6 +185,27 @@ return [
             'url'         => '',
             'image'       => '',
             'description' => '',
+        ]
+    ]
+];
+```
+
+<a name="fourm"></a>
+## Fourm
+
+Giving a chance to your users to post thier questions or feedback directly on your docs, is pretty nice way to engage them more. However, you can also disable the fourm's visibility if you don't like the idea. Supported Services: `disqus`
+
+> {info} [`Disqus`](https://disqus.com/) is a great way to setup fourm inside your website/docs in few steps. Create a site and paste its name in the `site_name` to activate the disqus fourm.
+
+```php
+return [
+    'fourm'                 => [
+        'enabled'           => false,
+        'default'           => 'disqus',
+        'services'          => [
+            'disqus'        => [
+                'site_name' => '', // yoursite.disqus.com
+            ]
         ]
     ]
 ];

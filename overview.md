@@ -35,7 +35,7 @@ Writing documentation is boring? Hah, let's see.
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-comment"></larecipe-badge> Fourm Support
+    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-comment"></larecipe-badge> Forum Support
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 

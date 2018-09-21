@@ -17,6 +17,10 @@ No actual core breaking changes from `v1.1` to `v1.2`. However, there are some c
 
 You can now use Algolia DocSearch directly in your docs simply by passing your key and index. See [**configuration**](/docs/{{version}}/configurations#search) page for more details.
 
+##### <i class="fa fa-comment"></i> Disqus Forum Support
+
+
+
 <a name="config"></a>
 ## Config
 
@@ -96,11 +100,11 @@ return [
 ```
 
 
-6. Add disqus fourm support: `fourm` array section has been added to the config.
+6. Add disqus forum support: `forum` array section has been added to the config.
 
 ```php
 return [
-    'fourm'                 => [
+    'forum'                 => [
         'enabled'           => false,
         'default'           => 'disqus',
         'services'          => [

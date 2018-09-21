@@ -95,6 +95,23 @@ return [
 ];
 ```
 
+
+6. Add disqus fourm support: `fourm` array section has been added to the config.
+
+```php
+return [
+    'fourm'                 => [
+        'enabled'           => false,
+        'default'           => 'disqus',
+        'services'          => [
+            'disqus'        => [
+                'site_name' => '', // yoursite.disqus.com
+            ]
+        ]
+    ]
+];
+```
+
 You can add them manually or you can run this command:
 
 > {warning} Please note running the command with `--force` will override your config settings.

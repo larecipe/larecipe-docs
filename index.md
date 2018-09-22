@@ -13,5 +13,6 @@
     - [Vue Components](/docs/{{version}}/vue-components-customization)
     - [Custom CSS And JS](/docs/{{version}}/custom-css-and-js)
 - ## Usage Examples
+    - [Awesome LaRecipe](/docs/{{version}}/example-documentations)
     - [API Docs](/docs/{{version}}/example-api-docs)
     - [Project Tracking](/docs/{{version}}/example-project-tracking)

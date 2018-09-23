@@ -21,14 +21,14 @@ LaRecipe provides a bunch of amazing looking UI Vue based components. Thanks to 
 Input:
 
 ```html
-<larecipe-card>
+<larecipe-card shadow>
     Example card
 </larecipe-card>
 ```
 
 Output:
 
-<larecipe-card>
+<larecipe-card shadow>
     Example card
 </larecipe-card>
 

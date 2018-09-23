@@ -57,7 +57,7 @@ Inline code is `cool`
 <br/>
 <larecipe-badge type="success">Code</larecipe-badge>
 
-LaRecipe uses `prism.js` with code highlighting out of the box. Currently supported languages: [**php**, **js**, **text**, **c**, **c++**, **html**, **text**]
+LaRecipe uses `prism.js` with code highlighting out of the box. LaraRecipe supports all Prism supported languages.
 
 Input:
 

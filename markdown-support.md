@@ -63,14 +63,14 @@ Input:
 
 \```php 
 <br>
-echo 'LaRecipe is beatiful';
+echo 'LaRecipe is beautiful';
 <br>
 \```
 
 Output:
 
 ```php
-echo 'LaRecipe is beatiful';
+echo 'LaRecipe is beautiful';
 ```
 
 

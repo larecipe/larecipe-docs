@@ -11,7 +11,7 @@ In addition to providing [authentication feature](/docs/{{version}}/configuratio
 <a name="why">
 ## Why?
 
-We at [BinaryTorch](http://binary-torch.com/) we use LaRecipe internally to write documentation for our clients' projects and share the access with them. However, in some situation, we want to prevent a group of users access against specific resources for several reasons.
+We at [BinaryTorch](https://binarytorch.com.com/) we use LaRecipe internally to write documentation for our clients' projects and share the access with them. However, in some situation, we want to prevent a group of users access against specific resources for several reasons.
 
 <a name="how">
 ## How?

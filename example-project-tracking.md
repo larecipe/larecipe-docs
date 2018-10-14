@@ -1,6 +1,6 @@
 # Project Tracking
 
-At [Binary Torch](http://binary-torch.com/) we also use LaRecipe internally to write docs for our clients' products and share the access with them in order for them to track the latest updates. Here we share with you a sample.
+At [Binary Torch](https://binarytorch.com.my/) we also use LaRecipe internally to write docs for our clients' products and share the access with them in order for them to track the latest updates. Here we share with you a sample.
 
 ---
 

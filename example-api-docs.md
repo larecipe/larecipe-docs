@@ -1,6 +1,6 @@
 # API Docs
 
-At [Binary Torch](http://binary-torch.com/) we use LaRecipe internally to write docs for our products/services and share the access with our developers. Here is an example of writing API docs in a nice human-readable way.
+At [Binary Torch](https://binarytorch.com.my/) we use LaRecipe internally to write docs for our products/services and share the access with our developers. Here is an example of writing API docs in a nice human-readable way.
 
 ---
 

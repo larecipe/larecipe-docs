@@ -5,6 +5,7 @@ LaRecipe has been used to document other projects/packages. Let's see.
 ---
 
 - [Zino](#zino)
+- [Blogged](#blogged)
 - [Add Yours](#add)
 
 <a name="zino"></a>
@@ -14,6 +15,15 @@ Custom C++ based Arduino library provides a convenient and fast way for developi
 
 <larecipe-button type="primary" tag="a" href="https://zino.saleemhadad.me" target="__blank">
     View Zino Library <i class="fa fa-external-link"></i>
+</larecipe-button>
+
+<a name="blogged"></a>
+## Blogged 
+
+Blogged is a carefully designed Laravel package provides an easy way to create a beautiful blog inside your normal Laravel projects. It comes with a beautiful looking user interface and dashboard which is highly configurable to fit your need.
+
+<larecipe-button type="primary" tag="a" href="https://blogged.binarytorch.com.my/" target="__blank">
+    View Blogged Package <i class="fa fa-external-link"></i>
 </larecipe-button>
 
 <a name="add"></a>

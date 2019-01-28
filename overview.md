@@ -14,6 +14,9 @@ Writing documentation is boring? Hah, let's see.
 
 **LaRecipe** is simply a code driven package provides an easy way to create beautiful documentation like this for your product or application inside your Laravel app. However, the usage of LaRecipe is not limited to creating documentation only 😏. See an [example](/docs/{{version}}/example-project-tracking).
 
+> {primary} Love writing blog articles? check out our new Laravel package [`Blogged`](https://blogged.binarytorch.com.my)
+
+
 ![screenshot](/images/screenshot.png)
 
 <a name="features"></a>

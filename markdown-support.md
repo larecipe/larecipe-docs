@@ -114,10 +114,22 @@ Output:
 
 > {danger} Here is an example of danger colored alarm
 
+You are also able to use font-awesome icons in alarms.
+
+Input: 
+
+```text
+> {danger.fa-exclamation-triangle} Here is an example of a font awesome icon
+```
+
+Output:
+
+> {danger.fa-exclamation-triangle} Here is an example of a font awesome icon
+
 <a name="toc">
 ## Table of Content
 
-By default, LaRecpie is considering the first `ul` element in your docs file as the table of content and it will appear on the top-right corner of your documentation for quick navigation.
+By default, LaRecipe is considering the first `ul` element in your docs file as the table of content and it will appear on the top-right corner of your documentation for quick navigation.
 
 > {primary} Each link in your table of content will be targeted to the corresponding **h2** element in your documentation file.
  

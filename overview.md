@@ -4,10 +4,16 @@ Writing documentation is boring? Hah, let's see.
 
 ---
 
+- [Gold Sponsors](#sponsors)
 - [Overview](#overview)
 - [Features](#features)
 - [Credits](#credits)
 
+
+<a name="sponsors"></a>
+## Gold Sponsors
+
+<object type="image/svg+xml" data="https://opencollective.com/larecipe/tiers/gold-sponsors.svg?avatarHeight=36&width=600"></object>
 
 <a name="overview"></a>
 ## Overview

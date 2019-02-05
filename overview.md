@@ -13,7 +13,7 @@ Writing documentation is boring? Hah, let's see.
 <a name="sponsors"></a>
 ## Gold Sponsors
 
-<object type="image/svg+xml" data="https://opencollective.com/larecipe/tiers/gold-sponsors.svg?avatarHeight=36&width=600"></object>
+<object type="image/svg+xml" data="https://opencollective.com/larecipe/tiers/gold-sponsors.svg?avatarHeight=36&width=300"></object>
 
 <a name="overview"></a>
 ## Overview

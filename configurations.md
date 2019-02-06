@@ -77,6 +77,12 @@ These options configure the additional behaviors of your documentation where you
 return [
     'settings' => [
         'auth'  => false,
+        'auth_links' => [
+            [
+                'name' => '',
+                'url' => '',
+            ],
+        ],
         'ga_id' => ''
     ]
 ];
@@ -101,7 +107,7 @@ return [
 <a name="search"></a>
 ## Search
 
-Here you can add configure the search functionality of your docs. You can choose the default engine of your search from the list. However, you can also enable/disable the search's visibility. Supported Search Engines: `algolia`
+Here you can add configure the search functionality of your docs. You can choose the default engine of your search from the list. However, you can also enable/disable the search's visibility. Supported Search Engines: `algolia`, `internal`
 
 > {warning} [`Algolia DocSearch`](https://community.algolia.com/docsearch/) requires you to submit your site to them for indexing before it starts working.
 
@@ -113,6 +119,9 @@ return [
         'enabled'       => false,
         'default'       => 'algolia',
         'engines'       => [
+            'internal'  => [
+                'index' => ['h2', 'h3']
+            ],
             'algolia'   => [
                 'key'   => '',
                 'index' => ''

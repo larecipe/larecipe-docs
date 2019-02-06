@@ -39,7 +39,7 @@ Writing documentation is boring? Hah, let's see.
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa  fa-search"></larecipe-badge> Algolia Search
+    <larecipe-badge type="success" circle class="mr-3" icon="fa  fa-search"></larecipe-badge> Algolia and Internal Search
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 

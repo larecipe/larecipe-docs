@@ -7,6 +7,7 @@
     - [MarkDown Support](/docs/{{version}}/markdown-support)
     - [Vue Components](/docs/{{version}}/vue-components-support)
     - [Authorization](/docs/{{version}}/authorization)
+    - [Search](/docs/{{version}}/search)
     - [Artisan Commands](/docs/{{version}}/artisan-commands)
     - [Keyboard Shortcuts](/docs/{{version}}/keyboard-shortcuts)
 - ## Customization

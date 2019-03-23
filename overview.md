@@ -25,73 +25,73 @@ Writing documentation is boring? Hah, let's see.
 > {info} Love writing blog articles? check out our new Laravel package [`Blogged`](https://blogged.binarytorch.com.my)
 
 
-![screenshot](/images/screenshot.png)
+![screenshot](https://larecipe.binarytorch.com.my/images/screenshot.png)
 
 <a name="features"></a>
 ## Features
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-book"></larecipe-badge> Markdown Support
+    <larecipe-badge type="success" circle class="mr-2" icon="fa fa-book"></larecipe-badge> Markdown Support
+    <larecipe-progress type="success" :value="100"></larecipe-progress>
+</larecipe-card>
+
+<larecipe-card>
+    <larecipe-badge type="success" circle class="mr-2" icon="fa  fa-heart"></larecipe-badge> UI Vue Component
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa  fa-heart"></larecipe-badge> UI Vue Component
+    <larecipe-badge type="success" circle class="mr-2" icon="fa  fa-search"></larecipe-badge> Algolia and Internal Search
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa  fa-search"></larecipe-badge> Algolia and Internal Search
+    <larecipe-badge type="success" circle class="mr-2" icon="fa fa-comment"></larecipe-badge> Forum Support
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-comment"></larecipe-badge> Forum Support
+    <larecipe-badge type="success" circle class="mr-2" icon="fa fa-paper-plane"></larecipe-badge> SEO Support
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-paper-plane"></larecipe-badge> SEO Support
+    <larecipe-badge type="success" circle class="mr-2" icon="fa fa-bar-chart"></larecipe-badge> Google Analytics
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-bar-chart"></larecipe-badge> Google Analytics
+    <larecipe-badge type="success" circle class="mr-2" icon="fa fa-bookmark"></larecipe-badge> Caching
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-bookmark"></larecipe-badge> Caching
+    <larecipe-badge type="success" circle class="mr-2" icon="fa fa-code-fork"></larecipe-badge> Versioning Support
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-code-fork"></larecipe-badge> Versioning Support
+    <larecipe-badge type="success" circle class="mr-2" icon="fa fa-lock"></larecipe-badge> Authentication
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-lock"></larecipe-badge> Authentication
+    <larecipe-badge type="success" circle class="mr-2" icon="fa fa-address-card"></larecipe-badge> Authorization
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa fa-address-card"></larecipe-badge> Authorization
+    <larecipe-badge type="success" circle class="mr-2" icon="fa  fa-terminal"></larecipe-badge> Artisan Commands
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa  fa-terminal"></larecipe-badge> Artisan Commands
+    <larecipe-badge type="success" circle class="mr-2" icon="fa  fa-key"></larecipe-badge> Keyboard Shortcuts
     <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
 </larecipe-card>
 
 <larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa  fa-key"></larecipe-badge> Keyboard Shortcuts
-    <larecipe-progress :striped="true" :animated="true" type="success" :value="100"></larecipe-progress>
-</larecipe-card>
-
-<larecipe-card>
-    <larecipe-badge type="success" circle class="mr-3" icon="fa  fa-user"></larecipe-badge> Responsive UI
+    <larecipe-badge type="success" circle class="mr-2" icon="fa  fa-user"></larecipe-badge> Responsive UI
     <larecipe-progress :striped="true" :animated="true" type="success" :value="99"></larecipe-progress>
 </larecipe-card>
 
@@ -101,12 +101,10 @@ Writing documentation is boring? Hah, let's see.
 
 LaRecipe package uses internally some open-source third-party libraries/packages, many thanks to the web community:
 
-+ Creative Tim - Awesome people, thanks for Argon library.
-+ Laravel - Open source full-stack framework.
-+ Bootstrap 4 - Open source front end framework.
-+ Vue - The Progressive JavaScript Framework.
-+ Bootstrap Vue - Vue components for Bootstrap 4.
-+ erusev/parsedown-extra - PHP markdown parser.
-+ symfony/dom-crawler - Dom manipulation.
-+ phpunit/phpunit - PHP unit testing library.
-+ orchestra/testbench - Unit test package for Laravel packages.
++ [Laravel](https://laravel.com) - Open source full-stack framework.
++ [VueJs](https://vuejs.org) - The Progressive JavaScript Framework.
++ [TailwindCSS](https://tailwindcss.com) - A utility-first CSS framework for rapid UI development.
++ [erusev/parsedown-extra](https://github.com/erusev/parsedown-extra) - PHP markdown parser.
++ [symfony/dom-crawler](https://symfony.com) - Dom manipulation.
++ [phpunit/phpunit](https://phpunit.de) - PHP unit testing library.
++ [orchestra/testbench](https://github.com/orchestral/testbench) - Unit test package for Laravel packages.

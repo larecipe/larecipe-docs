@@ -39,14 +39,14 @@ Output:
 Input:
 
 ```html
-<larecipe-button>
-    Example button
-</larecipe-button>
+<larecipe-button radius="full">Example button</larecipe-button>
+<larecipe-button type="success" radius="full">Success button</larecipe-button>
 ```
 
 Output:
 
-<larecipe-button>Example button</larecipe-button>
+<larecipe-button radius="full">Default button</larecipe-button>
+<larecipe-button type="success" radius="full">Success button</larecipe-button>
 
 
 <a name="badges"></a>
@@ -80,7 +80,7 @@ Output:
 
 <larecipe-progress type="success" :value="60"></larecipe-progress>
 
-> {primary} You can achieve the same effect on the installation page by including a progress component inside a card.
+> {primary} You can achieve the same effect on the overview page by including a progress component inside a card.
 
 Input:
 

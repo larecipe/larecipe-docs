@@ -1,6 +1,6 @@
 # Keyboard Shortcuts
 
-LaRecipe comes with multiple keyboard shortcuts if you don't like using 🐁.
+LaRecipe comes with useful keyboard shortcuts, they might be useful in some cases!
 
 ---
 

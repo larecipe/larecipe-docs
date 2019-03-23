@@ -45,8 +45,8 @@ php artisan larecipe:docs
 
 > {primary} The workflow of this command is described as follow:
 
-##### 1. LaRecipe will read the published versions array in your `config/larecipe`.
-##### 2. For each published version, LaRecipe will create the corresponding version directory if not exists.
-##### 3. After creating the directory, LaRecipe will create `index.md` for the given version if not exists.
-##### 4. Finally, LaRecipe will create `overview.md` for the given version if not exists.
+1. LaRecipe will read the published versions array in your `config/larecipe`.
+2. For each published version, LaRecipe will create the corresponding version directory if not exists.
+3. After creating the directory, LaRecipe will create `index.md` for the given version if not exists.
+4. Finally, LaRecipe will create `overview.md` for the given version if not exists.
 

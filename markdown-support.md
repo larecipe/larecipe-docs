@@ -9,7 +9,7 @@ LaRecipe automatically leverages Markdown to HTML parser out of the box.
 - [Alarms](#alarms)
 - [Table of Content](#toc)
 
-<a name="basics">
+<a name="basics"></a>
 ## Basics
 
 Markdown elements automatically parsed into normal HTML tags.
@@ -74,7 +74,7 @@ echo 'LaRecipe is beautiful';
 ```
 
 
-<a name="tables">
+<a name="tables"></a>
 ## Tables
 
 Markdown Tables automatically parsed and converted to nice looking rendered tables. Thanks to Argon and CSS :D
@@ -97,7 +97,7 @@ Output:
 | 2 | John   | 25  |
 | 3 | Ayman  | 26  |
 
-<a name="alarms">
+<a name="alarms"></a>
 ## Alarms
 
 LaRecipe provides beautiful looking alerts parsed directly from Markdown with extra sugar, all that you have to do is to prepend Markdown blockquote with `{type}` of your alert.
@@ -126,7 +126,7 @@ Output:
 
 > {danger.fa-exclamation-triangle} Here is an example of a font awesome icon
 
-<a name="toc">
+<a name="toc"></a>
 ## Table of Content
 
 By default, LaRecipe is considering the first `ul` element in your docs file as the table of content and it will appear on the top-right corner of your documentation for quick navigation.

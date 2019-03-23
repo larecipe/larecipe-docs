@@ -77,12 +77,6 @@ These options configure the additional behaviors of your documentation where you
 return [
     'settings' => [
         'auth'  => false,
-        'auth_links' => [
-            [
-                'name' => '',
-                'url' => '',
-            ],
-        ],
         'ga_id' => ''
     ]
 ];
@@ -131,20 +125,6 @@ return [
 ];
 ```
 
-<a name="repository"></a>
-## Repository
-
-This is an optional configuration you can set in order to show the external link to your documentation's repository if you have one. Once you set the value of the `url`, LaRecipe automatically will show the nav button.
-
-```php
-return [
-    'repository'   => [
-        'provider' => 'github',
-        'url'      => 'https://github.com/saleem-hadad/larecipe'
-    ]
-];
-```
-
 <a name="ui"></a>
 ## Appearance
 
@@ -155,13 +135,7 @@ Here you can add configure the appearance of your docs. For example, you can cha
 ```php
 return [
     'ui'                 => [
-        'show_app_name'  => true,
-        'logo'           => '', // e.g.: /images/logo.svg
-        'fav'            => '', // e.g.: /fav.png
-        'theme'          => 'light',
-        'code'           => 'dark',
-        'back_to_top'    => true,
-        'show_side_bar'  => true,
+        'code_theme'     => 'dark',
         'colors'         => [
             'primary'    => '#787AF6',
             'secondary'  => '#2b9cf2',

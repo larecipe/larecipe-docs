@@ -10,7 +10,6 @@ In this file, you can find various options to change the configuration of your L
 - [Settings](#settings)
 - [Cache](#cache)
 - [Search](#search)
-- [Repository](#repository)
 - [Appearance](#ui)
 - [SEO](#seo)
 - [Forum](#forum)

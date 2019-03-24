@@ -8,12 +8,12 @@ In addition to providing [authentication feature](/docs/{{version}}/configuratio
 - [How?](#how)
 - [Examples](#examples)
 
-<a name="why">
+<a name="why"></a>
 ## Why?
 
 We at [BinaryTorch](https://binarytorch.com.my/) we use LaRecipe internally to write documentation for our clients' projects and share the access with them. However, in some situation, we want to prevent a group of users access against specific resources for several reasons.
 
-<a name="how">
+<a name="how"></a>
 ## How?
 
 LaRecipe provides an easy way to activate the authorization feature using Laravel Gate. Please have a look at the [official documnetation](https://laravel.com/docs/5.7/authorization) if you're not familiar with Gates.
@@ -38,10 +38,11 @@ class AuthServiceProvider extends ServiceProvider
 }
 ```
 
-<a name="examples">
+<a name="examples"></a>
 ## Examples
 
 <larecipe-badge type="primary" circle class="mr-3 mb-2">1</larecipe-badge>
+
 You might check if the current user has admin role in order to access all docs.
 
 ```php
@@ -50,9 +51,8 @@ Gate::define('viewLarecipe', function($user, $documentation) {
 });
 ```
 
-<hr>
+<larecipe-badge type="primary" circle class="mr-3 mb-2 mt-6">2</larecipe-badge>
 
-<larecipe-badge type="primary" circle class="mr-3 mb-2">2</larecipe-badge>
 You may want to limit the access for small group of people listed manually.
 
 ```php
@@ -64,9 +64,8 @@ Gate::define('viewLarecipe', function($user, $documentation) {
 });
 ```
 
-<hr>
+<larecipe-badge type="primary" circle class="mr-3 mb-2 mt-6">3</larecipe-badge> 
 
-<larecipe-badge type="primary" circle class="mr-3 mb-2">3</larecipe-badge>
 You may want to give access to all users except one person where his access limited to few pages only.
 
 ```php

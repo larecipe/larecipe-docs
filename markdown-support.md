@@ -19,12 +19,12 @@ Markdown elements automatically parsed into normal HTML tags.
 Input:
 
 ```text
-###### H6
+### H3
 ```
 
 Output:
 
-###### H6
+### H3
 
 
 <br>

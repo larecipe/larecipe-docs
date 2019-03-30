@@ -22,9 +22,9 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. At atque, consequatur 
 
 ## Features
 
-<larecipe-badge type="success">Completed</larecipe-badge>
-<larecipe-badge type="primary">In Progress</larecipe-badge>
-<larecipe-badge type="warning">Needs Review</larecipe-badge>
+<larecipe-badge type="success" rounded>Completed</larecipe-badge>
+<larecipe-badge type="primary" rounded>In Progress</larecipe-badge>
+<larecipe-badge type="warning" rounded>Needs Review</larecipe-badge>
 
 <br>
 

@@ -14,7 +14,7 @@ LaRecipe automatically leverages Markdown to HTML parser out of the box.
 
 Markdown elements automatically parsed into normal HTML tags.
 
-<larecipe-badge type="success">Typography</larecipe-badge>
+<larecipe-badge type="success" rounded>Typography</larecipe-badge>
 
 Input:
 
@@ -29,7 +29,7 @@ Output:
 
 <br>
 
-<larecipe-badge type="success">Images</larecipe-badge>
+<larecipe-badge type="success" rounded>Images</larecipe-badge>
 
 Input:
 
@@ -42,7 +42,7 @@ Output:
 ![cute image](https://media.tenor.com/images/f45c43d124468dc602a95baabadab70d/tenor.gif)
 
 <br/>
-<larecipe-badge type="success">Inline Code</larecipe-badge>
+<larecipe-badge type="success" rounded>Inline Code</larecipe-badge>
 
 Input:
 
@@ -55,7 +55,7 @@ Output:
 Inline code is `cool`
 
 <br/>
-<larecipe-badge type="success">Code</larecipe-badge>
+<larecipe-badge type="success" rounded>Code</larecipe-badge>
 
 LaRecipe uses `prism.js` with code highlighting out of the box. LaRecipe supports all Prism supported languages.
 

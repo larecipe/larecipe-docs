@@ -52,7 +52,7 @@ return [
 
 Here you may specify the published versions of your documentation that users can view and the default version to be redirected to if your users visit the root route of your docs without specifying the intended page.
 
-> {warning} Make sure to list the default version in the published versions list.
+> {warning} Make sure to list the default version is in the published versions list.
 
 ```php
 return [
@@ -127,25 +127,17 @@ return [
 <a name="ui"></a>
 ## Appearance
 
-Here you can add configure the appearance of your docs. For example, you can change the default logo, control the visibility of the back-to-top button and many more. However, you can add your own CSS and JS files if you like.
-
-> {primary} Currently Supported Themes: `light`, `dark`
+Here you can add configure the appearance of your docs. For example, you can set the primary and secondary colors that will give your docs a unique look.
 
 ```php
 return [
     'ui'                 => [
-        'code_theme'     => 'dark',
+        'code_theme'     => 'dark', // or: light
+        'fav'            => '',     // eg: fav.png
         'colors'         => [
             'primary'    => '#787AF6',
-            'secondary'  => '#2b9cf2',
-            'selection'  => '#f4f5f7'
-        ],
-        'additional_css' => [
-            //'css/custom.css',
-        ],
-        'additional_js'  => [
-            //'js/custom.js',
-        ],
+            'secondary'  => '#2b9cf2'
+        ]
     ]
 ];
 ```

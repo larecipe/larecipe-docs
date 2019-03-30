@@ -56,15 +56,15 @@ Input:
 
 ```html
 <larecipe-badge type="primary" circle icon="fa fa-user"></larecipe-badge>
-<larecipe-badge type="success">Holly</larecipe-badge>
-<larecipe-badge type="danger">Molly</larecipe-badge>
+<larecipe-badge type="success" rounded>Holly</larecipe-badge>
+<larecipe-badge type="danger" rounded>Molly</larecipe-badge>
 ```
 
 Output:
 
 <larecipe-badge type="primary" circle icon="fa fa-user"></larecipe-badge>
-<larecipe-badge type="success">Holla</larecipe-badge>
-<larecipe-badge type="danger">Molly</larecipe-badge>
+<larecipe-badge type="success" rounded>Holla</larecipe-badge>
+<larecipe-badge type="danger" rounded>Molly</larecipe-badge>
 
 
 <a name="progress"></a>

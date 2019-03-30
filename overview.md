@@ -11,7 +11,6 @@ Writing documentation is boring? Hah, let's see.
 - [Features](#features)
 - [Credits](#credits)
 
-
 <a name="sponsors"></a>
 ## Gold Sponsors
 

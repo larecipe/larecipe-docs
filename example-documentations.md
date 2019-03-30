@@ -13,7 +13,7 @@ LaRecipe has been used to document other projects/packages. Let's see.
 
 Custom C++ based Arduino library provides a convenient and fast way for developing embedded systems projects.
 
-<larecipe-button type="primary" tag="a" href="https://zino.saleemhadad.me" target="__blank">
+<larecipe-button type="primary" tag="a" href="https://zino.saleemhadad.me" target="__blank" class="inline-block my-2">
     View Zino Library <i class="fa fa-external-link"></i>
 </larecipe-button>
 
@@ -22,7 +22,7 @@ Custom C++ based Arduino library provides a convenient and fast way for developi
 
 Blogged is a carefully designed Laravel package provides an easy way to create a beautiful blog inside your normal Laravel projects. It comes with a beautiful looking user interface and dashboard which is highly configurable to fit your need.
 
-<larecipe-button type="primary" tag="a" href="https://blogged.binarytorch.com.my/" target="__blank">
+<larecipe-button type="primary" tag="a" href="https://blogged.binarytorch.com.my/" target="__blank" class="inline-block my-2">
     View Blogged Package <i class="fa fa-external-link"></i>
 </larecipe-button>
 

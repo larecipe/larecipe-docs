@@ -20,7 +20,6 @@ LaRecipe provides an easy way to activate the authorization feature using Larave
 
 Register a new gate within `boot` method in your `AuthServiceProvider`.
 
-> {warning} Please note that once you define `viewLarecipe` gate, `Laravel` automatically will activate `auth` middleware on the entire docs which means your docs will be accessible only by authenticated users and then the authorization gate will be applied to the users.
 
 ```php
 use Illuminate\Support\Facades\Gate;

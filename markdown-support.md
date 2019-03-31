@@ -77,7 +77,7 @@ echo 'LaRecipe is beautiful';
 <a name="tables"></a>
 ## Tables
 
-Markdown Tables automatically parsed and converted to nice looking rendered tables. Thanks to Argon and CSS :D
+Markdown Tables automatically parsed and converted to nice looking rendered tables.
 
 Input: 
 
@@ -119,12 +119,12 @@ You are also able to use font-awesome icons in alarms.
 Input: 
 
 ```text
-> {danger.fa-exclamation-triangle} Here is an example of a font awesome icon
+> {danger.fa-close} Here is an example of a font awesome icon
 ```
 
 Output:
 
-> {danger.fa-exclamation-triangle} Here is an example of a font awesome icon
+> {danger.fa-close} Here is an example of a font awesome icon
 
 <a name="toc"></a>
 ## Table of Content

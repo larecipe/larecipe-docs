@@ -1,28 +1,32 @@
 # Custom CSS and JS
 
-Wants extra features and style?. No problem, dude. 
+Wants extra features and style?. Create a new theme or tool in less than one minute!
 
 ---
 
-- [How To](#how-to)
+- [New Theme](#new-theme)
+- [New Tool or Asset](#new-tool-or-asset)
 
-<a name="how-to"></a>
-## How to?
+<a name="new-theme"></a>
+## New Theme
 
-LaRecipe allows you add your own custom CSS and JS in order to change the behaviour or the style of the UI elements to match your needs. Simply pass the path of your CSS and JS files in the corresponding arrays in the `config/larecipe.php`.
+LaRecipe allows you to add your own custom assets through custom packages in order to match your needs. Simply run the following command:
 
-> {info} You can pass multiple CSS/JS files at once.
+> {info} The name of your theme should be in the following format: `vendor-name/project-name`
 
-```php
-return [
-    'ui'                 => [
-        ...
-        'additional_css' => [
-            //'css/custom.css',
-        ],
-        'additional_js'  => [
-            //'js/custom.js',
-        ],
-    ]
-];
+```bash
+php artisan larecipe:theme your-vendor/theme-name
 ```
+
+After running this command and answering a few questions, a new directory will be added to your Laravel project called `larecipe-components` which will contain any theme/asset you'll create.
+
+<a name="new-theme"></a>
+## New Tool or Asset
+
+Creating a new tool using VueJs cannot be easier than running one command:
+
+```bash
+php artisan larecipe:asset your-vendor/asset-name
+```
+
+Once your package is ready to deploy, you can share it with other developers! [submit your package here](/packages/submit).

@@ -7,55 +7,58 @@ We attempt to document every possible breaking change. Moreover, you can find mo
 - [Features](#features)
 - [Config](#config)
 - [UI](#ui)
+- [Views](#views)
 
 <a name="features"></a>
 ## Features
 
-No actual core breaking changes from `v1.2` to `v1.3`. However, there are some cool features and enhancements added:
+Few core breaking changes from `v1.x` to `v2.x`, we'll try to list down every change as much as we can.
 
-##### <i class="fa fa-search"></i> Internal Search Support
+### Remove unused Vue Components
 
-You can now use internal search engin simply by activating it and choosing it as default engin. See [**configuration**](/docs/{{version}}/configurations#search) page for more details.
+With the new version, we have replaced the old UI with a new one using TailwindCSS which cause few incompatibility issues.
+
+The components that have been deleted are:
+
+1. LarecipeInput.vue
+2. LarecipeAlert.vue
+3. LarecipeCheckbox.vue
+4. LarecipeCloseButton.vue
+5. LarecipeIcon.vue
+6. LarecipeNav.vue
+7. LarecipeNavbarToggleButton.vue
+8. LarecipeSwitch.vue
+
+In addition to that, we simplified the Vue components' props for most of the remaining components so that the core bundle of the LaRecipe will be smaller and useful for most use cases.
 
 
 <a name="config"></a>
 ## Config
 
-Few enhancements have been added to `v1.3`
+Few changes have been made to `v2.0`
 
 
-1. Search Support : `search` array section has been updated to:
+1. The UI section has been reduced and the old useful configs replaced with publishing few views so that you can edit them directly.
 
 ```php
 return [
-    'search'            => [
-        'enabled'       => false,
-        'default'       => 'algolia',
-        'engines'       => [
-            'internal'  => [
-                'index' => ['h2', 'h3']
-            ],
-            'algolia'   => [
-                'key'   => '',
-                'index' => ''
-            ]
-        ]
+    'ui'                 => [
+        'code_theme'     => 'dark', // or: light
+        'fav'            => '',     // eg: fav.png
+        'colors'         => [
+            'primary'    => '#787AF6',
+            'secondary'  => '#2b9cf2'
+        ],
     ],
 ];
 ```
 
-2. Settings section updated to include `auth_links`:
+2. The old `auth_links` section has been removed since the entire navbar will be avaiable under your `resources/vendor/larecipe/partials/navbar` and you can edit it from there.
 
 ```php
 return [
     'settings' => [
         'auth'  => false,
-        'auth_links' => [
-            [
-                'name' => '',
-                'url' => '',
-            ],
-        ],
         'ga_id' => ''
     ],
 ];
@@ -72,8 +75,17 @@ php artisan vendor:publish --tag=larecipe_config --force
 <a name="ui"></a>
 ## UI
 
-There are some new enhancements and fixes added to `v1.3`. In order to apply them you can run:
+There are some new enhancements and fixes added to `v2.0`. In order to apply them you can run:
 
 ```php
 php artisan vendor:publish --tag=larecipe_assets --force
+```
+
+<a name="views"></a>
+## View
+
+To publish the new views partials, please run this command
+
+```php
+php artisan vendor:publish --tag=larecipe_views
 ```

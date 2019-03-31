@@ -11,7 +11,7 @@ Because LaRecipe renders the documentations in the back-end of Laravel applicati
 
 ## Built-in Components
 
-LaRecipe provides a bunch of amazing looking UI Vue based components. Thanks to Argon again!
+LaRecipe provides a bunch of amazing looking UI Vue based components.
 
 > {warning} If you don't like the idea of mixing Vue components with Markdown, remember that this feature is optional. 
 

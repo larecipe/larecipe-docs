@@ -14,12 +14,12 @@ Writing documentation is boring? Hah, let's see.
 <a name="sponsors"></a>
 ## Gold Sponsors
 
-<object type="image/svg+xml" data="https://opencollective.com/larecipe/tiers/gold-sponsors.svg?avatarHeight=36&width=300"></object>
+<object type="image/svg+xml" data="https://opencollective.com/larecipe/tiers/gold-sponsors.svg?avatarHeight=100"></object>
 
 <a name="overview"></a>
 ## Overview
 
-**LaRecipe** is simply a code driven package provides an easy way to create beautiful documentation like this for your product or application inside your Laravel app. However, the usage of LaRecipe is not limited to creating documentation only 😏. See an [example](/docs/{{version}}/example-project-tracking).
+**LaRecipe** is simply  a code driven package provides an easy way to create beautiful documentation like this for your product or application inside your Laravel app. However, the usage of LaRecipe is not limited to creating documentation only 😏. See an [example](/docs/{{version}}/example-project-tracking).
 
 > {info} Love writing blog articles? check out our new Laravel package [`Blogged`](https://blogged.binarytorch.com.my)
 

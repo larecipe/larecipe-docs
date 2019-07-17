@@ -107,3 +107,6 @@ LaRecipe package uses internally some open-source third-party libraries/packages
 + [symfony/dom-crawler](https://symfony.com) - Dom manipulation.
 + [phpunit/phpunit](https://phpunit.de) - PHP unit testing library.
 + [orchestra/testbench](https://github.com/orchestral/testbench) - Unit test package for Laravel packages.
+
+
+<larecipe-feedback></larecipe-feedback>

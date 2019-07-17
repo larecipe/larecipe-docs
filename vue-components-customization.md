@@ -50,3 +50,5 @@ Thanks to VueJs, we can also use dynamic binding to change the behavior of the c
 |:-|:-|
 |type|white, black, primary, `success`, danger, warning, info|
 |value|`0`|
+
+<larecipe-feedback></larecipe-feedback>

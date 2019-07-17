@@ -34,3 +34,5 @@ The `nav.blade.php` file contians the code for the navigation bar. If you want t
 ## Sidebar
 
 The `sidebar.blade.php` file is the place where you can customize the sidebar menu. Out of the box this file just looks at your `docs/index.md` file, but you are free to customize to your hearts content.
+
+<larecipe-feedback></larecipe-feedback>

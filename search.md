@@ -77,3 +77,5 @@ return [
     ]
 ];
 ```
+
+<larecipe-feedback></larecipe-feedback>

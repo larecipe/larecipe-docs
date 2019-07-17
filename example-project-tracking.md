@@ -42,3 +42,5 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. At atque, consequatur 
     A user can update profile
     <larecipe-progress type="warning" :value="100"></larecipe-progress>
 </larecipe-card>
+
+<larecipe-feedback></larecipe-feedback>

@@ -89,3 +89,5 @@ To publish the new views partials, please run this command
 ```php
 php artisan vendor:publish --tag=larecipe_views
 ```
+
+<larecipe-feedback></larecipe-feedback>

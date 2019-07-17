@@ -91,3 +91,5 @@ Content
 ```json
 ...
 ```
+
+<larecipe-feedback></larecipe-feedback>

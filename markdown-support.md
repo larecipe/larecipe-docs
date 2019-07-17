@@ -139,3 +139,5 @@ By default, LaRecipe is considering the first `ul` element in your docs file as 
 <a name="example-link">
 ## Example
 ```
+
+<larecipe-feedback></larecipe-feedback>

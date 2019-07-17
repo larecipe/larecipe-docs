@@ -30,3 +30,5 @@ php artisan larecipe:asset your-vendor/asset-name
 ```
 
 Once your package is ready to deploy, you can share it with other developers! [submit your package here](/packages/submit).
+
+<larecipe-feedback></larecipe-feedback>

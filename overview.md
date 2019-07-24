@@ -122,4 +122,4 @@ LaRecipe package uses internally some open-source third-party libraries/packages
 + [orchestra/testbench](https://github.com/orchestral/testbench) - Unit test package for Laravel packages.
 
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

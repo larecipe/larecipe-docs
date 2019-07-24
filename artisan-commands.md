@@ -50,4 +50,4 @@ php artisan larecipe:docs
 3. After creating the directory, LaRecipe will create `index.md` for the given version if not exists.
 4. Finally, LaRecipe will create `overview.md` for the given version if not exists.
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

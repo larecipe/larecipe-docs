@@ -82,4 +82,4 @@ Gate::define('viewLarecipe', function($user, $documentation) {
 });
 ```
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

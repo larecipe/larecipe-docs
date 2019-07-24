@@ -99,4 +99,4 @@ Output:
 </larecipe-card>
 
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

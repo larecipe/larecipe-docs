@@ -43,4 +43,4 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. At atque, consequatur 
     <larecipe-progress type="warning" :value="100"></larecipe-progress>
 </larecipe-card>
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

@@ -31,4 +31,4 @@ php artisan larecipe:install
 1. Using Laravel Valet: visit `yourdomain.test/docs`.
 2. Using Laravel serve: `http://127.0.0.1:8000/docs`.
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

@@ -140,4 +140,4 @@ By default, LaRecipe is considering the first `ul` element in your docs file as 
 ## Example
 ```
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

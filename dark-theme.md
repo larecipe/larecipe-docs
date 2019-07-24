@@ -19,4 +19,4 @@ composer require binarytorch/larecipe-dark-theme
 
 Once isntalled, the theme will be activated automatically 😃
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

@@ -16,4 +16,4 @@ LaRecipe comes with useful keyboard shortcuts, they might be useful in some case
 | t | Scroll to Top  |
 | b | Scroll to Bottom  |
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

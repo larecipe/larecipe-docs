@@ -31,4 +31,4 @@ Blogged is a carefully designed Laravel package provides an easy way to create a
 
 If you developed a package or a project with **LaRecipe** installed and want to share your docs here please send a PR to the [LaRecipe docs repo](https://github.com/saleem-hadad/larecipe-docs) or you can email me direclty at `saleem[at]binarytorch.com.my` to add it for you.
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

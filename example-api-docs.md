@@ -92,4 +92,4 @@ Content
 ...
 ```
 
-<larecipe-feedback></larecipe-feedback>
+<larecipe-newsletter></larecipe-newsletter>

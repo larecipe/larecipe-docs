@@ -21,6 +21,12 @@ Writing documentation is boring? Hah, let's see.
             <p class="text-xl font-bold text-red">Nova ADC</p>
         </a>
     </larecipe-card>
+    <larecipe-card class="mr-2 text-center shadow shadow-lg">
+        <a href="https://www.inspector.dev/" target="__blank">
+            <img width="128" height="128" src="https://www.inspector.dev/wp-content/uploads/2018/10/logo-horizontal-shadow-transparent-768x225.png" />
+            <p class="text-xl font-bold text-red">Inspector</p>
+        </a>
+    </larecipe-card>
     <larecipe-card type="black" class="mr-2 text-center">
         <a href="https://opencollective.com/larecipe" target="__blank">
             <img width="128" height="128" src="/images/svg/heart.svg" />

@@ -11,7 +11,7 @@ In addition to providing [authentication feature](/docs/{{version}}/configuratio
 <a name="why"></a>
 ## Why?
 
-We at [BinaryTorch](https://binarytorch.com.my/) we use LaRecipe internally to write documentation for our clients' projects and share the access with them. However, in some situation, we want to prevent a group of users access against specific resources for several reasons.
+We at [BinaryTorch](https://binarytorch.com.my/) use LaRecipe internally to write documentation for our clients' projects and share the access with them. However, in some situations, we want to prevent a group of users access against specific resources for several reasons.
 
 <a name="how"></a>
 ## How?
@@ -79,6 +79,35 @@ Gate::define('viewLarecipe', function($user, $documentation) {
     }
     
     return true;
+});
+```
+
+<larecipe-badge type="primary" circle class="mr-3 mb-2 mt-6">4</larecipe-badge> 
+
+You may want to allow guest users to see some pages, authenticated users to see others, and admins (or any other groups you can think of) to see the rest. Note: you'll need to follow the steps explained in [configuration settings](/docs/{{version}}/configurations#settings) to accomplish this.
+
+```php
+Gate::define('viewLarecipe', function(?User $user, $documentation) {
+    if($user && !$user->isAdmin()){
+        //do some logic for regular authetnicated users
+        if($documentation->title == 'Overview'){
+            return true;
+        }
+        return false;
+    }else if($user && $user->isAdmin()){
+        //do some logic for admin users
+        if($documentation->title == 'Admin Dashboard'){
+            return true;
+        }
+        //or maybe just default to true
+        return true;
+    }else{
+        //do some logic for guest users
+        if($documentation->title == 'Features'){
+            return true;
+        }
+        return false;
+    }
 });
 ```
 

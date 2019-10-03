@@ -42,10 +42,13 @@ return [
     'docs'      => [
         'route'   => '/docs',
         'path'    => '/resources/docs',
-        'landing' => 'overview'
+        'landing' => 'overview',
+        'middleware' => ['web']
     ]
 ];
 ```
+> {primary} Want to be able to access Laravel's `Auth` class from within any of the published LaRecipe blades? Be sure to set the `larecipe.docs.middleware` array to have `web` in it, as shown above.
+
 
 <a name="versions"></a>
 ## Versions
@@ -68,18 +71,31 @@ return [
 <a name="settings"></a>
 ## Settings
 
-These options configure the additional behaviors of your documentation where you can limit the access to only authenticated users in your system. Moreover, you can setup Google Analytics service by adding your `ga_id`.
+These options configure the additional behaviors of your documentation where you can limit the access to only authenticated users in your system, or, using middleware, any combination you want. Moreover, you can setup Google Analytics service by adding your `ga_id`.
 
-> {info} When you set the auth to true, LaRecipe will activate Laravel's web auth middleware on the entire docs.
+> {info} When you set the auth to true, LaRecipe will activate Laravel's web auth middleware on the entire docs. But, when you set  it to false, LaRecipe will look at the middleware you have configured here to determine whether or not your docs are shown.
 
 ```php
 return [
     'settings' => [
         'auth'  => false,
-        'ga_id' => ''
+        'ga_id' => '',
+        'middleware' => [
+            'web',
+        ]
     ]
 ];
 ```
+
+Digging deeper on setting `auth` to false and and making your own middleware: Let's say you wish to show the same version of documentation to 
+<ul>
+<li>guest users</li>
+<li>authenticated users and </li>
+ <li>a subset(s) of authenticated users</li>
+ </ul>
+ Each group can only view a certain portion or pages of the docs within your published version. To accomplish this, you set `settings.auth` to false and `settings.middleware` to web and your new middleware you made, such as `['web','docs']`. Once this complete, you can use [gates](/docs/{{version}}/authorization) to specifically decide which user (or guest!) sees which documentation pages.
+
+> {info} Remember, if you set `auth` to true, your `settings.middleware` will be ignored!.
 
 <a name="cache"></a>
 ## Cache

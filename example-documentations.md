@@ -6,6 +6,7 @@ LaRecipe has been used to document other projects/packages. Let's see.
 
 - [Zino](#zino)
 - [Blogged](#blogged)
+- [WooSignal](#WooSignal)
 - [Add Yours](#add)
 
 <a name="zino"></a>
@@ -24,6 +25,15 @@ Blogged is a carefully designed Laravel package provides an easy way to create a
 
 <larecipe-button type="primary" tag="a" href="https://blogged.binarytorch.com.my/" target="__blank" class="inline-block my-2">
     View Blogged Package <i class="fa fa-external-link"></i>
+</larecipe-button>
+
+<a name="WooSignal"></a>
+## WooSignal 
+
+Fastest WooCommerce App Templates.
+
+<larecipe-button type="primary" tag="a" href="https://woosignal.com/docs/api/1.0/overview" target="__blank" class="inline-block my-2">
+    Visit WooCommerce <i class="fa fa-external-link"></i>
 </larecipe-button>
 
 <a name="add"></a>

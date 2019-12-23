@@ -1,4 +1,4 @@
-# Configurations
+# LaRecipe Configurations And General Setup
 
 With the installation of LaRecipe you will find a new configuration file located at `config/larecipe.php`.
 In this file, you can find various options to change the configuration of your LaRecipe installation.

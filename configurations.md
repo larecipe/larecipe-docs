@@ -183,7 +183,7 @@ return [
 <a name="forum"></a>
 ## Forum
 
-Giving a chance to your users to post thier questions or feedback directly on your docs, is pretty nice way to engage them more. However, you can also disable the forum's visibility if you don't like the idea. Supported Services: `disqus`
+Giving a chance to your users to post their questions or feedback directly on your docs, is pretty nice way to engage them more. However, you can also disable the forum's visibility if you don't like the idea. Supported Services: `disqus`
 
 > {info} [`Disqus`](https://disqus.com/) is a great way to setup forum inside your website/docs in few steps. Create a site and paste its name in the `site_name` to activate the disqus forum.
 

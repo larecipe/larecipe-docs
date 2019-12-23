@@ -1,8 +1,6 @@
-# LaRecipe
+# Laravel Markdown Documentation
 
-Writing documentation is boring? Hah, let's see.
-
-> {success} Are you a visual learner? [`DevDojo`](https://devdojo.com/episode/larecipe) provides a free introductory video about LaRecipe. It's a great place to start ✌️
+LaRecipe helps you write clean and beautiful documentation using Markdown for your software projects and keeping the docs within the source code.
 
 ---
 

@@ -137,7 +137,7 @@ By default, LaRecipe is considering the first `ul` element in your docs file as 
 - [Example](#example-link)
 
 <a name="example-link">
-## Example
+## [Example](#example-link)
 ```
 
 <larecipe-newsletter></larecipe-newsletter>

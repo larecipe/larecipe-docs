@@ -28,7 +28,7 @@ The `logo.blade.php` file contains the image that is displayed in the top left h
 <a name="nav"></a>
 ## Navigation Bar
 
-The `nav.blade.php` file contians the code for the navigation bar. If you want to make a change, for example, removing the github button. This is the place to do that.
+The `nav.blade.php` file contains the code for the navigation bar. If you want to make a change, for example removing the github button, this is the place to do that.
 
 <a name="sidebar"></a>
 ## Sidebar

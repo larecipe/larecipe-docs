@@ -17,6 +17,6 @@ By default, LaRecipe's default theme is the light one. However, for dark theme l
 composer require binarytorch/larecipe-dark-theme
 ```
 
-Once isntalled, the theme will be activated automatically 😃
+Once installed, the theme will be activated automatically 😃
 
 <larecipe-newsletter></larecipe-newsletter>

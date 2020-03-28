@@ -16,9 +16,9 @@ We at [BinaryTorch](https://binarytorch.com.my/) use LaRecipe internally to writ
 <a name="how"></a>
 ## How?
 
-LaRecipe provides an easy way to activate the authorization feature using Laravel Gate. Please have a look at the [official documnetation](https://laravel.com/docs/5.7/authorization) if you're not familiar with Gates.
+LaRecipe provides an easy way to activate the authorization feature using Laravel Gate. Please have a look at the [official documentation](https://laravel.com/docs/authorization) if you're not familiar with Gates.
 
-Register a new gate within `boot` method in your `AuthServiceProvider`.
+Register a new gate permission `viewLarecipe` within the `boot` method in your `AuthServiceProvider`.
 
 
 ```php
@@ -42,7 +42,7 @@ class AuthServiceProvider extends ServiceProvider
 
 <larecipe-badge type="primary" circle class="mr-3 mb-2">1</larecipe-badge>
 
-You might check if the current user has admin role in order to access all docs.
+You might check if the current user has a certain role like `isAdmin()` in order to access all docs.
 
 ```php
 Gate::define('viewLarecipe', function($user, $documentation) {
@@ -52,7 +52,7 @@ Gate::define('viewLarecipe', function($user, $documentation) {
 
 <larecipe-badge type="primary" circle class="mr-3 mb-2 mt-6">2</larecipe-badge>
 
-You may want to limit the access for small group of people listed manually.
+You may want to limit access for a small group of people listed manually.
 
 ```php
 Gate::define('viewLarecipe', function($user, $documentation) {
@@ -65,7 +65,7 @@ Gate::define('viewLarecipe', function($user, $documentation) {
 
 <larecipe-badge type="primary" circle class="mr-3 mb-2 mt-6">3</larecipe-badge> 
 
-You may want to give access to all users except one person where his access limited to few pages only.
+You may want to give access to all users except one person where his access is limited to a few pages only.
 
 ```php
 Gate::define('viewLarecipe', function($user, $documentation) {
@@ -89,7 +89,7 @@ You may want to allow guest users to see some pages, authenticated users to see 
 ```php
 Gate::define('viewLarecipe', function(?User $user, $documentation) {
     if($user && !$user->isAdmin()){
-        //do some logic for regular authetnicated users
+        //do some logic for regular authenticated users
         if($documentation->title == 'Overview'){
             return true;
         }

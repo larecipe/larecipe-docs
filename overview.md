@@ -4,15 +4,9 @@ LaRecipe helps you write clean and beautiful documentation using Markdown for yo
 
 ---
 
-- [Gold Sponsors](#sponsors)
 - [Overview](#overview)
 - [Features](#features)
 - [Credits](#credits)
-
-<a name="sponsors"></a>
-## Gold Sponsors
-
-<larecipe-sponsers></larecipe-sponsers>
 
 <a name="overview"></a>
 ## Overview

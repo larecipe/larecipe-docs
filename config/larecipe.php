@@ -57,7 +57,7 @@ return [
     'settings'       => [
         'auth'       => false,
         'guard'      => null,
-        'ga_id'      => 'UA-125185075-1',
+        'ga_id'      => 'G-DK7DYJ8SSR',
         'middleware' => [
             'web',
         ]

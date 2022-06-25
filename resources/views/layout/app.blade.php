@@ -53,13 +53,13 @@
 
         {{-- Google Analytics --}}
         @if(config('larecipe.settings.ga_id'))
-            <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('larecipe.settings.ga_id') }}"></script>
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-DK7DYJ8SSR"></script>
             <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
 
-                gtag('config', "{{ config('larecipe.settings.ga_id') }}");
+            gtag('config', 'G-DK7DYJ8SSR');
             </script>
         @endif
         {{-- /Google Analytics --}}

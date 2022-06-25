@@ -1,5 +1,5 @@
 <div class="sidebar pt-0" :class="[{'is-hidden': ! sidebar}]">
-    <div>
+    <div style="height: 320px;">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2975960653015025"
      crossorigin="anonymous"></script>
     <!-- larecipe-sidebar -->
@@ -13,6 +13,6 @@
         (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
     </div>
-    
+
     {!! $index !!}
 </div>

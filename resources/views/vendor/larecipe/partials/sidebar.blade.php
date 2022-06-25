@@ -1,5 +1,5 @@
 <div class="sidebar pt-0" :class="[{'is-hidden': ! sidebar}]">
-    <div style="height: 320px;">
+    <div style="max-height: 250px;">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2975960653015025"
      crossorigin="anonymous"></script>
     <!-- larecipe-sidebar -->

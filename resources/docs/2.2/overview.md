@@ -4,21 +4,9 @@ LaRecipe helps you write clean and beautiful documentation using Markdown for yo
 
 ---
 
-- [Sponsors](#sponsors)
 - [Overview](#overview)
 - [Features](#features)
 - [Credits](#credits)
-
-<a name="sponsors"></a>
-## 🩷 Sponsors
-
-<larecipe-card shadow shadow-size="sm" roudned-lg class="lg:w-1/2">
-
-<a href="https://usecyclone.dev/?utm_source=larecipe" target="__blank">
-<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/12780866/275704844-77e7f7cc-0bd0-4317-bbd6-a083ce6bffd8.png" width="250px" />
-</a>
-
-<h3 style="margin-top: 20px; margin-bottom: 0px;"><a href="https://usecyclone.dev/?utm_source=larecipe" target="__blank">Cyclone</a> - An instant coding playground embedded in your documentation pages</h3>
 
 </larecipe-card>
 

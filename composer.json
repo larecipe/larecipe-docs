@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
-        "binarytorch/larecipe": "^2.5",
+        "binarytorch/larecipe": "^2.8.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.11",
         "laravel/octane": "^1.2",

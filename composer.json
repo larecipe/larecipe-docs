@@ -11,7 +11,7 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10",
-        "spiral/roadrunner": "^2.8.2"
+        "spiral/roadrunner": "^2025.1.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

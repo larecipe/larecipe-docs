@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="-4 0 48 48">
+  <!-- The favicon cut of the ticket mark: two bars, so it reads at 16px. Ink in light mode, paper in dark. -->
+  <style>path { fill: #1C1B22 } @media (prefers-color-scheme: dark) { path { fill: #FAFAF8 } }</style>
+  <path fill-rule="evenodd" d="M6 7a3 3 0 0 1 3-3h22a3 3 0 0 1 3 3v37a3.5 3.5 0 0 0-7 0a3.5 3.5 0 0 0-7 0a3.5 3.5 0 0 0-7 0a3.5 3.5 0 0 0-7 0ZM13.5 12h13a2.5 2.5 0 0 1 0 5h-13a2.5 2.5 0 0 1 0-5ZM13.5 22h6a2.5 2.5 0 0 1 0 5h-6a2.5 2.5 0 0 1 0-5Z"/>
+</svg>

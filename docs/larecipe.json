@@ -1,0 +1,26 @@
+{
+  "$schema": "https://larecipe.saleem.dev/schemas/3.x/larecipe.json",
+  "name": "LaRecipe",
+  "description": "Living documentation for Laravel apps. Your coding agents write the docs and keep them current; every reader, human or agent, gets the current answer.",
+  "logo": { "light": "/brand/mark.svg", "dark": "/brand/mark-dark.svg" },
+  "favicon": "/favicon.svg",
+  "repository": { "url": "https://github.com/saleem-hadad/larecipe", "docsPath": "docs" },
+  "versions": [
+    { "id": "3.x", "default": true },
+    { "id": "2.x", "status": "maintained" }
+  ],
+  "locales": [
+    { "code": "en", "label": "English", "default": true },
+    { "code": "ar", "label": "العربية", "dir": "rtl" }
+  ],
+  "navbar": {
+    "links": [{ "label": "GitHub", "href": "https://github.com/saleem-hadad/larecipe", "icon": "github" }]
+  },
+  "inserts": { "article.after": ["Subscribe"] },
+  "agents": {
+    "llmsTxt": {
+      "description": "LaRecipe is the docs engine that lives inside your Laravel app: Markdown docs in your repo (or your database), served to people as a fast site and to agents as Markdown, llms.txt, skill.md and MCP, and kept current by your own coding agent in the same pull request as the code.",
+      "instructions": "Read the 3.x pages unless the user is on LaRecipe 2. Commands are php artisan larecipe:*; configuration lives in config/larecipe.php, presentation in docs/larecipe.json. Prefer the Reference pages for exact option names."
+    }
+  }
+}

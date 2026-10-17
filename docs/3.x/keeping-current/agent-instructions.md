@@ -28,7 +28,7 @@ The core of keeping docs current is a few lines of plain text in `AGENTS.md`, at
 
 ## This site's block
 
-This is the LaRecipe section of this site's own `AGENTS.md`, exactly as `larecipe:agents` wrote it:
+This is the LaRecipe section of this site's own `AGENTS.md`, as `larecipe:agents` wrote it, with the index cut to its first three of 46 lines:
 
 ```markdown
 <!-- larecipe:start -->
@@ -47,15 +47,18 @@ Review mode is `required`: show the user the docs diff and wait for approval bef
 
 Search and read the docs with the `larecipe` MCP server. Never write configuration or environment values into docs.
 
-### Docs index: LaRecipe
+### Docs index: LaRecipe (version 3.x)
 
-1 page. One line per page: path, title, description. Read a page with the `read_page` tool of the `larecipe` MCP server, or open its file in `docs/`. Refresh this index with `php artisan larecipe:agents-md`.
+46 pages. One line per page: path, title, description. Read a page with the `read_page` tool of the `larecipe` MCP server, or open its file in `docs/`. Refresh this index with `php artisan larecipe:agents-md`.
 
-- `index`: Introduction. Documentation for LaRecipe.
+- `index`: Docs that keep up with your code. LaRecipe lives inside your Laravel app. Your coding agents write the docs and update them with every change. People g.
+- `upgrade`: Upgrade from v2. Move a LaRecipe 2 site to LaRecipe 3 with one command and a report, then finish the manual items with your coding age.
+- `agents/ask-ai`: Ask AI. Let readers ask a question and get a short answer written only from your docs, with every cited page checked, on your.
+- ...
 <!-- larecipe:end -->
 ```
 
-The index at the bottom was written when the site had one page. It is exactly the kind of drift the [pre-push hook](pre-push-hook.md) catches: once pages are added, removed or retitled, the hook's message asks the agent to run `php artisan larecipe:agents-md` and bring the index up to date.
+When pages are added, removed or retitled, the index falls behind. The [pre-push hook](pre-push-hook.md) catches that: its message asks the agent to run `php artisan larecipe:agents-md` and bring the index up to date.
 
 ## What it says
 

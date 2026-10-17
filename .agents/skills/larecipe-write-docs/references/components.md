@@ -288,6 +288,20 @@ Content in Markdown.
 </Steps>
 ```
 
+## Subscribe
+
+A sign-up form for the LaRecipe newsletter. (defined by this app)
+
+| Prop | Type | Required | Default | Allowed values | Description |
+| --- | --- | --- | --- | --- | --- |
+| `list` | string | no | `larecipe` |  | The newsletter list to join |
+
+```markdown
+<Subscribe>
+Content in Markdown.
+</Subscribe>
+```
+
 ## Tab
 
 One tab inside <Tabs>. (built in)

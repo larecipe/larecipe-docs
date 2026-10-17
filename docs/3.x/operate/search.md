@@ -1,0 +1,306 @@
+---
+title: Search
+description: How search works with no service to run, what gets indexed, how to keep the index small, and how to plug in your own engine.
+sources:
+  - vendor/larecipe/larecipe/src/Domains/Search/**
+  - vendor/larecipe/larecipe/ui/src/palette/search.ts
+  - vendor/larecipe/larecipe/ui/src/overlays/Overlays.tsx
+  - vendor/larecipe/larecipe/ui/src/app/shortcuts.ts
+  - vendor/larecipe/larecipe/src/LaRecipe.php
+  - vendor/larecipe/larecipe/src/Domains/Validation/Rules/SearchBudgetRule.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Commands/OptimizeCommand.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Events/SearchPerformed.php
+  - vendor/larecipe/larecipe/src/Domains/Agents/Mcp/Tools/SearchDocsTool.php
+  - vendor/larecipe/larecipe/src/Domains/Agents/Controllers/AskEndpointController.php
+  - vendor/larecipe/larecipe/config/larecipe.php
+---
+
+# Search
+
+Search works the moment LaRecipe is installed, with no service to run and nothing to configure. Each version and language of a doc set gets a small JSON index, the reader's browser searches it as they type, and agents search the same records through a ranker in PHP. Press `⌘K` (`Ctrl K`) or `/` on any page to try it.
+
+| Who searches | How | Engine |
+| --- | --- | --- |
+| Readers | The command palette | MiniSearch, in the browser, over the client index |
+| Agents | MCP `search_docs`, or `GET /ask?q=` when it is on | The PHP ranker |
+| Readers who hit a missing page | Suggestions on the 404 | The PHP ranker |
+| Sets on the `server` driver, scripts | `GET /_search?q=` | The PHP ranker, or your own driver |
+
+All of them read the same records and apply the same access rules, so a private page never shows up in anyone's results unless they may open it.
+
+## What gets indexed
+
+LaRecipe splits every page into records:
+
+- **The page itself**: its description and the text before the first H2.
+- **One record per H2 and H3**, with the text under it. Deeper headings and their text belong to the section above them.
+- **One record per `<Can>` or `<Cannot>` block**, carrying the ability it requires. A heading inside a gated block never labels text outside it.
+
+Records keep up to 1,000 characters of text, code blocks included, plus component titles and labels such as a step's title. Frontmatter `tags` are searchable. Pages with `hidden: true` stay out of search. Records are built once per change to the docs and cached; [`larecipe:optimize`](caching.md) builds them on deploy, before the first search.
+
+## The client index
+
+Every page's boot data tells the palette where its index lives. This site's 3.x pages carried this when this page was written:
+
+```json
+"search": {
+    "driver": "client",
+    "index_url": "/3.x/_search/4d40f12a0a16.fed1749a3fe4.json",
+    "endpoint": "/3.x/_search"
+}
+```
+
+The file name is `{audience}.{fingerprint}.json`, under the set's prefix, locale and version:
+
+- **The fingerprint** changes whenever the version's content changes, so the URL is immutable. Guests on a public set get it with `Cache-Control: public, max-age=31536000, immutable`, and a CDN can keep it forever.
+- **The audience** is a short hash of the pages a reader may see and the gate abilities they hold. Every guest shares one public file. A signed-in reader gets the file for what they may see, served `private`, and it holds only those records.
+- **Anyone asking for another audience's file**, or an old fingerprint, is redirected to their own current index. Nobody can download records meant for someone else.
+
+The file holds the MiniSearch options and the records:
+
+```json
+{
+    "fingerprint": "fed1749a3fe4",
+    "audience": "4d40f12a0a16",
+    "fields": ["title", "heading", "tags", "text", "terms"],
+    "storeFields": ["title", "heading", "path", "url", "kind"],
+    "searchOptions": {
+        "boost": { "title": 4, "heading": 3, "tags": 2, "terms": 1.5, "text": 1 },
+        "prefix": true,
+        "fuzzy": 0.2,
+        "combineWith": "AND"
+    },
+    "records": [
+        {
+            "id": "writing/live-references#drift-detection",
+            "title": "Live references",
+            "heading": "Drift detection",
+            "tags": "",
+            "text": "Live references name their targets, so larecipe:sources:suggest reads them along with the classes, commands and route names in your inline code when it proposes sources: for a page. See how keeping docs current works.",
+            "terms": "larecipe sources suggest writing live references",
+            "path": "writing/live-references",
+            "url": "/3.x/writing/live-references#drift-detection",
+            "kind": "section"
+        }
+    ]
+}
+```
+
+That is one record of 522 in the file, which weighed about 123 KB gzipped.
+
+### Loading
+
+Nothing about search loads with the page. The palette and the index arrive the first time the reader opens search, or earlier, when the browser is idle after the reader's first click, key press, scroll or touch, so `⌘K` usually opens with results ready. The browser then builds the MiniSearch index from the records, which takes a few milliseconds for a typical set.
+
+The palette matches prefixes and tolerates typos. Every word must match; when nothing matches all of them, it shows results that match any. If the index cannot load, the palette falls back to the server endpoint, and without one, to page titles from the navigation.
+
+## Code identifiers
+
+Docs are full of names like `Route::middleware`, `$request->user()`, `orders:prune`, `snake_case` and `hasMany`. The tokenizer keeps each identifier whole and also splits it into its parts, so `middleware` finds `Route::middleware`, and on the server a query for `Route::middleware` gives exact matches a bonus.
+
+In the client index, the parts of every identifier in a record go into the low-weight `terms` field. In the record above, `larecipe:sources:suggest` became `larecipe sources suggest`, so a search for `suggest` finds the section.
+
+## Keep the index small
+
+A client index should stay small enough to download in a moment. The budget is set in `config/larecipe.php`, in KB of gzipped JSON:
+
+```php
+// config/larecipe.php
+'search' => [
+    'driver' => 'client',
+    'budget_kb' => 300,
+],
+```
+
+Two commands measure against it:
+
+- `php artisan larecipe:validate` estimates each version's index from its rendered pages and reports a `search.budget` warning when it would be over budget, with the fix: switch the set to the `server` driver, or split the docs into more versions or sets. See [Validation and doctor](validation.md).
+- `php artisan larecipe:optimize` measures the real guest index of every version on deploy and prints its size, with a warning past the budget.
+
+Indexes are already split per version and per language, so the budget applies to each one separately. A set can set its own `search` values in its entry under `sets`.
+
+## The server driver and the PHP ranker
+
+Set `search.driver` to `server` and the browser downloads no index at all. The palette sends each query to the set's search endpoint instead:
+
+```bash
+curl 'https://larecipe.saleem.dev/3.x/_search?q=cache+warm&limit=1'
+```
+
+```json
+{
+    "query": "cache warm",
+    "version": "3.x",
+    "locale": "en",
+    "hits": [
+        {
+            "path": "operate/caching",
+            "title": "Caching and optimize",
+            "heading": "Database sets",
+            "anchor": "database-sets",
+            "snippet": "…set never reads the database to serve a cached page. Its fingerprint lives in the cache store, every publish bumps it, and the ContentChanged event queues a listener that warms the…",
+            "score": 10.3787,
+            "description": "How LaRecipe caches rendered pages, page lists and navigation, and what larecipe:optimize compiles on deploy.",
+            "url": "https://larecipe.saleem.dev/3.x/operate/caching#database-sets",
+            "markdown_url": "https://larecipe.saleem.dev/3.x/operate/caching.md"
+        }
+    ]
+}
+```
+
+The endpoint answers on every driver, so scripts can use it too. `limit` runs from 1 to 50 (default 10), and queries are cut at 200 characters. Guests on a public set get answers that caches may keep for a minute; everyone else gets `private, no-store`.
+
+Behind the endpoint is the PHP ranker, which also serves MCP `search_docs`, the `/ask` endpoint, Ask AI and the suggestions on a Markdown 404. It scores the same records with BM25 over weighted fields (title, then heading, tags, the page path and the text), matches prefixes (`migr` finds `migrations`), and allows one typo in words of four to seven letters and two from eight letters, but only for a word that matches nothing as written. Records that match more of the query rank higher, a query that is exactly a page title or a heading gets a boost, and one page contributes at most two sections to a result list.
+
+The browser and the server rank with different code, so their order can differ a little. What they can find, and who may find it, is the same.
+
+## Custom drivers
+
+For an engine of your own (Meilisearch, Typesense, a full-text index in your database), implement LaRecipe's `SearchDriver` contract:
+
+```php title="vendor/larecipe/larecipe/src/Domains/Search/Contracts/SearchDriver.php"
+<?php
+
+namespace LaRecipe\Domains\Search\Contracts;
+
+use LaRecipe\Domains\Search\DTOs\SearchQuery;
+use LaRecipe\Domains\Search\DTOs\SearchRecord;
+use LaRecipe\Domains\Search\DTOs\SearchResults;
+
+/**
+ * A custom search engine for a doc set (Meilisearch, Typesense, your own),
+ * registered with LaRecipe::extendSearch() and selected with search.driver.
+ *
+ * LaRecipe pushes every record (private pages and gated blocks included) when
+ * the set's content changes. Records carry the abilities they require, so a
+ * driver must filter by the reader's: the query carries the pages the reader
+ * may see and the abilities they hold (the Same-Rules Rule).
+ */
+interface SearchDriver
+{
+    /** @param iterable<SearchRecord> $records every record of one version and locale */
+    public function index(string $set, string $version, string $locale, iterable $records): void;
+
+    public function search(SearchQuery $query): SearchResults;
+
+    public function flush(string $set, ?string $version = null): void;
+}
+```
+
+LaRecipe calls `index()` with every record of a version and language, private pages and gated blocks included, the first time that version is searched after its content changed. Each record carries the abilities it requires, and every `SearchQuery` carries the pages the reader may see (`visible`, keyed by path) and the abilities they hold. **Your driver must filter by them.** `SearchRecord::allows()` does the ability check for you:
+
+```php title="app/Search/EngineDriver.php"
+<?php
+
+namespace App\Search;
+
+use LaRecipe\Domains\Content\DTOs\PageRef;
+use LaRecipe\Domains\Search\Contracts\SearchDriver;
+use LaRecipe\Domains\Search\DTOs\SearchHit;
+use LaRecipe\Domains\Search\DTOs\SearchQuery;
+use LaRecipe\Domains\Search\DTOs\SearchRecord;
+use LaRecipe\Domains\Search\DTOs\SearchResults;
+
+final class EngineDriver implements SearchDriver
+{
+    // EngineClient stands for your engine's PHP client.
+    public function __construct(private readonly EngineClient $client) {}
+
+    public function index(string $set, string $version, string $locale, iterable $records): void
+    {
+        $documents = [];
+
+        foreach ($records as $record) {
+            $documents[] = $record->toArray();
+        }
+
+        // Replace everything stored for this set, version and locale, so deleted pages disappear.
+        $this->client->replace("{$set}-{$version}-{$locale}", $documents);
+    }
+
+    public function search(SearchQuery $query): SearchResults
+    {
+        $hits = [];
+
+        foreach ($this->client->search("{$query->set}-{$query->version}-{$query->locale}", $query->query) as $document) {
+            $record = SearchRecord::fromArray($document);
+
+            // Only what this reader may see: a visible page, and the abilities a gated block asks for.
+            if (! isset($query->visible[$record->path]) || ! $record->allows($query->abilities)) {
+                continue;
+            }
+
+            $hits[] = new SearchHit(
+                ref: new PageRef($query->set, $query->version, $query->locale, $record->path),
+                title: $record->title,
+                heading: $record->heading,
+                anchor: $record->anchor,
+                snippet: mb_substr($record->text, 0, 180),
+            );
+
+            if (count($hits) === $query->limit) {
+                break;
+            }
+        }
+
+        return new SearchResults($hits);
+    }
+
+    public function flush(string $set, ?string $version = null): void
+    {
+        $this->client->drop($set, $version);
+    }
+}
+```
+
+Register it in a service provider and select it by name:
+
+```php title="app/Providers/AppServiceProvider.php"
+use App\Search\EngineClient;
+use App\Search\EngineDriver;
+use LaRecipe\Facades\LaRecipe;
+
+public function boot(): void
+{
+    LaRecipe::extendSearch('engine', fn ($app, array $config) => new EngineDriver($app->make(EngineClient::class)));
+}
+```
+
+```php
+// config/larecipe.php
+'search' => [
+    'driver' => 'engine',
+],
+```
+
+The factory receives the app and the set's `search` config, so you can add keys of your own there. With a custom driver, the boot data has no index URL: the palette queries the search endpoint, and MCP, Ask AI and Markdown 404s all search through your driver. A driver name nobody registered throws an exception on the first search, so a typo never goes unnoticed.
+
+LaRecipe does not call `flush()` itself yet; keep it for your own maintenance. Because `index()` receives the whole version every time, replacing what you stored is enough to keep the engine current.
+
+## Searches as events
+
+Server-side searches fire `SearchPerformed`: MCP `search_docs` (source `mcp`), Ask AI's retrieval (source `assistant`) and the `/ask` endpoint (source `endpoint`). Searches typed into the palette run in the browser and fire nothing, and neither does `GET /_search`.
+
+<Event name="SearchPerformed" />
+
+The `zeroResults` flag is the useful one: it is how you find questions your docs do not answer yet. A listener in your app can collect them:
+
+```php title="app/Providers/AppServiceProvider.php"
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
+use LaRecipe\Domains\Delivery\Events\SearchPerformed;
+
+Event::listen(function (SearchPerformed $event) {
+    if ($event->zeroResults) {
+        Log::info('Docs search found nothing', ['query' => $event->query, 'source' => $event->source]);
+    }
+});
+```
+
+LaRecipe stores nothing. See [Analytics and events](analytics.md) for the other events.
+
+## Next
+
+- [Analytics and events](analytics.md): forward searches and page views to your own tools.
+- [Caching and optimize](caching.md): how records are cached and compiled on deploy.
+- [Validation and doctor](validation.md): the `search.budget` check.

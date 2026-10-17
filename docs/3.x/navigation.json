@@ -1,0 +1,77 @@
+{
+  "$schema": "https://larecipe.saleem.dev/schemas/3.x/navigation.json",
+  "groups": [
+    { "group": "Introduction", "pages": [{ "page": "index", "label": "Introduction" }] },
+    {
+      "group": "Get started",
+      "pages": [
+        "get-started/installation",
+        "get-started/your-first-docs",
+        "get-started/configuration",
+        "get-started/project-structure"
+      ]
+    },
+    {
+      "group": "Writing",
+      "pages": [
+        "writing/markdown",
+        "writing/components",
+        "writing/code-blocks",
+        "writing/navigation",
+        "writing/versions",
+        "writing/languages",
+        "writing/live-references",
+        "writing/gate-blocks"
+      ]
+    },
+    {
+      "group": "Keeping docs current",
+      "pages": [
+        "keeping-current/how-it-works",
+        "keeping-current/agent-instructions",
+        "keeping-current/pre-push-hook",
+        "keeping-current/skills",
+        "keeping-current/review-modes",
+        "keeping-current/sync",
+        "keeping-current/ci-check"
+      ]
+    },
+    {
+      "group": "For agents",
+      "pages": ["agents/surfaces", "agents/mcp", "agents/ask-ai"]
+    },
+    {
+      "group": "Sources",
+      "pages": ["sources/repository", "sources/database", "sources/docs-migrations", "sources/switching"]
+    },
+    {
+      "group": "Customize",
+      "pages": ["customize/theme", "customize/custom-components", "customize/insert-points", "customize/eject"]
+    },
+    {
+      "group": "Operate",
+      "pages": [
+        "operate/search",
+        "operate/analytics",
+        "operate/caching",
+        "operate/static-export",
+        "operate/validation",
+        "operate/deployment",
+        "operate/security"
+      ]
+    },
+    { "group": "Upgrade", "pages": ["upgrade"] },
+    {
+      "group": "Reference",
+      "pages": [
+        "reference/commands",
+        "reference/configuration",
+        "reference/frontmatter",
+        "reference/manifest",
+        "reference/components",
+        "reference/events",
+        "reference/mcp-tools"
+      ]
+    }
+  ]
+}

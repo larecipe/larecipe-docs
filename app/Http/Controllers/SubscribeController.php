@@ -20,27 +20,29 @@ use Throwable;
  * server fallback when JavaScript is off. A plain post lands on /newsletter,
  * which can show the outcome; the docs page itself is cached HTML and cannot.
  *
- * It never fails with a 500: a missing SDK or API key, an unreachable API or
- * a rejected address each come back as one plain sentence.
+ * It answers in the page's language (English or Arabic), and it never fails
+ * with a 500: a missing SDK or API key, an unreachable API or a rejected
+ * address each come back as one plain sentence.
  */
 final class SubscribeController
 {
-    private const NOT_CONNECTED = 'The newsletter is not taking sign-ups yet. Watch the GitHub repository for releases in the meantime.';
-
-    private const UNAVAILABLE = 'The newsletter could not be reached. Please try again in a few minutes.';
+    public const LOCALES = ['en', 'ar'];
 
     public function __invoke(Request $request): JsonResponse|RedirectResponse
     {
+        $locale = in_array($request->input('locale'), self::LOCALES, true) ? $request->input('locale') : 'en';
+
         $data = $request->validate([
             'email' => ['required', 'string', 'email', 'max:254'],
             'list' => ['nullable', 'string', 'max:64'],
             'source' => ['nullable', 'string', 'max:255'],
+            'locale' => ['nullable', 'string'],
         ], [
-            'email.required' => 'Enter your email address.',
-            'email.email' => 'That does not look like an email address.',
+            'email.required' => __('newsletter.required', [], $locale),
+            'email.email' => __('newsletter.invalid', [], $locale),
         ]);
 
-        [$subscribed, $message, $field] = $this->subscribe($data['email']);
+        [$subscribed, $message, $field] = $this->subscribe($data['email'], $locale);
 
         if ($request->expectsJson()) {
             return $subscribed
@@ -52,16 +54,18 @@ final class SubscribeController
                 ], $field ? 422 : 503);
         }
 
+        $page = redirect()->route('newsletter', $locale === 'en' ? [] : ['lang' => $locale]);
+
         return $subscribed
-            ? redirect()->route('newsletter')->with('subscribed', $data['email'])
-            : redirect()->route('newsletter')->withInput()->withErrors(['email' => $message]);
+            ? $page->with('subscribed', $data['email'])
+            : $page->withInput()->withErrors(['email' => $message]);
     }
 
     /** @return array{bool, ?string, ?string} subscribed, a message for the reader, the field it is about */
-    private function subscribe(string $email): array
+    private function subscribe(string $email, string $locale): array
     {
         if (! class_exists(Nashra::class) || blank(config('nashra.api_key'))) {
-            return [false, self::NOT_CONNECTED, null];
+            return [false, __('newsletter.not_connected', [], $locale), null];
         }
 
         try {
@@ -69,17 +73,17 @@ final class SubscribeController
 
             return [true, null, null];
         } catch (ValidationException $exception) {
-            return [false, $exception->errors()['email'][0] ?? 'That email address was not accepted.', 'email'];
+            return [false, $exception->errors()['email'][0] ?? __('newsletter.rejected', [], $locale), 'email'];
         } catch (RateLimitException) {
-            return [false, 'A lot of people are signing up right now. Please try again in a minute.', null];
+            return [false, __('newsletter.rate_limited', [], $locale), null];
         } catch (AuthenticationException|AuthorizationException $exception) {
             report($exception);
 
-            return [false, self::NOT_CONNECTED, null];
+            return [false, __('newsletter.not_connected', [], $locale), null];
         } catch (Throwable $exception) {
             report($exception);
 
-            return [false, self::UNAVAILABLE, null];
+            return [false, __('newsletter.unavailable', [], $locale), null];
         }
     }
 }

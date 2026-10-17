@@ -1,16 +1,18 @@
+@php($locale = request('lang') === 'ar' ? 'ar' : 'en')
 <!doctype html>
-<html lang="en">
+<html lang="{{ $locale }}" dir="{{ $locale === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Newsletter · LaRecipe</title>
-    <meta name="description" content="Get LaRecipe release notes by email.">
+    <title>{{ __('newsletter.label', [], $locale) }} · LaRecipe</title>
+    <meta name="description" content="{{ __('newsletter.body', [], $locale) }}">
     <link rel="icon" href="/favicon.svg">
     <meta name="color-scheme" content="light dark">
     <style>
         :root { --paper: #fafaf8; --ink: rgb(28 27 34 / 0.92); --muted: rgb(28 27 34 / 0.66); --surface: #f2f1f4; --hairline: #e7e6ea; --strong: #d6d5db; --accent: oklch(0.55 0.2 279); --success: oklch(0.56 0.13 155); --danger: oklch(0.56 0.2 25); }
         @media (prefers-color-scheme: dark) { :root { --paper: #111016; --ink: rgb(244 243 248 / 0.92); --muted: rgb(244 243 248 / 0.64); --surface: #1b1a21; --hairline: #26252d; --strong: #34333c; --accent: oklch(0.74 0.14 279); --success: oklch(0.8 0.14 155); --danger: oklch(0.78 0.17 25); } }
         * { box-sizing: border-box; }
+        body:lang(ar) { font-family: 'Thmanyah Sans', ui-sans-serif, system-ui, sans-serif; line-height: 1.8; }
         body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.75 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
         main { max-width: 560px; margin: 0 auto; padding: 72px 16px; }
         .mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; }
@@ -41,25 +43,26 @@
         LaRecipe
     </a>
 
-    <p class="label">Newsletter</p>
-    <h1>Stay in the loop</h1>
-    <p class="lead">LaRecipe release notes by email, when a release ships. Unsubscribe any time.</p>
+    <p class="label">{{ __('newsletter.label', [], $locale) }}</p>
+    <h1>{{ __('newsletter.title', [], $locale) }}</h1>
+    <p class="lead">{{ __('newsletter.body', [], $locale) }}</p>
 
     @if (session('subscribed'))
-        <div class="status ok" role="status"><strong>Subscribed</strong>Thanks. {{ session('subscribed') }} is on the list.</div>
+        <div class="status ok" role="status"><strong>{{ __('newsletter.submit', [], $locale) }}</strong>{{ __('newsletter.subscribed', ['email' => session('subscribed')], $locale) }}</div>
     @elseif ($errors->has('email'))
-        <div class="status error" role="alert"><strong>Not subscribed</strong>{{ $errors->first('email') }}</div>
+        <div class="status error" role="alert"><strong>{{ __('newsletter.not_subscribed', [], $locale) }}</strong>{{ $errors->first('email') }}</div>
     @endif
 
     <form method="post" action="{{ route('newsletter.subscribe') }}">
         @csrf
         <input type="hidden" name="list" value="larecipe">
-        <label for="email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Email address</label>
-        <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="you@example.com">
-        <button type="submit">Subscribe</button>
+        <input type="hidden" name="locale" value="{{ $locale }}">
+        <label for="email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">{{ __('newsletter.email', [], $locale) }}</label>
+        <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="you@example.com" dir="ltr">
+        <button type="submit">{{ __('newsletter.submit', [], $locale) }}</button>
     </form>
 
-    <p class="back"><a href="{{ url('/') }}">Back to the docs</a></p>
+    <p class="back"><a href="{{ url($locale === 'ar' ? '/ar/3.x' : '/') }}">{{ __('newsletter.back', [], $locale) }}</a></p>
 </main>
 </body>
 </html>

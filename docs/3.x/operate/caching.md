@@ -1,6 +1,6 @@
 ---
 title: Caching and optimize
-description: How LaRecipe caches rendered pages, page lists and navigation, what larecipe:optimize compiles on deploy, and how to keep the cache store working on Laravel 13.
+description: How LaRecipe caches rendered pages, page lists and navigation, and what larecipe:optimize compiles on deploy.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Delivery/Services/RenderCache.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Services/PageCatalog.php
@@ -51,27 +51,7 @@ LaRecipe uses your app's default cache store unless you name another one:
 
 Any persistent store works: `database`, `file`, `redis`, `memcached`. A repository set reads its files from disk, so a cold cache costs render time, not correctness. A database set always runs behind this store, and `larecipe:validate` reports an error when a database set uses the `array` or `null` store outside tests.
 
-> [!WARNING]
-> **Laravel 13 refuses to unserialize objects from the cache by default** (`'serializable_classes' => false` in `config/cache.php`). LaRecipe caches page lists and navigation trees as its own value objects, so on a fresh Laravel 13 app every docs page fails until you allow them. Allow LaRecipe's DTOs and enums, plus `DateTimeImmutable`, and keep every other class refused. This is the block this site runs with in `config/cache.php`.
-
-```php
-'serializable_classes' => (static function (): array {
-    if (! class_exists(\LaRecipe\LaRecipe::class)) {
-        return [];
-    }
-
-    $src = dirname((new ReflectionClass(\LaRecipe\LaRecipe::class))->getFileName());
-    $classes = [DateTimeImmutable::class];
-
-    foreach (glob($src.'/Domains/*/{DTOs,Enums}/*.php', GLOB_BRACE) ?: [] as $file) {
-        $classes[] = 'LaRecipe\\'.str_replace('/', '\\', substr($file, strlen($src) + 1, -4));
-    }
-
-    return $classes;
-})(),
-```
-
-The list is computed once when the config loads, and `php artisan config:cache` stores the resulting array, so it costs nothing per request.
+Everything LaRecipe caches is plain data (strings and arrays), so it works with Laravel 13's default `cache.serializable_classes => false`.
 
 ## Compile on deploy
 

@@ -129,26 +129,8 @@ return [
     | storage. By default, no PHP classes will be unserialized from your
     | cache to prevent gadget chain attacks if your APP_KEY is leaked.
     |
-    | LaRecipe caches its own value objects (page lists, navigation trees),
-    | so its DTOs and enums are allowed, plus DateTimeImmutable. They are
-    | plain data carriers with no magic methods. Every other class stays
-    | refused.
-    |
     */
 
-    'serializable_classes' => (static function (): array {
-        if (! class_exists(\LaRecipe\LaRecipe::class)) {
-            return [];
-        }
-
-        $src = dirname((new ReflectionClass(\LaRecipe\LaRecipe::class))->getFileName());
-        $classes = [DateTimeImmutable::class];
-
-        foreach (glob($src.'/Domains/*/{DTOs,Enums}/*.php', GLOB_BRACE) ?: [] as $file) {
-            $classes[] = 'LaRecipe\\'.str_replace('/', '\\', substr($file, strlen($src) + 1, -4));
-        }
-
-        return $classes;
-    })(),
+    'serializable_classes' => false,
 
 ];

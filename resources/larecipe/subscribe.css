@@ -1,0 +1,96 @@
+/*
+ * The newsletter form. It reads LaRecipe's theme tokens, so it follows the
+ * site's accent, dark mode and direction. The same rules style the server
+ * fallback (no JavaScript) and the React form.
+ */
+.lr-subscribe {
+  display: grid;
+  gap: 16px;
+  margin-block: 40px 8px;
+  padding: 20px;
+  border: 1px solid var(--lr-hairline);
+  border-radius: var(--lr-radius-md);
+  background: transparent;
+}
+
+.lr-prose .lr-subscribe p,
+.lr-subscribe p {
+  margin: 0;
+}
+
+.lr-subscribe-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.lr-subscribe-label {
+  font-family: var(--lr-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lr-ink-muted);
+}
+
+.lr-subscribe .lr-subscribe-title {
+  margin-block-start: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--lr-ink);
+}
+
+.lr-subscribe .lr-subscribe-body {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--lr-ink-muted);
+}
+
+.lr-subscribe-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lr-subscribe-field {
+  flex: 1 1 220px;
+  display: flex;
+}
+
+.lr-subscribe-field .lr-input {
+  width: 100%;
+}
+
+.lr-subscribe-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* An ink button: violet stays for the one primary action on the page. */
+.lr-subscribe .lr-subscribe-button {
+  background: var(--lr-ink);
+  border-color: transparent;
+  color: var(--lr-paper);
+}
+
+.lr-subscribe .lr-subscribe-button:hover {
+  background: color-mix(in oklch, var(--lr-ink) 86%, var(--lr-paper));
+}
+
+.lr-subscribe .lr-subscribe-error {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--lr-danger);
+}
+
+:root:lang(ar) .lr-subscribe-label {
+  font-family: var(--lr-font-sans);
+  font-size: 12.5px;
+  letter-spacing: normal;
+  text-transform: none;
+}

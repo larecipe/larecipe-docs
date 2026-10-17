@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SchemaController;
 use App\Http\Controllers\SubscribeController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +19,9 @@ Route::view('/newsletter', 'newsletter')->name('newsletter');
 Route::permanentRedirect('/docs', '/');
 Route::permanentRedirect('/docs/{version}', '/2.x');
 Route::permanentRedirect('/docs/{version}/{page}', '/2.x/{page}');
+
+// Every LaRecipe 3 manifest points its "$schema" at this domain
+// (https://larecipe.saleem.dev/schemas/3.x/larecipe.json and friends).
+Route::get('/schemas/3.x/{name}.json', SchemaController::class)
+    ->whereIn('name', SchemaController::SCHEMAS)
+    ->name('schemas');

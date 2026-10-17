@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\LaRecipeCommands;
 use App\Support\LaRecipeExtension;
 use Illuminate\Support\ServiceProvider;
 use LaRecipe\Facades\LaRecipe;
@@ -33,5 +34,10 @@ class AppServiceProvider extends ServiceProvider
 
         // Load the extension that holds the React side of our components.
         LaRecipe::head(fn () => LaRecipeExtension::tags());
+
+        // Let <Artisan command="larecipe:..." /> read LaRecipe's own commands on the web.
+        if (! $this->app->runningInConsole()) {
+            LaRecipeCommands::registerForWeb();
+        }
     }
 }

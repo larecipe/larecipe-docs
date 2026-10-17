@@ -216,7 +216,8 @@ return [
             'allow' => ['App\\Models\\*'],
         ],
         'events' => [
-            'namespaces' => ['App\\Events'],
+            // LaRecipe's own events, so the Events reference reads their payloads live.
+            'namespaces' => ['App\\Events', 'LaRecipe\\Domains\\Delivery\\Events', 'LaRecipe\\Domains\\Sources\\Events'],
         ],
     ],
 

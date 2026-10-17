@@ -1,7 +1,4 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
+// The docs own the domain root (config/larecipe.php mounts the set at ''),
+// so this file only holds what the docs site adds around them.

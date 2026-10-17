@@ -63,9 +63,12 @@ Everything LaRecipe caches is plain data (strings and arrays), so it works with 
 php artisan optimize
 ```
 
+This is this site's own run:
+
 ```text
-docs 3.x en .. 41 pages, 389 search records, 38 KB index
-docs 2.x en .. 17 pages, 76 search records, 10 KB index
+docs 3.x en ................... 46 pages, 542 search records, 127 KB index
+docs 3.x ar ...................... 2 pages, 17 search records, 6 KB index
+docs 2.x en .................... 17 pages, 76 search records, 10 KB index
 
 INFO LaRecipe docs compiled.
 ```

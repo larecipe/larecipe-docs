@@ -1,0 +1,270 @@
+---
+title: Navigation
+description: Build the sidebar from your folders with no config, or write it in navigation.json, and keep old URLs working with redirects.
+sources:
+  - vendor/larecipe/larecipe/resources/schemas/navigation.schema.json
+  - vendor/larecipe/larecipe/src/Domains/Content/Services/NavigationResolver.php
+  - vendor/larecipe/larecipe/src/Domains/Content/Services/ZeroConfigNavigation.php
+  - vendor/larecipe/larecipe/src/Domains/Content/DTOs/NavigationTree.php
+  - vendor/larecipe/larecipe/src/Domains/Content/DTOs/NavigationTab.php
+  - vendor/larecipe/larecipe/src/Domains/Content/DTOs/NavigationNode.php
+  - vendor/larecipe/larecipe/src/Domains/Sources/Drivers/RepositorySource.php
+  - vendor/larecipe/larecipe/src/Domains/Validation/Rules/NavigationRule.php
+  - vendor/larecipe/larecipe/src/Domains/Onboarding/Commands/NavigationFreezeCommand.php
+  - vendor/larecipe/larecipe/src/Domains/Onboarding/Actions/FreezeNavigationAction.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Controllers/PageController.php
+  - vendor/larecipe/larecipe/src/Domains/Content/DTOs/Manifest.php
+  - vendor/larecipe/larecipe/ui/src/regions/Sidebar.tsx
+  - docs/3.x/navigation.json
+---
+
+# Navigation
+
+Every version has a sidebar, and you choose where it comes from. With no config, LaRecipe builds it from your folders and each page's frontmatter, so a new page shows up the moment you add the file. When you want to decide the order and the groups yourself, write a `navigation.json` in the version folder. You can start with the first and switch to the second at any time.
+
+The same tree also sets the previous and next links at the bottom of each page, the sections of `llms.txt` and the outline in `skill.md`.
+
+## Navigation from your folders
+
+A version without a `navigation.json` gets its navigation from its files:
+
+- The version's `index.md` comes first, then the other pages at the version root, then one group per folder.
+- A folder's group is labelled with the title of its own page (`guides/index.md`, or a `guides.md` next to the folder). Without one, the folder name is used: `getting-started` becomes "Getting started", and a numeric prefix such as `01-` is dropped.
+- A folder's own page leads its group, and its `icon` and `order` stand for the whole folder.
+- Pages sort by their frontmatter `order`, lowest first, then by title. Pages without an `order` come after those with one.
+- Folders sort the same way: by their own page's `order`, then by that page's title or the folder name.
+- Folders inside folders become nested groups.
+- Pages with `hidden: true` are left out. Hiding a folder's own page hides the whole folder.
+
+So this folder:
+
+<FileTree>
+
+- docs/3.x/
+  - index.md
+  - configuration.md
+  - installation.md
+  - billing/
+    - index.md
+    - refunds.md
+    - invoices.md
+
+</FileTree>
+
+with `order: 1` on `installation.md` and `order: 2` on `configuration.md` gives this sidebar: the Introduction, Installation, Configuration, then a group labelled with the title of `billing/index.md`, holding that page first and then Invoices and Refunds, sorted by title.
+
+## navigation.json
+
+A `navigation.json` in a version folder (`docs/3.x/navigation.json`) replaces the derived navigation for that version. A set without versions keeps it at the root of its docs. Start it with the `$schema` pointer, so your editor and your agent can check it as you type:
+
+```json
+{
+  "$schema": "https://larecipe.saleem.dev/schemas/3.x/navigation.json",
+  "groups": [
+    { "group": "Get started", "pages": ["index", "installation"] },
+    { "group": "Billing", "pages": ["billing/invoices", "billing/refunds"] }
+  ]
+}
+```
+
+Page entries are paths from the version root, without `.md`: `billing/refunds` is `docs/3.x/billing/refunds.md`, and `index` is the version's landing page. Pages appear in the order you list them, under the titles from their frontmatter.
+
+<Accordion title="This site's navigation.json">
+
+<<< @/docs/3.x/navigation.json
+
+</Accordion>
+
+### Three shapes
+
+The file can take three shapes. Use the smallest one that fits.
+
+<Tabs>
+
+<Tab label="Groups">
+
+The common case, and the shape this site uses: one list of groups and pages.
+
+```json
+{
+  "groups": [
+    { "group": "Get started", "pages": ["index", "installation"] },
+    { "group": "Guides", "pages": ["guides/billing", "guides/webhooks"] }
+  ]
+}
+```
+
+</Tab>
+
+<Tab label="Tabs">
+
+Several labelled sections, each with its own groups. The sidebar shows each tab's label above its groups.
+
+```json
+{
+  "tabs": [
+    {
+      "label": "Guides",
+      "groups": [
+        { "group": "Get started", "pages": ["index", "installation"] }
+      ]
+    },
+    {
+      "label": "API",
+      "groups": [
+        { "group": "Resources", "pages": ["api/orders", "api/customers"] }
+      ]
+    }
+  ]
+}
+```
+
+</Tab>
+
+<Tab label="A bare list">
+
+For a small set: a plain list of pages and groups, with nothing around it.
+
+```json
+["index", "installation", "configuration", "faq"]
+```
+
+</Tab>
+
+</Tabs>
+
+Inside `{ "groups": [...] }` or a tab, you may also write `"pages": [...]` for entries that sit outside any group. When both are present, the `groups` entries come first.
+
+### Entries
+
+Every list in the file holds the same four kinds of entry:
+
+| Entry | Shape | Shows |
+| --- | --- | --- |
+| A page | `"billing/refunds"` | The page, under its own title |
+| A page with its own label | `{ "page": "index", "label": "Introduction", "icon": "house" }` | The page, under `label` |
+| A group | `{ "group": "Billing", "collapsed": true, "pages": [...] }` | A labelled group; its `pages` can hold any entry, groups included |
+| A link | `{ "label": "Changelog", "href": "https://example.com/changelog" }` | A link to anywhere, marked as external |
+
+A page's `label` changes only its sidebar entry; the page keeps its own title everywhere else. A group may be named with `label` instead of `group`.
+
+`icon` takes a [Lucide](https://lucide.dev/icons/) icon name on pages, groups, links and tabs. LaRecipe passes it to the reader UI, but the default sidebar does not draw navigation icons yet.
+
+### Collapsed and nested groups
+
+Top-level groups are always open. Nested groups fold, and start open. Add `"collapsed": true` to start a group folded, top-level or nested; a folded group still opens when it holds the page you are reading.
+
+```json
+{
+  "groups": [
+    {
+      "group": "Billing",
+      "pages": [
+        "billing",
+        "billing/invoices",
+        { "group": "Webhooks", "collapsed": true, "pages": ["billing/webhooks/events", "billing/webhooks/retries"] }
+      ]
+    }
+  ]
+}
+```
+
+> [!NOTE]
+> The schema also accepts a tab with `href` instead of groups, as a link in place of a section. The current reader UI shows such a tab's label without the link, so use a link entry inside a group for now.
+
+### What readers see
+
+The navigation is the same file for everyone, but each reader sees only what they may read. Private pages are left out for readers who cannot open them, and a group with nothing left to show disappears. Entries for pages that do not exist are left out too, and `larecipe:validate` reports them.
+
+A page's `badge` frontmatter shows next to its entry, and pages that changed in the last seven days carry a small dot.
+
+## Hidden pages
+
+`hidden: true` in a page's frontmatter makes it routable but unlisted: it has a URL and a Markdown twin, but it stays out of the derived navigation, search, the sitemap and the docs index in `AGENTS.md`. Use it for pages you link to but do not want in the sidebar, such as a long reference table or an archived changelog. A hidden page is not private: anyone with its URL can read it.
+
+```yaml
+---
+title: Legacy webhooks
+description: The v1 webhook format, kept for integrations that still use it.
+hidden: true
+---
+```
+
+With a `navigation.json`, the file decides what is listed. A page you leave out of it is not in the sidebar, and `larecipe:validate` warns about it as `pages.orphan`, because readers can only reach it by URL. Set `hidden: true` on it to say that is intended. A hidden page you do list in `navigation.json` still shows.
+
+For pages that only some readers may see, use `visibility: private` instead. See [gate blocks and private docs](gate-blocks.md).
+
+## Navigation in each language
+
+Each language uses the version's navigation, with the translated title of every page that has a translation. To change the order or translate the group labels, give the language its own file next to its pages, such as `docs/3.x/ar/navigation.json`. LaRecipe looks there first, then falls back to the version's file. See [languages](languages.md).
+
+## Freeze the derived navigation
+
+When you outgrow folder-based navigation, `larecipe:navigation:freeze` writes the tree LaRecipe derives today into a `navigation.json`, so you can edit from there instead of starting from nothing:
+
+```bash
+php artisan larecipe:navigation:freeze
+```
+
+It writes the default version's file (`--docs-version=2.x` for another, `--locale=ar` for a language's own file, `--set=` for another doc set), with the `$schema` pointer and the groups in the order readers see them now. A version that already has a `navigation.json` is left alone. It works on repository sets; a database set changes its navigation with the `update_navigation` MCP tool. Read live from this app:
+
+<Artisan command="larecipe:navigation:freeze" />
+
+## Redirects
+
+Pages move. Two features keep the old URLs working, both answering with a redirect only when no page exists at the old URL.
+
+### redirect_from in frontmatter
+
+List a page's old paths in its own frontmatter, so the redirect moves with the page:
+
+```yaml
+---
+title: Webhooks
+redirect_from:
+  - hooks
+  - guides/hooks
+---
+```
+
+Write each one as the old page path inside the version, as you would in `navigation.json`. A request for the old path redirects with a `301` to this page, in the same version and language, and a request for the old Markdown twin (`hooks.md`) redirects to the new twin. The full old URL path, such as `/docs/3.x/hooks`, matches as well.
+
+LaRecipe looks for `redirect_from` among the pages of the version and language that was requested. A page copied into a new version keeps its `redirect_from`, but a translation needs its own to redirect its old URL.
+
+### redirects in larecipe.json
+
+For URLs that no page owns any more, list them in the set's `larecipe.json`:
+
+```json
+{
+  "redirects": [
+    { "from": "/docs/3.x/setup", "to": "/docs/3.x/installation" },
+    { "from": "/docs/3.x/billing/plans", "to": "https://example.com/pricing", "status": 302 }
+  ]
+}
+```
+
+`from` is the full path of the old URL: the set's prefix, then the version, then the page (with the language segment for a translation). `to` is any path or URL, and `status` defaults to `301`.
+
+> [!WARNING]
+> On a versioned set, always write `from` with its version. A URL without one is sent to the default version before redirects are read, so `"from": "/docs/setup"` never fires; `"from": "/docs/3.x/setup"` does.
+
+To redirect URLs outside the docs, or a whole old prefix, use your app's routes. [Upgrade from v2](../upgrade.md) shows how this site keeps its LaRecipe 2 URLs working.
+
+## Validation
+
+`php artisan larecipe:validate` checks navigation on every run:
+
+| Rule | Level | When |
+| --- | --- | --- |
+| `navigation.schema` | error | `navigation.json` is not valid JSON, or not a shape the schema allows |
+| `navigation.missing-page` | error | An entry names a page that does not exist, with the closest path as a fix |
+| `pages.orphan` | warning | The version has a `navigation.json`, and a page is neither in it nor `hidden` |
+
+Derived navigation lists every page by construction, so it never has orphans.
+
+## Next
+
+- [Versions](versions.md): one `navigation.json` per version.
+- [Languages](languages.md): navigation per language.
+- [Frontmatter reference](../reference/frontmatter.md): `order`, `icon`, `badge`, `hidden` and `redirect_from`.

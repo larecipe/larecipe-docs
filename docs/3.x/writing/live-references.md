@@ -99,7 +99,7 @@ Two settings in `config/larecipe.php` decide which classes a page may point at:
 Rename a route, a command or a model and every page that references the old name stops rendering it:
 
 - The page shows a plain notice in its place, such as "The route `orders.store` is not defined in this app.", and the Markdown twin shows the same sentence as a warning.
-- `php artisan larecipe:validate` reports a `references.missing` error on that page, with a fix when it can find the closest existing name: `Use name="orders.create".`
+- `php artisan larecipe:validate` reports a `references.missing` error on that page, with the line of the reference.
 
 So renaming a route without updating the docs fails the validator, in your agent's session and in CI. The [`larecipe-update-docs` skill](../keeping-current/skills.md) tells agents to fix these references along with the code change.
 

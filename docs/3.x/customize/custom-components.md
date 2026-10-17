@@ -105,7 +105,7 @@ The fallback is what a reader without JavaScript gets, so make it work on its ow
 
 <<< @/resources/views/docs/subscribe.blade.php
 
-Rendered articles are cached and shared between readers, so a fallback must not bake in anything that belongs to one request. `LaRecipe::csrfField()` prints a placeholder that LaRecipe fills with the reader's CSRF token on every response. Without JavaScript, the form posts and lands on [/newsletter](/newsletter), a plain page that shows whether it worked.
+Rendered articles are cached and shared between readers, so a fallback must not bake in anything that belongs to one request. `LaRecipe::csrfField()` prints a placeholder that LaRecipe fills with the reader's CSRF token on every response. Without JavaScript, the form posts and lands on [the newsletter page](/newsletter), a plain page that shows whether it worked.
 
 ### The Markdown form
 

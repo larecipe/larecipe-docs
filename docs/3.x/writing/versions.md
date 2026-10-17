@@ -138,7 +138,7 @@ Every version has its own agent files, and the set's root file points at all of 
 - `/{version}/llms.txt` lists that version's pages, and `/{version}/llms-full.txt` holds their full text.
 - The MCP tools `search_docs`, `read_page` and `list_pages` take a `version` argument, and use the default version without one.
 
-On this site that is [/llms.txt](/llms.txt), [/3.x/llms.txt](/3.x/llms.txt) and [/2.x/llms.txt](/2.x/llms.txt).
+On this site those are [the root index](/llms.txt), [the 3.x index](/3.x/llms.txt) and [the 2.x index](/2.x/llms.txt).
 
 ## Next
 

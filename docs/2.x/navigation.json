@@ -1,0 +1,63 @@
+{
+    "$schema": "https://larecipe.saleem.dev/schemas/3.x/navigation.json",
+    "groups": [
+        {
+            "group": "Get Started",
+            "pages": [
+                {
+                    "page": "index",
+                    "label": "Overview"
+                },
+                "installation",
+                {
+                    "page": "configurations",
+                    "label": "Configurations"
+                },
+                "upgrade"
+            ]
+        },
+        {
+            "group": "Features",
+            "pages": [
+                {
+                    "page": "markdown-support",
+                    "label": "MarkDown Support"
+                },
+                {
+                    "page": "vue-components-support",
+                    "label": "Vue Components"
+                },
+                "authorization",
+                {
+                    "page": "search",
+                    "label": "Search"
+                },
+                "artisan-commands",
+                "keyboard-shortcuts"
+            ]
+        },
+        {
+            "group": "Customization",
+            "pages": [
+                {
+                    "page": "vue-components-customization",
+                    "label": "Vue Components"
+                },
+                {
+                    "page": "custom-css-and-js",
+                    "label": "Custom CSS And JS"
+                },
+                "custom-views",
+                "dark-theme"
+            ]
+        },
+        {
+            "group": "Usage Examples",
+            "pages": [
+                "example-documentations",
+                "example-api-docs",
+                "example-project-tracking"
+            ]
+        }
+    ]
+}

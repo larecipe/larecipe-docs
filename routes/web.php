@@ -12,3 +12,9 @@ Route::post('/newsletter/subscribe', SubscribeController::class)
 
 // The same form as a plain page, for agents and readers without JavaScript.
 Route::view('/newsletter', 'newsletter')->name('newsletter');
+
+// LaRecipe 2 served its docs at /docs/{version}/{page}. Those pages now live
+// in the 2.x version at the root, so old links and search results still land.
+Route::permanentRedirect('/docs', '/');
+Route::permanentRedirect('/docs/{version}', '/2.x');
+Route::permanentRedirect('/docs/{version}/{page}', '/2.x/{page}');

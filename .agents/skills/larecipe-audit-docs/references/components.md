@@ -128,7 +128,7 @@ A link block with a title and a short description. (built in)
 | --- | --- | --- | --- | --- | --- |
 | `title` | string | no |  |  | The card title (optional: a card can be body only, as v2 cards were) |
 | `href` | string | no |  |  | Where the card links to (a relative .md link works) |
-| `icon` | string | no |  |  | A Lucide icon name |
+| `icon` | string | no |  |  | An icon by its Lucide name, from LaRecipe's content set: rocket, book-open, refresh-cw, globe, lock, shield-check, code, terminal, and more |
 
 ```markdown
 <Card>
@@ -337,7 +337,7 @@ A video that loads only when the reader asks. Without src it shows a labelled pl
 
 | Prop | Type | Required | Default | Allowed values | Description |
 | --- | --- | --- | --- | --- | --- |
-| `src` | string | no |  |  | A video file, or a YouTube or Vimeo URL |
+| `src` | string | no |  |  | A video file, or a YouTube, Vimeo or Loom URL |
 | `poster` | string | no |  |  | Image shown before the video plays |
 | `title` | string | no |  |  | What the video shows |
 | `duration` | string | no |  |  | Length, for example 2:40 |

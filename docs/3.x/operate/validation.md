@@ -65,19 +65,26 @@ Every issue has a stable rule id. Page rules run on each page, set rules on the 
 | `snippets.denied` | error | An include outside the snippet root, or of a file that may hold secrets. |
 | `snippets.disabled` | error | An include on a set with no snippet root (database sets, unless you configure one). |
 | `media.placeholder` | warning | A video placeholder: a `Video` component with a `placeholder` prop and no `src` yet. |
-| `links.broken` | error | A link to a page or an anchor that does not exist: relative `.md` links, absolute links into the set, and `#anchors` on the same page. |
+| `links.broken` | error | A link to a page or an anchor that does not exist: relative `.md` links, absolute links into any version or language of the set, and `#anchors` on the same page. A link to a page not translated yet is fine: readers get the original, so the validator falls back to the default language the same way. |
 | `links.private-from-public` | warning | A public page linking to a private one, where every guest gets a 404. |
+| `links.unsafe` | error | A link in `navigation.json`, the navbar, the footer or the repository URL that is not `http`, `https`, `mailto` or a path on the site. Pages leave it out. |
 | `markdown.size` | warning | A page whose agent Markdown is over `agents.markdown_budget` (50,000 characters by default), where agents start cutting. |
 | `manifest.schema` | error, warning | `larecipe.json` that is not valid JSON or breaks the schema (error); a missing `larecipe.json`, or a key that looks like a typo (warning). |
+| `manifest.integrations` | warning | Analytics `integrations` in a database set's `larecipe.json`, which it ignores. Move them to `sets.{key}.integrations` in `config/larecipe.php`. |
+| `assets.missing` | error | A stylesheet listed under `assets.css` that is not next to `larecipe.json`. |
 | `navigation.schema` | error | `navigation.json` that is not valid JSON or breaks the schema. |
-| `navigation.missing-page` | error | A navigation entry with no page behind it. |
+| `navigation.missing-page` | error | A navigation entry with no page behind it. A language's own `navigation.json` may list pages not translated yet: they fall back to the original. |
 | `pages.orphan` | warning | A page `navigation.json` leaves out and does not hide, so readers reach it only by URL. |
 | `pages.duplicate` | error | Two files that become the same URL, such as `guides.md` and `guides/index.md`. |
 | `redirects.loop` | error | Redirects (in `larecipe.json` or `redirect_from`) that lead back to where they started. |
 | `redirects.shadowed` | warning | A redirect from a URL a page still lives at. The page wins, so the redirect never runs. |
 | `search.budget` | warning | A version whose client search index would be over `search.budget_kb`. Only on the `client` [search driver](search.md). |
 | `skills.spec` | error, warning | A hand-written `skills/{name}/SKILL.md` that breaks the Agent Skills spec (error), or one over 500 lines (warning). |
-| `cache.store` | error | A database set on the `array` or `null` cache store, outside tests. |
+| `cache.store` | error | A database set on the `array` or `null` cache store, outside tests. It reads the set's own `source.cache` first. |
+| `access.gate-syntax` | error | A `<Can>` or `<Cannot>` tag the parser could not read: inside a sentence, a table or a heading, split over lines, or in lowercase. The block around it is hidden from every reader until it is fixed. |
+| `access.unknown-ability` | warning | A gate block that asks about an ability your app never defined, so it denies every reader. The fix names the closest defined ability. |
+| `access.redundant-gate` | warning | A gate block on a page that is itself private, whose readers already passed `viewLarecipe`. |
+| `migrations.conflict` | warning | A docs migration that met a change made in production and waits as a conflict at [the pass](../sources/database.md#the-pass-the-review-queue). The fix gives its address in the admin. |
 
 Validation and rendering never disagree: the component, snippet, reference and placeholder rules come straight from the renderer, which reports every problem it meets while rendering the page.
 

@@ -111,7 +111,7 @@ visibility: private
 ---
 ```
 
-Both need `viewLarecipe`, in every access mode. For a private version the gate is asked with no page; for a private page it receives the page. A reader the gate refuses never learns either exists: they are left out of navigation, search, `llms.txt`, the sitemap and MCP, and a direct request answers 404.
+Both need `viewLarecipe`, in every access mode. For a private version the gate is asked with no page; for a private page it receives the page. A `visibility` value is trimmed and lowercased, and anything other than `public` counts as private, so a typo keeps a page closed. A reader the gate refuses never learns either exists: they are left out of navigation, the version and language switchers, search, `llms.txt`, the sitemap and MCP, and a direct request answers 404.
 
 ### A page the reader may not see is a 404, never a 403
 
@@ -139,8 +139,10 @@ The ability is any gate you define, checked for the current reader with no other
 Gate::define('view-billing', fn (?User $user) => $user?->plan === 'enterprise');
 ```
 
-- **An ability you never defined denies everyone.** `<Can>` stays hidden and `<Cannot>` shows, so a typo hides content instead of leaking it.
+- **An ability you never defined denies everyone.** `<Can>` stays hidden and `<Cannot>` shows, so a typo hides content instead of leaking it. `php artisan larecipe:validate` warns about it as `access.unknown-ability`, with the closest ability your app defines.
 - **A block without `ability` is hidden from every reader**, and `php artisan larecipe:validate` reports the missing prop.
+- **Write each tag on its own line**, in PascalCase, with a blank line before and after, as above. A gate tag the parser cannot read (inside a sentence, a table or a heading, split over several lines, or in lowercase such as `<can>`) fails closed: the block around it, up to its closing tag, is hidden from every reader, and `larecipe:validate` reports an `access.gate-syntax` error.
+- **A gate block on a private page** is reported as `access.redundant-gate`: its readers already passed `viewLarecipe`, so check whether the block is still needed.
 - **Policies that need a model do not fit.** The block passes no arguments, so use a gate that decides from the user alone.
 
 ### Removed, not hidden
@@ -195,6 +197,8 @@ X-Robots-Tag: noindex
 ```
 
 and no `ETag`. A page opened with a share link also sends `Referrer-Policy: no-referrer`, so the token never leaks to the next site in a `Referer` header. A public page that has gate blocks, served to a guest, stays cacheable but varies on `Accept` and `Cookie`.
+
+A signed-in reader's response to a public page is personal too, in every format (HTML, the JSON the UI fetches, and Markdown), because its navigation can list pages guests never see: `Cache-Control: private, no-cache`, `Vary: Accept, Cookie`, and an `ETag` that never matches the guest's.
 
 Public pages are cacheable for a minute in browsers and ten minutes in shared caches; [agent surfaces](../agents/surfaces.md) lists every header a page sends.
 

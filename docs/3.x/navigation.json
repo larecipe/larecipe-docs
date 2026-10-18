@@ -4,24 +4,18 @@
     { "group": "Introduction", "pages": [{ "page": "index", "label": "Introduction" }] },
     {
       "group": "Get started",
-      "pages": [
-        "get-started/installation",
-        "get-started/your-first-docs",
-        "get-started/configuration",
-        "get-started/project-structure"
-      ]
+      "pages": ["get-started/installation", "get-started/your-first-docs", "get-started/configuration"]
     },
     {
       "group": "Writing",
       "pages": [
+        "get-started/project-structure",
         "writing/markdown",
         "writing/components",
         "writing/code-blocks",
         "writing/navigation",
         "writing/versions",
-        "writing/languages",
-        "writing/live-references",
-        "writing/gate-blocks"
+        "writing/languages"
       ]
     },
     {
@@ -31,9 +25,7 @@
         "keeping-current/agent-instructions",
         "keeping-current/pre-push-hook",
         "keeping-current/skills",
-        "keeping-current/review-modes",
-        "keeping-current/sync",
-        "keeping-current/ci-check"
+        "keeping-current/review-modes"
       ]
     },
     {
@@ -41,26 +33,30 @@
       "pages": ["agents/surfaces", "agents/mcp", "agents/ask-ai"]
     },
     {
-      "group": "Sources",
-      "pages": ["sources/repository", "sources/database", "sources/docs-migrations", "sources/switching"]
-    },
-    {
       "group": "Customize",
       "pages": ["customize/theme", "customize/custom-components", "customize/insert-points", "customize/eject"]
     },
     {
       "group": "Operate",
+      "pages": ["operate/deployment", "operate/validation", "operate/search", "operate/analytics"]
+    },
+    {
+      "group": "Advanced",
+      "collapsed": true,
       "pages": [
-        "operate/search",
-        "operate/analytics",
-        "operate/caching",
+        "writing/live-references",
+        "writing/gate-blocks",
+        "keeping-current/ci-check",
+        "keeping-current/sync",
         "operate/static-export",
-        "operate/validation",
-        "operate/deployment",
+        "sources/repository",
+        "sources/database",
+        "sources/docs-migrations",
+        "sources/switching",
+        "operate/caching",
         "operate/security"
       ]
     },
-    { "group": "Upgrade", "pages": ["upgrade"] },
     {
       "group": "Reference",
       "pages": [
@@ -72,6 +68,7 @@
         "reference/events",
         "reference/mcp-tools"
       ]
-    }
+    },
+    { "group": "Upgrade", "pages": ["upgrade"] }
   ]
 }

@@ -17,15 +17,9 @@ sources:
 
 # Configuration
 
-`config/larecipe.php` holds the infrastructure of your docs: where each doc set is mounted, where its content lives, who may read it, and how caching, search, AI, MCP and the agent surfaces behave. Presentation (name, theme, versions, languages, navigation) lives next to the docs in [larecipe.json](manifest.md), never here.
+Every key in `config/larecipe.php`, in the order of the file. Presentation (name, theme, versions, languages) lives in [larecipe.json](manifest.md) instead; [configuration basics](../get-started/configuration.md) explains the split and the keys most apps change.
 
-`larecipe:install` publishes the file when you choose anything other than the defaults. To publish it yourself:
-
-```bash
-php artisan vendor:publish --tag=larecipe-config
-```
-
-The tables follow the order of the file. "Per set" says whether a doc set can give the key its own value; see [Override a key per set](#override-a-key-per-set).
+Publish the file with `php artisan vendor:publish --tag=larecipe-config`. "Per set" says whether a doc set can give a key its own value; see [Override a key per set](#override-a-key-per-set).
 
 ## Default doc set
 
@@ -35,7 +29,7 @@ The tables follow the order of the file. "Per set" says whether a doc set can gi
 
 ## Doc sets
 
-`sets` maps a set key to its settings. Each set is its own docs site in the app, with its own route, source, `larecipe.json` and agent surfaces. The package ships one set, `docs`.
+`sets` maps a set key to its settings: one docs site each, with its own route, source, `larecipe.json` and agent surfaces. The package ships one set, `docs`.
 
 | Key | Type | Default | Meaning |
 | --- | --- | --- | --- |
@@ -65,7 +59,7 @@ The tables follow the order of the file. "Per set" says whether a doc set can gi
 
 ## Database source models
 
-The Eloquent models behind a database set's tables. Point a key at your own subclass to add scopes, tenancy or observers.
+The Eloquent models behind a database set's tables. Point a key at your own subclass to add scopes, tenancy or observers. Read from the top level only.
 
 | Key | Type | Default |
 | --- | --- | --- |
@@ -76,11 +70,9 @@ The Eloquent models behind a database set's tables. Point a key at your own subc
 | `models.asset` | class name | `LaRecipe\Domains\Sources\Models\Asset` |
 | `models.docs_migration` | class name | `LaRecipe\Domains\Sources\Models\DocsMigrationRecord` |
 
-These keys are read from the top level only.
-
 ## AI
 
-Ask AI and `larecipe:sync` need `laravel/ai` installed. Without it, the `ai.ask` keys have no effect and `larecipe:sync` stops with the install steps.
+Ask AI and `larecipe:sync` need `laravel/ai`. Without it, the `ai.ask` keys have no effect and `larecipe:sync` stops with the install steps. See [Ask AI](../agents/ask-ai.md).
 
 | Key | Type | Default | Per set | Meaning |
 | --- | --- | --- | --- | --- |
@@ -104,7 +96,7 @@ Ask AI and `larecipe:sync` need `laravel/ai` installed. Without it, the `ai.ask`
 
 ## MCP
 
-One web endpoint per set, plus one local stdio server for every set. See [MCP tools](mcp-tools.md).
+One web endpoint per set, plus one local stdio server for every set. See [the MCP server](../agents/mcp.md).
 
 | Key | Type | Default | Per set | Meaning |
 | --- | --- | --- | --- | --- |
@@ -173,7 +165,7 @@ See [live references](../writing/live-references.md).
 
 ## Override a key per set
 
-A set's own settings sit next to `route`, `source` and `access`. LaRecipe merges the top-level `review`, `cache`, `search`, `ai`, `mcp`, `agents`, `references` and `migrations` groups into every set, and the set's own value wins. `feedback.enabled` and `snippets.root` are also read from the set first.
+A set's own settings sit next to `route`, `source` and `access`. LaRecipe merges the top-level `review`, `cache`, `search`, `ai`, `mcp`, `agents`, `references` and `migrations` groups into every set, and the set's value wins. `feedback.enabled` and `snippets.root` are also read from the set first.
 
 ```php
 'sets' => [
@@ -189,21 +181,22 @@ A set's own settings sit next to `route`, `source` and `access`. LaRecipe merges
 ],
 ```
 
-Some keys inside the merged groups are still read from the top level only, so a set's value for them has no effect: `ai.ask.rate_limit`, `mcp.local`, `references.*`, `migrations.*`, and `cache.store` for everything except a database set's own source cache. The "Per set" column in each table says which.
+Some keys inside the merged groups are read from the top level only, so a set's value has no effect: `ai.ask.rate_limit`, `mcp.local`, `references.*`, `migrations.*`, and `cache.store` except for a database set's own source cache.
 
 ## Environment variables
 
 The file reads these variables. Their values belong in `.env`, never in the docs.
 
-- `LARECIPE_DEFAULT_SET`
-- `LARECIPE_PREFIX`
-- `LARECIPE_REVIEW`
-- `LARECIPE_CACHE_STORE`
-- `LARECIPE_ASK`
-- `LARECIPE_AI_PROVIDER`
-- `LARECIPE_AI_MODEL`
-- `LARECIPE_SYNC_TOKEN`
-- `LARECIPE_SYNC_QUEUE`
-- `LARECIPE_HOOKS` (also read by `larecipe:hook` directly, so `LARECIPE_HOOKS=off` turns the check off for one session)
-- `LARECIPE_DEFAULT_BRANCH`
-- `LARECIPE_UI_DEV`
+| Variable | Sets |
+| --- | --- |
+| `LARECIPE_DEFAULT_SET` | `default` |
+| `LARECIPE_PREFIX` | The `docs` set's `route.prefix` |
+| `LARECIPE_REVIEW` | `review` |
+| `LARECIPE_CACHE_STORE` | `cache.store` |
+| `LARECIPE_ASK` | `ai.ask.enabled` |
+| `LARECIPE_AI_PROVIDER`, `LARECIPE_AI_MODEL` | `ai.ask.provider` and `ai.ask.model`, and the same `ai.sync` keys |
+| `LARECIPE_SYNC_TOKEN` | `ai.sync.remote_token`, for `larecipe:sync --remote` |
+| `LARECIPE_SYNC_QUEUE` | `ai.sync.queue`, for `larecipe:sync --queue` |
+| `LARECIPE_HOOKS` | `hooks.enabled`. `larecipe:hook` also reads it directly, so `LARECIPE_HOOKS=off` turns the check off for one session. |
+| `LARECIPE_DEFAULT_BRANCH` | `instructions.default_branch` |
+| `LARECIPE_UI_DEV` | `ui.dev_server` |

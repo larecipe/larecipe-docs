@@ -23,7 +23,7 @@ sources:
 
 # Events
 
-LaRecipe stores no traffic and no feedback. It dispatches ordinary Laravel events, and your app listens and forwards them to whatever it already uses. Traffic events matter most for agents: they read Markdown, `llms.txt` and MCP, and never run client-side analytics.
+Every Laravel event LaRecipe dispatches. LaRecipe stores no traffic and no feedback: your app listens and forwards. For what to do with them, see [analytics and events](../operate/analytics.md).
 
 ```php
 use Illuminate\Support\Facades\Event;
@@ -34,18 +34,20 @@ Event::listen(function (PageViewed $event) {
 });
 ```
 
-There are two groups: traffic events in `LaRecipe\Domains\Delivery\Events`, and content events in `LaRecipe\Domains\Sources\Events`. The payload table under each event below is read from this app by an [`<Event>` live reference](../writing/live-references.md), with the listeners registered in this app. This site adds none of its own, so only `ContentChanged` lists one: LaRecipe's cache warmer. For what to do with the events, see [analytics](../operate/analytics.md).
+Traffic events live in `LaRecipe\Domains\Delivery\Events`, content events in `LaRecipe\Domains\Sources\Events`. Each payload table below is read from this app by an [`<Event>` live reference](../writing/live-references.md), with this app's listeners (only `ContentChanged` has one: LaRecipe's cache warmer).
 
 ## The request kind
 
-Traffic events carry a `kind`: `human`, `crawler` or `agent`. It is decided from the request, in this order:
+Traffic events carry a `kind`: `human`, `crawler` or `agent`. The first rule that matches decides it:
 
-1. A user agent that names a crawler (`ClaudeBot`, `GPTBot`, `PerplexityBot`, `Googlebot`, `Bingbot`, `Applebot`, `CCBot` and others) is `crawler`.
-2. A user agent that names an agent or an HTTP client (`Claude-User`, `Claude-Code`, `ChatGPT-User`, `Perplexity-User`, `OAI-SearchBot`, `Cursor`, `codex`, `curl`, `python-requests`, `node-fetch`, `axios` and others) is `agent`.
-3. A request for Markdown (a `.md` URL, or `Accept: text/markdown`) is `agent`.
-4. Anything else is `human`.
+| Order | When | Kind |
+| --- | --- | --- |
+| 1 | The user agent contains a crawler name: `ClaudeBot`, `GPTBot`, `PerplexityBot`, `Googlebot`, `Bingbot`, `Applebot`, `CCBot`, `Bytespider`, `Amazonbot`, `DuckDuckBot`, `YandexBot`, `facebookexternalhit`, `Slackbot`, `Twitterbot` or `LinkedInBot` | `crawler` |
+| 2 | The user agent contains an agent or HTTP client name, in any case: `Claude-User`, `Claude-Code`, `ChatGPT-User`, `Perplexity-User`, `OAI-SearchBot`, `Cursor`, `codex`, `GoogleAgent`, `MistralAI-User`, `axios`, `node-fetch`, `python-requests`, `curl`, `Go-http-client` or `undici` | `agent` |
+| 3 | The request asks for Markdown: a `.md` URL, or `Accept: text/markdown` | `agent` |
+| 4 | Anything else | `human` |
 
-`llms.txt`, `skill.md`, the skills index and the `/ask` endpoint exist for agents, so a fetch of them that does not accept `text/html` counts as `agent` unless its user agent names a crawler. MCP calls are always `agent`. The kind feeds events only: it never changes what is served.
+`llms.txt`, `llms-full.txt`, `skill.md`, hand-written skill files, the skills index and the `/ask` endpoint exist for agents, so a fetch of them that does not ask for HTML counts as `agent` unless its user agent names a crawler. MCP calls are always `agent`. The kind feeds events only: it never changes what is served.
 
 ## Traffic events
 
@@ -91,7 +93,7 @@ Fires for every search, with its `source`:
 | `server` | The `/_search` endpoint: the palette on the `server` driver or a custom driver, and scripts. |
 | `palette` | A search the palette answered in the browser, from the client index, reported afterwards. |
 
-The palette reports its own searches in small batches to `POST {prefix}/_search/report` (with the locale and version in front for other scopes). Only a settled query counts: one the reader stopped typing, not each keystroke. The route is rate limited to 30 reports a minute per reader, stores nothing and only dispatches the events. A static export leaves the reporting out. The counts come from the reader's browser, so treat them as analytics, never as a security signal.
+The palette reports its searches in small batches to `POST {prefix}/_search/report` (with the locale and version in front for other scopes). Only a settled query counts, not each keystroke. The route is rate limited to 30 reports a minute per reader and stores nothing. A static export leaves the reporting out. The counts come from the browser: treat them as analytics, never as a security signal.
 
 `zeroResults` marks the searches your docs could not answer.
 
@@ -111,13 +113,13 @@ Fires when Ask AI finishes an answer. `covered` is false when the assistant said
 
 ### PageRendered
 
-Fires when LaRecipe renders a page, an extension point for work that should follow a render, such as warming another cache. `format` is `html` when the article was rendered because the render cache did not have it (a changed page, a cold cache, or `larecipe:optimize` compiling it): a request answered from the cache does not fire it. `format` is `markdown` on every request for a page's Markdown twin, which is not cached. It carries the page and its content hash, never anything about the reader; count readers with `PageViewed` and `MarkdownServed`. The MCP `read_page` tool and `llms-full.txt` do not fire it.
+Fires when LaRecipe renders a page, for work that should follow a render. `format` is `html` when the article was rendered because the render cache did not have it (a changed page, a cold cache, or `larecipe:optimize`); a cached answer fires nothing. `format` is `markdown` on every request for a Markdown twin, which is not cached. It carries the page and its content hash, never the reader: count readers with `PageViewed`. The MCP `read_page` tool and `llms-full.txt` do not fire it.
 
 <Event name="PageRendered" />
 
 ## Content events
 
-Content events fire when a change goes through LaRecipe's write path: the MCP author tools, the admin UI, `larecipe:sync`, a docs migration, `larecipe:source:import` or `larecipe:source:move`. Editing a Markdown file in your editor fires nothing; git records that change.
+Content events fire when a change goes through LaRecipe's write path: the MCP author tools, the admin UI, `larecipe:sync`, a docs migration, `larecipe:source:import` or `larecipe:source:move`. Editing a Markdown file in your editor fires nothing.
 
 ### PageWritten
 

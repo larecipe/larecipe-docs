@@ -20,7 +20,7 @@ sources:
 
 # Components
 
-Every component a page on this site can use: the props each one takes, the HTML the server renders and the Markdown agents read. For live examples of each, see [Components](../writing/components.md).
+Every component a page on this site can use: its props, the HTML the server renders and the Markdown agents read. For live examples, see [Components](../writing/components.md).
 
 ## How props are checked
 
@@ -86,9 +86,13 @@ A link block with a title and a short description.
 | `icon` | string | no | | | An icon from LaRecipe's content set, by its Lucide name, drawn above the title. Unknown names draw nothing. |
 
 - **HTML:** `<a class="lr-card" href="...">` with `.lr-card-title` and `.lr-card-body`, or `<div class="lr-card">` without `href`. `icon` draws the icon in `.lr-card-icon` above the title (and stays on the card as `data-icon`). A one-paragraph body is unwrapped.
-
-The content icon set: `accessibility`, `activity`, `bell`, `blocks`, `book`, `book-open`, `bot`, `box`, `brain`, `bug`, `calendar`, `chart-column`, `circle-check`, `circle-question-mark`, `clipboard-list`, `clock`, `cloud`, `code`, `compass`, `cpu`, `credit-card`, `database`, `download`, `eye`, `file-code`, `file-text`, `flag`, `folder`, `gauge`, `gift`, `git-branch`, `git-merge`, `git-pull-request`, `globe`, `graduation-cap`, `hammer`, `heart`, `house`, `image`, `inbox`, `key`, `languages`, `layers`, `layout-grid`, `life-buoy`, `lightbulb`, `link`, `lock`, `mail`, `map`, `megaphone`, `message-circle`, `monitor`, `package`, `palette`, `pen-line`, `plug`, `puzzle`, `refresh-cw`, `rocket`, `scale`, `search`, `send`, `server`, `settings`, `shield-check`, `shopping-cart`, `smartphone`, `sparkles`, `star`, `terminal`, `timer`, `trophy`, `upload`, `user`, `users`, `wand-sparkles`, `workflow`, `wrench`, `zap`.
 - **Markdown:** `- [Title](url): description`, or `- **Title**: description` without `href`.
+
+<Accordion title="The content icon set">
+
+`accessibility`, `activity`, `bell`, `blocks`, `book`, `book-open`, `bot`, `box`, `brain`, `bug`, `calendar`, `chart-column`, `circle-check`, `circle-question-mark`, `clipboard-list`, `clock`, `cloud`, `code`, `compass`, `cpu`, `credit-card`, `database`, `download`, `eye`, `file-code`, `file-text`, `flag`, `folder`, `gauge`, `gift`, `git-branch`, `git-merge`, `git-pull-request`, `globe`, `graduation-cap`, `hammer`, `heart`, `house`, `image`, `inbox`, `key`, `languages`, `layers`, `layout-grid`, `life-buoy`, `lightbulb`, `link`, `lock`, `mail`, `map`, `megaphone`, `message-circle`, `monitor`, `package`, `palette`, `pen-line`, `plug`, `puzzle`, `refresh-cw`, `rocket`, `scale`, `search`, `send`, `server`, `settings`, `shield-check`, `shopping-cart`, `smartphone`, `sparkles`, `star`, `terminal`, `timer`, `trophy`, `upload`, `user`, `users`, `wand-sparkles`, `workflow`, `wrench`, `zap`.
+
+</Accordion>
 
 ### CardGroup and Columns
 
@@ -161,13 +165,13 @@ A video that loads only when the reader asks. Without `src` it shows a labelled 
 
 | Prop | Type | Required | Default | Allowed values | Description |
 | --- | --- | --- | --- | --- | --- |
-| `src` | string | no | | | A video file, or a YouTube or Vimeo URL. |
+| `src` | string | no | | | A video file, or a YouTube, Vimeo or Loom URL. |
 | `poster` | string | no | | | The image shown before the video plays. |
 | `title` | string | no | | | What the video shows. |
 | `duration` | string | no | | | The length, for example `2:40`. |
 | `placeholder` | string | no | | | The label of the frame shown until `src` is set. |
 
-- **HTML:** a file is `<figure class="lr-video"><video controls preload="none">`. A YouTube or Vimeo URL is a link (`a.lr-video-link`, "Watch on YouTube") and nothing from the provider loads until the reader asks; LaRecipe derives the island's `embed` (a `youtube-nocookie.com` or `player.vimeo.com` URL) and `provider` from `src`, and a page cannot set them. The island frames only `www.youtube-nocookie.com`, `player.vimeo.com` and `www.loom.com` over `https`. Without `src`: `figure.lr-video.lr-video-placeholder` with the placeholder, else the `video.placeholder` UI string in the page's language ("Demo video coming soon" in English), and a `media.placeholder` warning. The caption is `title · duration`.
+- **HTML:** a file is `<figure class="lr-video"><video controls preload="none">`. A YouTube, Vimeo or Loom URL is a link (`a.lr-video-link`, "Watch on YouTube") and nothing from the provider loads until the reader asks; LaRecipe derives the island's `embed` (a `youtube-nocookie.com`, `player.vimeo.com` or `www.loom.com/embed` URL) and `provider` from `src`, and a page cannot set them. The island frames only `www.youtube-nocookie.com`, `player.vimeo.com` and `www.loom.com` over `https`. Without `src`: `figure.lr-video.lr-video-placeholder` with the placeholder, else the `video.placeholder` UI string in the page's language ("Demo video coming soon" in English), and a `media.placeholder` warning. The caption is `title · duration`.
 - **Markdown:** `[Video: Title · 2:40](src)`, or `*Video coming soon: {placeholder}*` without `src`.
 
 ### Mermaid
@@ -190,7 +194,7 @@ A TeX formula. A `$$ ... $$` block renders the same. **Island:** `Math`, with a 
 
 ## Live references
 
-`<Route>`, `<Artisan>`, `<Model>` and `<Event>` read facts from the running app. Each takes one required prop that names its target. See [live references](../writing/live-references.md).
+`<Route>`, `<Artisan>`, `<Model>` and `<Event>` read facts from the running app. Each takes one required prop. See [live references](../writing/live-references.md).
 
 | Component | Prop | Type | Required | Description |
 | --- | --- | --- | --- | --- |
@@ -206,7 +210,7 @@ A TeX formula. A `$$ ... $$` block renders the same. **Island:** `Math`, with a 
 
 ## Gate blocks
 
-`<Can>` and `<Cannot>` show content to some readers only. LaRecipe removes the blocks a reader may not see from the parsed page before any renderer runs, so the HTML, the table of contents, agent Markdown, search and MCP all agree. See [gate blocks and private docs](../writing/gate-blocks.md).
+`<Can>` and `<Cannot>` show content to some readers only. A block a reader may not see is removed before any renderer runs, so every surface agrees. See [gate blocks and private docs](../writing/gate-blocks.md).
 
 | Component | Prop | Type | Required | Description |
 | --- | --- | --- | --- | --- |
@@ -220,7 +224,7 @@ A TeX formula. A `$$ ... $$` block renders the same. **Island:** `Math`, with a 
 
 ### Subscribe
 
-The newsletter form after every article on this site. It is a host component, registered in `app/Providers/AppServiceProvider.php` with `LaRecipe::component('Subscribe')` and placed with `inserts` in [larecipe.json](manifest.md). **Island:** `Subscribe`, the React form in `resources/larecipe/Subscribe.tsx`.
+The newsletter form after every article on this site, registered in `app/Providers/AppServiceProvider.php` with `LaRecipe::component('Subscribe')` and placed with `inserts` in [larecipe.json](manifest.md). **Island:** `Subscribe`, the React form in `resources/larecipe/Subscribe.tsx`.
 
 | Prop | Type | Required | Default | Allowed values | Description |
 | --- | --- | --- | --- | --- | --- |

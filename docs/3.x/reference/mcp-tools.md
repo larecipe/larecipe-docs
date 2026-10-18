@@ -13,14 +13,12 @@ sources:
 
 # MCP tools
 
-LaRecipe runs one MCP server class on two transports. What a caller sees depends on the transport, the set and who is calling. For how to connect an agent, see [the MCP server](../agents/mcp.md).
+Every tool, resource and prompt the LaRecipe MCP server exposes. What a caller sees depends on the server, the set and who is calling. To connect an agent, see [the MCP server](../agents/mcp.md).
 
 | Server | Where | Serves |
 | --- | --- | --- |
 | Web | `POST /{prefix}/mcp` per set (`/mcp` on this site) | That set only. Read tools for everyone the set lets in; more for callers your gates allow. |
 | Local | `php artisan larecipe:mcp`, over stdio | Every set. Read tools take a `set` argument. All tools, author tools included. |
-
-The web endpoint sits outside the `web` middleware group, so clients post JSON without a session or CSRF token. A private set authenticates them with `mcp.web.middleware`, and access is checked again on every call. See [configuration](configuration.md#mcp).
 
 ## Which tools each server exposes
 
@@ -32,18 +30,7 @@ The web endpoint sits outside the `web` middleware group, so clients post JSON w
 | `write_page`, `move_page`, `delete_page`, `update_navigation`, `update_manifest` | yes | only on a database set with `mcp.web.author_tools` on, for a signed-in caller the `manageLarecipe` gate allows |
 | `affected_pages` | yes | never: it reads your working tree |
 
-A repository set never exposes author tools on the web: its changes belong in git. Each web endpoint is bound to its own set: a call that names another set in `set` is refused, and points to that set's own endpoint.
-
-This site's web endpoint, asked for its tools with no credentials:
-
-```bash
-curl -s -X POST https://larecipe.saleem.dev/mcp \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json, text/event-stream" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
-```
-
-Run against this site's app, it answers with four tools: `search_docs`, `read_page`, `list_pages` and `submit_feedback`. A guest sees no `validate_docs`, and a repository set offers no author tools on the web.
+A repository set never exposes author tools on the web. Each web endpoint is bound to its own set: a call that names another set in `set` is refused. A guest on this site's endpoint sees four tools: `search_docs`, `read_page`, `list_pages` and `submit_feedback`. Settings are under [`mcp` in the configuration reference](configuration.md#mcp).
 
 ## Read tools
 
@@ -120,7 +107,7 @@ Returns the same report as `php artisan larecipe:validate --json`.
 
 ## Author tools
 
-Author tools change the docs. On a repository set they edit files in the working tree. On a database set they apply the change to the local database and write it into the branch's docs migration, which you commit with the code. Each one returns `outcome` (`published`, `drafted`, `conflicted`, `unchanged` or `rejected`), `message`, `revision`, `validation` and `docs_migration`.
+Author tools change the docs: files in the working tree on a repository set; on a database set, the local database plus the branch's docs migration. Each one returns `outcome` (`published`, `drafted`, `conflicted`, `unchanged` or `rejected`), `message`, `revision`, `validation` and `docs_migration`.
 
 Every author tool is annotated `destructiveHint: true`, and takes these arguments besides its own:
 
@@ -218,7 +205,7 @@ The server offers the template only; `resources/list` is empty. A web endpoint r
 
 ## Instructions on connect
 
-Every client is told the same workflow when it connects: search first with `search_docs`, read before writing with `read_page`, validate after writing with `validate_docs`, cite the page URLs, and use `submit_feedback` when a page was wrong or missing. The local server also lists its sets when there is more than one.
+Every client gets the same workflow on connect: search first with `search_docs`, read before writing with `read_page`, validate after writing with `validate_docs`, cite the page URLs, and use `submit_feedback` when a page was wrong or missing. With several sets, the local server also lists them. [The MCP server](../agents/mcp.md) shows the full text.
 
 ## Next
 

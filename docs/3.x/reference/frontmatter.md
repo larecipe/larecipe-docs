@@ -17,9 +17,7 @@ sources:
 
 # Frontmatter
 
-Frontmatter is the YAML between the `---` lines at the top of a page. It configures that page only. Set-wide settings belong in [larecipe.json](manifest.md), and navigation structure in `navigation.json`.
-
-Every page should set `title`, `description` and `sources`.
+Every key a page can set in its frontmatter, the YAML between the `---` lines at the top. It configures that page only: set-wide settings belong in [larecipe.json](manifest.md). Every page should set `title`, `description` and `sources`.
 
 ```yaml
 ---
@@ -59,7 +57,7 @@ The insert points `inserts` can name are `header.actions`, `sidebar.before`, `si
 
 ## Unknown keys
 
-Keys LaRecipe does not know are kept on the server and are never an error, but they do not reach readers: they often hold notes for the team, such as an owner or a ticket. Values your own components and extensions read go under `meta:`, the one map passed to the UI, as `page.meta`:
+Unknown keys are kept on the server, never an error, and never reach readers: they often hold team notes, such as an owner. Values your own components read go under `meta:`, the one map passed to the UI, as `page.meta`:
 
 ```yaml
 ---
@@ -88,7 +86,7 @@ The schema ships with the package at `resources/schemas/frontmatter.schema.json`
 https://larecipe.saleem.dev/schemas/3.x/frontmatter.json
 ```
 
-That URL resolves on this site. Every doc set also serves the copy that matches your installed version at `/{prefix}/schemas/frontmatter.json`; this site's set is mounted at the root, so its copy is at `/schemas/frontmatter.json`. See [larecipe.json](manifest.md#the-schema) for how the schemas are served.
+Every doc set also serves the copy that matches your installed version at `/{prefix}/schemas/frontmatter.json` (`/schemas/frontmatter.json` on this site). See [larecipe.json](manifest.md#the-schema) for how the schemas are served.
 
 ## Next
 

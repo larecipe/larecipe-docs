@@ -21,13 +21,13 @@ sources:
 
 # larecipe.json
 
-`larecipe.json` is a doc set's manifest: one file at the root of the set's content, next to the version folders. It holds presentation and content structure (name, theme, versions, languages, navbar, redirects, agent text). Infrastructure (routes, the source driver, cache, AI) lives in [config/larecipe.php](configuration.md), and secrets never belong here. Without the file, a set uses defaults: its key, capitalized, as the name, one version and one language.
+Every key of `larecipe.json`, a doc set's manifest at the root of its content. It holds presentation and structure; infrastructure lives in [config/larecipe.php](configuration.md), and secrets never belong here. Without the file, a set is named after its key, with one version and one language.
 
-## This site's manifest
-
-The manifest that configures these docs, included from the file itself:
+<Accordion title="This site's larecipe.json">
 
 <<< @/docs/larecipe.json
+
+</Accordion>
 
 ## Keys
 
@@ -124,9 +124,7 @@ Keys are insert points: `header.actions`, `sidebar.before`, `sidebar.after`, `ar
 
 ### integrations.analytics
 
-LaRecipe adds each tool's script to every page, after checking each value against the shape its provider uses. A value that does not match is left out. Page feedback is forwarded to the tools that are loaded.
-
-Only a repository set reads `integrations` from `larecipe.json`, because its manifest is reviewed with your code. A database set's manifest can be changed in the admin UI and over MCP, so it ignores them, and `larecipe:validate` warns with `manifest.integrations`: put them in `sets.{key}.integrations.analytics` in `config/larecipe.php` instead. The same keys work there for every set, and config wins per tool.
+Each tool's script goes on every page once its values match the shape its provider uses; a value that does not match is left out. Only a repository set reads `integrations` from `larecipe.json`. A database set ignores them (`larecipe:validate` warns with `manifest.integrations`): use `sets.{key}.integrations.analytics` in `config/larecipe.php`, which takes the same keys for every set and wins per tool.
 
 | Key | Required | Optional | Example |
 | --- | --- | --- | --- |
@@ -160,11 +158,11 @@ The schema ships with the package at `resources/schemas/larecipe.schema.json`. L
 https://larecipe.saleem.dev/schemas/3.x/larecipe.json
 ```
 
-Every doc set also serves the schemas that match your installed version, so editors and agents can validate without reaching another site. The route answers at `/{prefix}/schemas/{name}.json` for `larecipe`, `navigation`, `frontmatter` and `validate`, with `Content-Type: application/schema+json` and `Access-Control-Allow-Origin: *`. This site is mounted at the root, so its copy is at `/schemas/larecipe.json`:
+Every doc set also serves the schemas that match your installed version at `/{prefix}/schemas/{name}.json`, for `larecipe`, `navigation`, `frontmatter` and `validate`, with `Content-Type: application/schema+json` and `Access-Control-Allow-Origin: *` (`/schemas/larecipe.json` on this site):
 
 <Route name="larecipe.docs.schema" />
 
-The served path has no version segment, and it always matches the package version you have installed. The versioned `$id` URL resolves too: this site serves the 3.x schemas at `/schemas/3.x/{name}.json`, so an editor that follows `$schema` gets the file.
+The served path has no version segment and always matches your installed package. The versioned `$id` URL resolves too: this site serves `/schemas/3.x/{name}.json`, so an editor that follows `$schema` gets the file.
 
 ## Next
 

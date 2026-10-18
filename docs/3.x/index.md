@@ -23,11 +23,11 @@ composer require larecipe/larecipe
 php artisan larecipe:install
 ```
 
-Open `/docs` in your browser. Your docs are already there, starting with an Introduction page written from facts about your app. There is no Node and no build step.
+The installer asks a few questions, and the defaults suit most apps. Then open `/docs` in your browser. Your docs are already there, starting with an Introduction page written from facts about your app. There is no Node and no build step.
 
 ## Push code, the docs follow
 
-Every page lists the code it describes. When you change that code, the coding agent that made the change also updates the page before it pushes. The docs land in the same pull request as the code, and you review them together.
+Every page lists the code it describes. When you change that code, the coding agent that made the change also updates the page before it pushes. If it forgets, a hook holds the push once and names the pages to update. The docs land in the same pull request as the code, and you review them together.
 
 The installer sets this up for the coding agents you already use, such as Claude Code, Codex and Cursor. There is nothing to remember day to day.
 

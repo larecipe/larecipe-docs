@@ -1,6 +1,6 @@
 ---
 title: Search
-description: How search works with no service to run, what gets indexed, how to keep the index small, and how to plug in your own engine.
+description: Search works with no service to run. What gets indexed, how to keep the browser index small, the server driver, and how to plug in your own engine.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Search/**
   - vendor/larecipe/larecipe/ui/src/palette/search.ts
@@ -18,7 +18,13 @@ sources:
 
 # Search
 
-Search works the moment LaRecipe is installed, with no service to run and nothing to configure. Each version and language of a doc set gets a small JSON index, the reader's browser searches it as they type, and agents search the same records through a ranker in PHP. Press `⌘K` (`Ctrl K`) or `/` on any page to try it.
+Search works the moment LaRecipe is installed, with no service to run and nothing to configure. Press `⌘K` (`Ctrl K`) or `/` on any page to try it.
+
+Each version and language of a doc set gets a small JSON index, and the reader's browser searches it as they type. Agents search the same records through a ranker in PHP. Everyone gets the same access rules, so a private page never shows up in anyone's results unless they may open it.
+
+LaRecipe splits every page into records: one for the page itself (its description and the text before the first H2), one per H2 and H3 with the text under it, and one per `<Can>` or `<Cannot>` block. Frontmatter `tags` are searchable, and pages with `hidden: true` stay out.
+
+## Who searches, and how
 
 | Who searches | How | Engine |
 | --- | --- | --- |
@@ -27,19 +33,42 @@ Search works the moment LaRecipe is installed, with no service to run and nothin
 | Readers who hit a missing page | Suggestions on the 404 | The PHP ranker |
 | Sets on the `server` driver, scripts | `GET /_search?q=` | The PHP ranker, or your own driver |
 
-All of them read the same records and apply the same access rules, so a private page never shows up in anyone's results unless they may open it.
+Records are built once per change to the docs and cached. [`php artisan optimize`](deployment.md) builds them on deploy, before the first search.
 
-## What gets indexed
+## Keep the index small
 
-LaRecipe splits every page into records:
+A client index should stay small enough to download in a moment. The budget is set in `config/larecipe.php`, in KB of gzipped JSON:
 
-- **The page itself**: its description and the text before the first H2.
-- **One record per H2 and H3**, with the text under it. Deeper headings and their text belong to the section above them.
-- **One record per `<Can>` or `<Cannot>` block**, carrying the ability it requires. A heading inside a gated block never labels text outside it.
+```php
+// config/larecipe.php
+'search' => [
+    'driver' => 'client',
+    'budget_kb' => 300,
+],
+```
 
-Records keep up to 1,000 characters of text, code blocks included, plus component titles and labels such as a step's title. Frontmatter `tags` are searchable. Pages with `hidden: true` stay out of search. Records are built once per change to the docs and cached; [`larecipe:optimize`](caching.md) builds them on deploy, before the first search.
+- `php artisan larecipe:validate` estimates each version's index and reports a `search.budget` warning when it would be over budget, with the fix: switch the set to the `server` driver, or split the docs into more versions or sets.
+- `php artisan larecipe:optimize` measures the real guest index of every version on deploy and prints its size, with a warning past the budget.
 
-## The client index
+Indexes are already split per version and per language, so the budget applies to each one separately. A set can set its own `search` values in its entry under `sets`.
+
+## The server driver
+
+Set `search.driver` to `server` and the browser downloads no index at all. The palette sends each query to the set's search endpoint instead:
+
+```bash
+curl 'https://larecipe.saleem.dev/3.x/_search?q=cache+warm&limit=1'
+```
+
+The endpoint answers on every driver, so scripts can use it too. `limit` runs from 1 to 50 (default 10), and queries are cut at 200 characters. Each hit carries the page's `path`, `title`, `heading`, `anchor`, `snippet`, `score`, `description`, `url` and `markdown_url`.
+
+`search.driver` also takes the name of a driver you register yourself, for Meilisearch, Typesense or a full-text index in your database: see [a custom search driver](#details) below.
+
+## Details
+
+<AccordionGroup>
+
+<Accordion title="The client index file">
 
 Every page's boot data tells the palette where its index lives. This site's 3.x pages carried this when this page was written:
 
@@ -52,7 +81,7 @@ Every page's boot data tells the palette where its index lives. This site's 3.x 
 }
 ```
 
-`report_url` is where the palette reports the searches it answers in the browser; see [searches as events](#searches-as-events). The file name is `{audience}.{fingerprint}.json`, under the set's prefix, locale and version:
+`report_url` is where the palette reports the searches it answers in the browser (see searches as events, below). The file name is `{audience}.{fingerprint}.json`, under the set's prefix, locale and version:
 
 - **The fingerprint** changes whenever the version's content changes, so the URL is immutable. Guests on a public set get it with `Cache-Control: public, max-age=31536000, immutable`, and a CDN can keep it forever.
 - **The audience** is a short hash of the pages a reader may see and the gate abilities they hold. Every guest shares one public file. A signed-in reader gets the file for what they may see, served `private`, and it holds only those records.
@@ -88,46 +117,29 @@ The file holds the MiniSearch options and the records:
 }
 ```
 
-That is one record of 522 in the file, which weighed about 123 KB gzipped.
+That is one record of 522 in the file, which weighed about 123 KB gzipped. Records keep up to 1,000 characters of text, code blocks included, plus component titles and labels such as a step's title. Deeper headings and their text belong to the section above them, and a heading inside a gated block never labels text outside it.
 
-### Loading
+</Accordion>
+
+<Accordion title="When the index loads">
 
 Nothing about search loads with the page. The palette and the index arrive the first time the reader opens search, or earlier, when the browser is idle after the reader's first click, key press, scroll or touch, so `⌘K` usually opens with results ready. The browser then builds the MiniSearch index from the records, which takes a few milliseconds for a typical set.
 
 The palette matches prefixes and tolerates typos. Every word must match; when nothing matches all of them, it shows results that match any. If the index cannot load, the palette falls back to the server endpoint, and without one, to page titles from the navigation.
 
-## Code identifiers
+</Accordion>
+
+<Accordion title="Code identifiers">
 
 Docs are full of names like `Route::middleware`, `$request->user()`, `orders:prune`, `snake_case` and `hasMany`. The tokenizer keeps each identifier whole and also splits it into its parts, so `middleware` finds `Route::middleware`, and on the server a query for `Route::middleware` gives exact matches a bonus.
 
-In the client index, the parts of every identifier in a record go into the low-weight `terms` field. In the record above, `larecipe:sources:suggest` became `larecipe sources suggest`, so a search for `suggest` finds the section.
+In the client index, the parts of every identifier in a record go into the low-weight `terms` field. In the record shown in the client index file above, `larecipe:sources:suggest` became `larecipe sources suggest`, so a search for `suggest` finds the section.
 
-## Keep the index small
+</Accordion>
 
-A client index should stay small enough to download in a moment. The budget is set in `config/larecipe.php`, in KB of gzipped JSON:
+<Accordion title="How the PHP ranker scores">
 
-```php
-// config/larecipe.php
-'search' => [
-    'driver' => 'client',
-    'budget_kb' => 300,
-],
-```
-
-Two commands measure against it:
-
-- `php artisan larecipe:validate` estimates each version's index from its rendered pages and reports a `search.budget` warning when it would be over budget, with the fix: switch the set to the `server` driver, or split the docs into more versions or sets. See [Validation and doctor](validation.md).
-- `php artisan larecipe:optimize` measures the real guest index of every version on deploy and prints its size, with a warning past the budget.
-
-Indexes are already split per version and per language, so the budget applies to each one separately. A set can set its own `search` values in its entry under `sets`.
-
-## The server driver and the PHP ranker
-
-Set `search.driver` to `server` and the browser downloads no index at all. The palette sends each query to the set's search endpoint instead:
-
-```bash
-curl 'https://larecipe.saleem.dev/3.x/_search?q=cache+warm&limit=1'
-```
+The PHP ranker serves the `/_search` endpoint, MCP `search_docs`, the `/ask` endpoint, Ask AI and the suggestions on a Markdown 404. A response from the endpoint looks like this:
 
 ```json
 {
@@ -150,15 +162,15 @@ curl 'https://larecipe.saleem.dev/3.x/_search?q=cache+warm&limit=1'
 }
 ```
 
-The endpoint answers on every driver, so scripts can use it too. `limit` runs from 1 to 50 (default 10), and queries are cut at 200 characters. Guests on a public set get answers that caches may keep for a minute; everyone else gets `private, no-store`.
+It scores the records with BM25 over weighted fields (title, then heading, tags, the page path and the text), matches prefixes (`migr` finds `migrations`), and allows one typo in words of four to seven letters and two from eight letters, but only for a word that matches nothing as written. Records that match more of the query rank higher, a query that is exactly a page title or a heading gets a boost, and one page contributes at most two sections to a result list.
 
-Behind the endpoint is the PHP ranker, which also serves MCP `search_docs`, the `/ask` endpoint, Ask AI and the suggestions on a Markdown 404. It scores the same records with BM25 over weighted fields (title, then heading, tags, the page path and the text), matches prefixes (`migr` finds `migrations`), and allows one typo in words of four to seven letters and two from eight letters, but only for a word that matches nothing as written. Records that match more of the query rank higher, a query that is exactly a page title or a heading gets a boost, and one page contributes at most two sections to a result list.
+Guests on a public set get endpoint answers that caches may keep for a minute; everyone else gets `private, no-store`. The browser and the server rank with different code, so their order can differ a little. What they can find, and who may find it, is the same.
 
-The browser and the server rank with different code, so their order can differ a little. What they can find, and who may find it, is the same.
+</Accordion>
 
-## Custom drivers
+<Accordion title="A custom search driver">
 
-For an engine of your own (Meilisearch, Typesense, a full-text index in your database), implement LaRecipe's `SearchDriver` contract:
+For an engine of your own, implement LaRecipe's `SearchDriver` contract:
 
 ```php title="vendor/larecipe/larecipe/src/Domains/Search/Contracts/SearchDriver.php"
 <?php
@@ -285,7 +297,9 @@ The factory receives the app and the set's `search` config, so you can add keys 
 
 LaRecipe does not call `flush()` itself yet; keep it for your own maintenance. Because `index()` receives the whole version every time, replacing what you stored is enough to keep the engine current.
 
-## Searches as events
+</Accordion>
+
+<Accordion title="Searches as events">
 
 Every search fires `SearchPerformed`, with a `source`: MCP `search_docs` (`mcp`), Ask AI's retrieval (`assistant`), the `/ask` endpoint (`endpoint`) and the `/_search` endpoint (`server`), which is what the palette queries on the `server` driver or a custom one.
 
@@ -309,8 +323,12 @@ Event::listen(function (SearchPerformed $event) {
 
 LaRecipe stores nothing. See [Analytics and events](analytics.md) for the other events.
 
+</Accordion>
+
+</AccordionGroup>
+
 ## Next
 
 - [Analytics and events](analytics.md): forward searches and page views to your own tools.
-- [Caching and optimize](caching.md): how records are cached and compiled on deploy.
 - [Validation and doctor](validation.md): the `search.budget` check.
+- [Caching](caching.md): go deeper into how records are cached.

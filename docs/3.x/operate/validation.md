@@ -1,6 +1,6 @@
 ---
 title: Validation and doctor
-description: Check the docs with larecipe:validate and what agents get from your app with larecipe:doctor, read their reports, and run both in CI.
+description: Check that the docs are correct with larecipe:validate and what agents get from your app with larecipe:doctor, read their reports, and run them in CI.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Validation/**
   - vendor/larecipe/larecipe/resources/schemas/validate.schema.json
@@ -18,28 +18,16 @@ sources:
 
 # Validation and doctor
 
-Two read-only checks, for two different questions:
-
-- **`larecipe:validate`**: are the docs correct? It reads every page through the real renderer and reports broken links, schema errors, unknown components, missing snippets, references that stopped resolving and more. Run it after every docs change. Your coding agent does.
-- **`larecipe:doctor`**: what do agents get? It requests your docs through the app the way an agent would and grades the answers: Markdown twins, `llms.txt`, 404s, headers, redirects, `skill.md` and MCP.
-
-Neither one writes anything, and neither one uses AI.
-
-## larecipe:validate
-
-<Artisan command="larecipe:validate" />
+Two read-only checks, with no AI. Run `larecipe:validate` after every docs change to check that the docs are correct, and `larecipe:doctor` after a deploy to check what agents get from your app.
 
 ```bash
 php artisan larecipe:validate
-php artisan larecipe:validate --set=docs --docs-version=3.x
-php artisan larecipe:validate --json
+php artisan larecipe:doctor
 ```
 
-Without options it checks every version and language of every doc set. The version option is `--docs-version` because Symfony reserves `--version` for the application.
+`larecipe:validate` reads every page through the real renderer and reports broken links, schema errors, unknown components, missing snippets, live references that stopped resolving and more. It exits with `1` when it finds an error, so CI can stop on it. Warnings never fail it. Your coding agent runs it before every push.
 
-It exits with `1` when there is at least one error, so CI can stop on it. Warnings never fail it. A set or version that does not exist exits with `2`.
-
-Each issue prints its level, rule, page and line, the message, and a fix when LaRecipe knows one:
+Each issue names its level, rule, page and line, with a fix when LaRecipe knows one:
 
 ```text
   ERROR  links.broken  3.x/agents/mcp line 220
@@ -49,9 +37,24 @@ Each issue prints its level, rule, page and line, the message, and a fix when La
 
 That one is from this site, while these docs were being written: the page it links to was next in line.
 
-## Rules
+## larecipe:validate
 
-Every issue has a stable rule id. Page rules run on each page, set rules on the doc set as a whole.
+Without options it checks every version and language of every doc set. Narrow it down, or ask for the report agents read:
+
+```bash
+php artisan larecipe:validate --set=docs --docs-version=3.x
+php artisan larecipe:validate --json
+```
+
+The version option is `--docs-version` because Symfony reserves `--version` for the application. A set or version that does not exist exits with `2`.
+
+Every issue has a stable rule id, such as `links.broken` or `components.unknown`. Validation and rendering never disagree: the component, snippet, reference and placeholder rules come straight from the renderer, which reports every problem it meets while rendering the page.
+
+<AccordionGroup>
+
+<Accordion title="Every rule">
+
+Page rules run on each page, set rules on the doc set as a whole.
 
 | Rule | Level | What it finds |
 | --- | --- | --- |
@@ -86,9 +89,9 @@ Every issue has a stable rule id. Page rules run on each page, set rules on the 
 | `access.redundant-gate` | warning | A gate block on a page that is itself private, whose readers already passed `viewLarecipe`. |
 | `migrations.conflict` | warning | A docs migration that met a change made in production and waits as a conflict at [the pass](../sources/database.md#the-pass-the-review-queue). The fix gives its address in the admin. |
 
-Validation and rendering never disagree: the component, snippet, reference and placeholder rules come straight from the renderer, which reports every problem it meets while rendering the page.
+</Accordion>
 
-## The JSON report
+<Accordion title="The JSON report">
 
 `--json` prints the report agents read. Its shape is published as a JSON Schema, in the package at `resources/schemas/validate.schema.json` and on every set at `/schemas/validate.json` (under the set's prefix).
 
@@ -120,35 +123,45 @@ The other 47 errors were links and navigation entries for pages not written yet.
 - `file` is relative to the set's root (`docs/` here), and `line` points into that file, frontmatter included.
 - `fix` is there when LaRecipe can suggest one: the closest anchor, the closest page, the frontmatter key you probably meant. Treat it as a suggestion. For a link to a page that does not exist yet, the closest page is usually the wrong answer.
 
-### Fixes for agents
+</Accordion>
+
+<Accordion title="How agents use the report">
 
 The report is built for the agent that wrote the page a moment ago. Stable rule ids tell it what kind of problem it has, `file` and `line` tell it where, and `fix` often tells it what to change. The `larecipe-write-docs` and `larecipe-update-docs` skills tell agents to run the validator and fix every error before they stop.
 
-Agents connected to the MCP server can call the **`validate_docs`** tool instead of the command. It returns the same report as `--json`, for one set and optionally one version. It is always on the local server (`php artisan larecipe:mcp`). On a set's web endpoint it is offered only to callers the `manageLarecipe` gate allows, because it reads every page, private ones included.
+Agents connected to the MCP server can call the `validate_docs` tool instead of the command. It returns the same report as `--json`, for one set and optionally one version. It is always on the local server (`php artisan larecipe:mcp`). On a set's web endpoint it is offered only to callers the `manageLarecipe` gate allows, because it reads every page, private ones included.
 
 When an agent writes a page through the MCP author tools, the same page rules run on that page first, and a page with errors is not written. Link problems are only warnings at that point, because an agent writing several pages links to the next one before it exists. The full `larecipe:validate` run catches whatever is still broken.
 
+</Accordion>
+
+<Accordion title="Every option">
+
+<Artisan command="larecipe:validate" />
+
+</Accordion>
+
+</AccordionGroup>
+
 ## In CI
 
-The installer can add an optional check for pull requests:
-
-```bash
-php artisan larecipe:install --ci=fail
-```
-
-It writes `.github/workflows/larecipe-docs-check.yml`, which runs `php artisan larecipe:validate --json` and `php artisan larecipe:affected` on every pull request. It runs no AI, writes nothing and needs no secrets for a repository set, so it is safe on pull requests from forks. Database sets apply the pull request's docs migrations to a throwaway database first, so a broken docs migration fails the check. `--ci=comment` posts the list of stale pages instead of failing. See [the CI check](../keeping-current/ci-check.md).
-
-In any other CI, one step is enough. The exit code fails the job on errors:
+One step is enough. The exit code fails the job on errors:
 
 ```yaml
 - run: php artisan larecipe:validate
 ```
 
+For GitHub Actions, the installer can write a ready-made workflow that also lists the pages a pull request left stale: see [the CI check](../keeping-current/ci-check.md).
+
 ## larecipe:doctor
 
-<Artisan command="larecipe:doctor" />
+The doctor grades each doc set the way the AFDocs checks grade a docs site for agents, from inside your app: Markdown twins, `llms.txt` and its links, 404s, discovery headers, redirects, `skill.md`, the MCP endpoint and the cache store. It sends real requests through the app's HTTP kernel, with the user agent `LaRecipe-Doctor/1.0`, so it needs no running server and sees your middleware, headers and exception handler exactly as an agent would. URLs are built from `APP_URL`.
 
-The doctor grades each doc set the way the AFDocs checks grade a docs site for agents, from inside your app. It sends real requests through the app's HTTP kernel, with the user agent `LaRecipe-Doctor/1.0`, so it needs no running server and sees your middleware, headers and exception handler exactly as an agent would. URLs are built from `APP_URL`.
+Each check passes, warns, fails or is skipped, with a fix for every finding, and the set gets a grade from A to D. The command exits with `1` only when a check fails. `--set` limits it to one set, and `--json` prints the report.
+
+<AccordionGroup>
+
+<Accordion title="The checks">
 
 | Check | Passes when |
 | --- | --- |
@@ -162,9 +175,17 @@ The doctor grades each doc set the way the AFDocs checks grade a docs site for a
 | `mcp` | The set's MCP endpoint answers `tools/list` with `search_docs` and `read_page`. Skipped when it asks for authentication. |
 | `cache-store` | A database set uses a persistent cache store. Skipped for repository sets. |
 
-A pass counts fully, a warning half and a failure nothing; skipped checks do not count. The score becomes a grade: A from 90, B from 80, C from 70, D from 60. The command exits with `1` only when a check fails. `--set` limits it to one set, and `--json` prints the report.
+</Accordion>
 
-This site's doctor run, from the local copy:
+<Accordion title="How the grade is scored">
+
+A pass counts fully, a warning half and a failure nothing; skipped checks do not count. The score becomes a grade: A from 90, B from 80, C from 70, D from 60.
+
+</Accordion>
+
+<Accordion title="This site's doctor run">
+
+From the local copy:
 
 ```text
   docs http://127.0.0.1:8780/
@@ -183,6 +204,16 @@ This site's doctor run, from the local copy:
   Agent readiness: A (94 / 100)
 ```
 
+</Accordion>
+
+<Accordion title="Every option">
+
+<Artisan command="larecipe:doctor" />
+
+</Accordion>
+
+</AccordionGroup>
+
 ## Which one when
 
 | | `larecipe:validate` | `larecipe:doctor` |
@@ -196,6 +227,6 @@ A page can pass validation and still fail the doctor: a proxy that strips `Link`
 
 ## Next
 
-- [Search](search.md): the `search.budget` check and the server driver.
 - [Deployment](deployment.md): where both commands fit in a deploy.
+- [The CI check](../keeping-current/ci-check.md): go deeper with the ready-made GitHub Actions workflow.
 - [Agent surfaces](../agents/surfaces.md): the files the doctor checks.

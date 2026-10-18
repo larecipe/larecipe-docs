@@ -139,7 +139,7 @@ Each page is rewritten line by line. Code blocks are never touched.
 | `> {warning} text`, `> {info} text` and the other alert types | GitHub alerts: `primary` becomes `IMPORTANT`, `secondary` and `info` become `NOTE`, `success` becomes `TIP`, `warning` stays `WARNING`, `danger` becomes `CAUTION` |
 | `<a name="x"></a>` before a heading | A `{#x}` heading id, so old `#x` links still land |
 | `<larecipe-card>` | `<Card>` |
-| `<larecipe-badge>`, `<larecipe-button>` on their own line | `<Badge>`, `<Button>` (check these, [below](#check-after-the-upgrade)) |
+| `<larecipe-badge>`, `<larecipe-button>` on their own line | `<Badge tone="success">Text</Badge>`, `<Button href="..." variant="primary">Text</Button>`, with the v2 type mapped to a tone or variant |
 | `<larecipe-badge>`, `<larecipe-button>` inside a sentence | Their text |
 | `/{{route}}/{{version}}/page#anchor` links | Relative links: `page.md#anchor` |
 | `/docs/{{version}}/page` links | Kept, because v3 still fills in `{{version}}`; relative with `--relative-links` |
@@ -156,7 +156,7 @@ Some things need a person, or your agent. The upgrade finds them and lists them 
 
 - Blade in Markdown (`@if`, `@include`, `{{ $variable }}`, `{!! !!}`). v3 does not evaluate Blade in content.
 - Custom Vue components, and any `larecipe-` tag it could not convert.
-- Raw HTML, which v3 shows as text.
+- Raw HTML, which v3 shows as text. Replace it with Markdown or a component, leave it as text, or let a repository set allow it with `html_input` set to `allow` (see [Markdown](writing/markdown.md#raw-html)).
 - An `<a name>` anchor with no heading after it.
 - `LaRecipe::script()` and `LaRecipe::style()` calls, uses of the `BinaryTorch\LaRecipe` namespace and your `viewLarecipe` gate, in `app/`, `routes/`, `config/` and `bootstrap/`.
 - Published v2 views in `resources/views/vendor/larecipe/`.
@@ -249,31 +249,17 @@ It finishes when `php artisan larecipe:validate` passes, and leaves the commit t
 
 ## Check after the upgrade
 
-The converter is deterministic, not perfect. Two things on this site needed fixing by hand after it ran, and they are worth checking on yours.
+The converter is deterministic, not perfect. Work through the "Left for you" list in its report, then check these on yours:
 
-**Badges and buttons came out empty.** The converter writes a v2 badge or button as a self-closing tag with `label` and `tone` props:
+**Badges and buttons.** A v2 badge or button on its own line becomes a component with its text inside, `<Badge tone="success">Completed</Badge>` or `<Button href="https://zino.binarytorch.com.my" variant="primary">View Zino Library</Button>`. A v2 type with no v3 match, icons and styling attributes are dropped and listed in the report, and a badge with no text is removed, with a report entry. Look at each one in the browser.
 
-```markdown
-<Badge label="Completed" tone="success" />
-<Button label="View Zino Library" href="https://zino.binarytorch.com.my" />
-```
-
-The v3 components do not read a `label` prop: their text is the tag's content. `<Button>` takes `href` and `variant`, not `tone`. Unknown props pass silently, so the validator does not catch this. Rewrite each one with its text inside:
-
-```markdown
-<Badge tone="success">Completed</Badge>
-<Button href="https://zino.binarytorch.com.my">View Zino Library</Button>
-```
-
-Find them with `grep -rn 'label="' docs/`.
-
-**Links inside alerts were not rewritten.** The converter turns `> {info}` alerts into GitHub alerts, but leaves the links inside them as they were. On this site, a `/docs/{{version}}/...` link inside a converted alert kept its v2 form, even though the site's docs moved to the domain root. Search for what is left:
+**Links that kept `{{version}}`.** Links are rewritten everywhere, inside converted alerts too, first line included. A `/docs/{{version}}/...` link stays as it was unless you pass `--relative-links`; it still works as long as the prefix in it is still right. Search for what is left:
 
 ```bash
 grep -rn '{{' docs/
 ```
 
-Rewrite each link it finds as a relative `.md` link. A `{{version}}` that remains in a link still works, as long as the prefix in it is still right.
+Rewrite each link it finds as a relative `.md` link if your prefix changed.
 
 **Old URLs.** If your route prefix changed, keep old links and search results working with redirects in your app. This site moved its v2 docs from `/docs/{version}/{page}` to `/2.x/{page}`, and its `routes/web.php` ends with:
 

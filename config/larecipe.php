@@ -28,6 +28,25 @@ return [
     | source.driver is 'repository' (recommended: docs in this repo) or
     | 'database' (managed in the admin UI, always behind a cache).
     | access.mode is 'public', 'auth' or 'gate' (the viewLarecipe gate).
+    | html_input is 'escape' (default: raw HTML in Markdown shows as text) or,
+    | for a repository set only, 'allow' (raw HTML passes as written, except
+    | GitHub's filtered tags such as <script> and <iframe>). Database sets always
+    | escape raw HTML and sanitize every rendered page.
+    |
+    | integrations.analytics adds GA4, Plausible, Fathom, PostHog or a custom
+    | https script to every page of the set, with the same keys as larecipe.json:
+    |
+    |   'integrations' => ['analytics' => [
+    |       'plausible' => ['domain' => 'docs.example.com'],
+    |       'posthog' => ['apiKey' => 'phc_...', 'host' => 'https://ph.example.com'],
+    |   ]],
+    |
+    | These scripts run with every reader's session, so a database set reads
+    | them from here only: its larecipe.json can be edited in the admin UI and
+    | over MCP. A repository set may also declare them in larecipe.json, where
+    | they are reviewed with your code; this file wins per provider. A
+    | self-hosted Plausible, Fathom or PostHog host (src, host) counts only
+    | here; larecipe.json loads them from their official hosts.
     |
     */
 
@@ -109,21 +128,42 @@ return [
     // Ask AI needs laravel/ai and a provider key. rate_limit is "requests,minutes"
     // per reader; daily_budget caps answers per set per day (null: no cap).
     'ai' => [
+        // Ask AI. provider is a laravel/ai provider name, or a failover list
+        // tried in order when one fails: ['anthropic', 'openai'], or with a
+        // model for each: ['anthropic' => '{model}', 'openai' => '{model}'].
+        // model applies to a single provider only. Answers run on your provider
+        // key: rate_limit is answers per reader ("10,1": 10 a minute, per set),
+        // daily_budget caps answers per set per day (null for no cap), and the
+        // conversation a browser sends back is limited to max_messages turns,
+        // max_question_length characters per question and max_history_length
+        // characters of earlier turns in all.
         'ask' => [
             'enabled' => env('LARECIPE_ASK', false),
             'provider' => env('LARECIPE_AI_PROVIDER'),
             'model' => env('LARECIPE_AI_MODEL'),
             'max_steps' => 6,
             'rate_limit' => '10,1',
-            'daily_budget' => null,
+            'daily_budget' => 500,
             'max_messages' => 20,
             'max_question_length' => 2000,
+            'max_history_length' => 20000,
         ],
+        // php artisan larecipe:sync, the on-demand docs agent (never in CI).
+        // timeout is seconds per provider request. remote_token authenticates
+        // --remote runs against a production set's MCP endpoint (a token of a
+        // user the manageLarecipe gate allows). deny adds paths the agent may
+        // never read, on top of the built-in list (.env and every dotfile,
+        // config/, bootstrap/cache/, storage/, vendor/, keys, auth.json).
+        // queue is the queue for --queue runs (null: the default queue).
         'sync' => [
             'provider' => env('LARECIPE_AI_PROVIDER'),
             'model' => env('LARECIPE_AI_MODEL'),
             'max_pages' => 20,
             'max_steps' => 30,
+            'timeout' => 120,
+            'remote_token' => env('LARECIPE_SYNC_TOKEN'),
+            'deny' => [],
+            'queue' => env('LARECIPE_SYNC_QUEUE'),
         ],
     ],
 
@@ -165,6 +205,12 @@ return [
     'feedback' => [
         'enabled' => true,
         'rate_limit' => '20,1',
+    ],
+
+    // The images and files that live with the docs (/{prefix}/_assets/...).
+    // "requests,minutes" per reader, generous enough for image-heavy pages.
+    'assets' => [
+        'rate_limit' => '600,1',
     ],
 
     /*
@@ -211,7 +257,16 @@ return [
     // Live references (<Route>, <Artisan>, <Model>, <Event>) read the app's public
     // shape only. <Model> describes classes in these namespaces and nothing else;
     // <Event> looks up short names in these namespaces.
+    // <Route> shows a route's method, URI, middleware names and form request
+    // field and rule names, never rule arguments or the domain. routes.allow
+    // lists the routes it may describe, by name or URI ('orders.*', 'api/*').
+    // null means every route your app defines: routes registered by packages
+    // in vendor/ are left out, except LaRecipe's own. The snapshot command and
+    // larecipe:validate follow the same list.
     'references' => [
+        'routes' => [
+            'allow' => null,
+        ],
         'models' => [
             'allow' => ['App\\Models\\*'],
         ],

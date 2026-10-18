@@ -61,7 +61,7 @@ Font tokens name a family; they do not download it. Load the font files yourself
 
 A reader's own choice of light or dark wins over `mode`. They make it with the theme button at the end of the header, which switches between light and dark in one click, and it is stored in their browser under `larecipe:theme`. The color mode is set before the first paint, so pages never flash the wrong theme.
 
-The switch next to the logo hides the navigation on wide screens and shows it again, the way LaRecipe 2's did. That choice is stored under `larecipe:sidebar` and applied before the first paint too. On phones the navigation opens as a sheet from the menu button instead.
+The switch next to the logo hides the navigation on wide screens and shows it again, the way LaRecipe 2's did. With the navigation hidden, the article widens for easier reading. That choice is stored under `larecipe:sidebar` and applied before the first paint too. On phones the navigation opens as a sheet from the menu button instead.
 
 ## Logo and favicon
 

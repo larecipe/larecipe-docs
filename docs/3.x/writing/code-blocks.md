@@ -31,7 +31,7 @@ The language is the first word of the fence. LaRecipe highlights it with Phiki, 
 
 `text`, `txt`, `plain`, `plaintext`, `none` and `output` mean no highlighting. A language Phiki does not know falls back to plain text, so a typo in a fence never breaks a page. Always write a language: it labels the block and tells agents what they are reading.
 
-Code sits on a dark slab in both light and dark mode, in LaRecipe's own `larecipe-pass` theme. Highlighting is the slowest part of rendering, so each block's output is cached on its own: editing a paragraph re-renders the page, while every unchanged code block comes from the cache.
+Code sits on a slate slab in both light and dark mode, in LaRecipe's own `larecipe-pass` theme. Highlighting is the slowest part of rendering, so each block's output is cached on its own: editing a paragraph re-renders the page, while every unchanged code block comes from the cache.
 
 ## Titles
 

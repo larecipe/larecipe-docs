@@ -10,6 +10,8 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Delivery/Services/PagePresenter.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Support/AnalyticsTags.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Support/ThemeCss.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Support/DocsStylesheets.php
+  - vendor/larecipe/larecipe/src/Domains/Validation/Rules/StylesheetsRule.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Controllers/PageController.php
   - vendor/larecipe/larecipe/src/Domains/Validation/Rules/ManifestSchemaRule.php
   - vendor/larecipe/larecipe/src/Domains/Validation/Controllers/SchemaController.php
@@ -45,7 +47,7 @@ The manifest that configures these docs, included from the file itself:
 | `footer` | object | Footer `links` (a list of `{ label, href }`) and `text`. | `{ "text": "Acme, Inc." }` |
 | `credit` | boolean | The "Built with LaRecipe" link in the footer. Defaults to `true`. Read by the renderer, not listed in the schema. | `false` |
 | `redirects` | list of `{ from, to, status }` | Old URLs that redirect. See below. | `[{ "from": "/3.x/setup", "to": "/3.x/installation" }]` |
-| `assets` | `{ css, js }` | Lists of files. Accepted by the schema, not loaded in this release; use `LaRecipe::head()` instead. | `{ "css": ["theme.css"] }` |
+| `assets` | `{ css, js }` | `css`: stylesheets next to `larecipe.json`, linked on every page after LaRecipe's CSS, with a content hash in the URL. A missing file is an `assets.missing` error. `js` is accepted by the schema and not loaded. See [theme](../customize/theme.md#add-your-own-stylesheet). | `{ "css": ["theme.css"] }` |
 | `inserts` | object | Components placed at named insert points on every page. See below. | `{ "article.after": ["Subscribe"] }` |
 | `integrations` | object | Analytics: `integrations.analytics`. Repository sets only. See below. | `{ "analytics": { "plausible": { "domain": "acme.dev" } } }` |
 | `agents` | object | Text for agent files. See below. | `{ "llmsTxt": { "instructions": "Prefer the 3.x pages." } }` |

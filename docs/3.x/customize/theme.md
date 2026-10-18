@@ -5,6 +5,9 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Content/DTOs/Theme.php
   - vendor/larecipe/larecipe/src/Domains/Content/DTOs/Manifest.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Support/ThemeCss.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Support/DocsStylesheets.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Controllers/DocsAssetController.php
+  - vendor/larecipe/larecipe/src/Domains/Validation/Rules/StylesheetsRule.php
   - vendor/larecipe/larecipe/src/LaRecipe.php
   - vendor/larecipe/larecipe/resources/views/partials/head.blade.php
   - vendor/larecipe/larecipe/resources/views/prerender/header.blade.php
@@ -54,7 +57,7 @@ Set any of these under `theme` in `larecipe.json`. Leave out what you do not wan
 
 LaRecipe writes only the tokens you set, as CSS variables in a `<style>` tag in the page head. Each value is checked first, because it comes from a content file: a value that could close the tag or inject a rule is dropped.
 
-Font tokens name a family; they do not download it. Load the font files yourself, for example with a [head tag](#add-your-own-stylesheet).
+Font tokens name a family; they do not download it. Load the font files yourself, for example from [your own stylesheet](#add-your-own-stylesheet).
 
 A reader's own choice of light or dark, stored in their browser under `larecipe:theme`, wins over `mode`. The color mode is set before the first paint, so pages never flash the wrong theme.
 
@@ -77,7 +80,26 @@ The logo sits in the header, next to the site name from `larecipe.json`. Give on
 
 ## Add your own stylesheet
 
-For anything the tokens do not cover, add CSS of your own. Register it in a service provider with `LaRecipe::head()`, which prints whatever you return into the `<head>` of every docs page:
+For anything the tokens do not cover, add CSS of your own. The simplest place is a `theme.css` next to `larecipe.json`, listed under `assets.css`:
+
+```json title="docs/larecipe.json"
+{
+  "assets": { "css": ["theme.css"] }
+}
+```
+
+<FileTree>
+
+- docs/
+  - larecipe.json
+  - theme.css
+  - 3.x/
+
+</FileTree>
+
+LaRecipe links each listed stylesheet on every page of the set, right after its own CSS, so your rules win where they overlap. The file is served by the docs asset route with its content hash in the URL (`?v=...`), so browsers and CDNs keep it for a year and a changed file gets a new URL. It travels with the docs: it serves every version, lands in a [static export](../operate/static-export.md), and needs no build step. A listed file that does not exist gets no tag, and `php artisan larecipe:validate` reports it as `assets.missing`.
+
+For CSS that lives elsewhere, or a stylesheet only some sets get, register it in a service provider with `LaRecipe::head()`, which prints whatever you return into the `<head>` of every docs page:
 
 ```php title="app/Providers/AppServiceProvider.php"
 use LaRecipe\Facades\LaRecipe;
@@ -88,10 +110,7 @@ public function boot(): void
 }
 ```
 
-The callback receives the doc set, so one app can style its sets differently (`fn ($set) => $set->key === 'handbook' ? '...' : ''`). It may return HTML, a view or anything `Htmlable`. The same hook is the place for font stylesheets.
-
-> [!NOTE]
-> `larecipe.json` also accepts `assets.css` (a list of stylesheets that live with the docs, such as a `theme.css`), but LaRecipe does not load those files yet. Use `LaRecipe::head()` until it does.
+The callback receives the doc set, so one app can style its sets differently (`fn ($set) => $set->key === 'handbook' ? '...' : ''`). It may return HTML, a view or anything `Htmlable`. It is also a place for font stylesheets from a font service.
 
 Write your CSS against the classes LaRecipe renders (`.lr-callout`, `.lr-card`, `.lr-code` and the rest; the [components reference](../reference/components.md) lists them) and the theme variables below. CSS that ships with a [custom component](custom-components.md) goes in that component's extension instead.
 
@@ -111,7 +130,7 @@ These CSS variables hold the design system. They switch values in dark mode, so 
 | `--lr-radius-xs`, `--lr-radius-sm`, `--lr-radius-md`, `--lr-radius-lg` | The corner radii (`radius: soft` changes them) |
 | `--lr-font-sans`, `--lr-font-mono` | The font stacks, including your `fonts` tokens |
 
-```css title="public/css/docs.css"
+```css title="docs/theme.css"
 .status-pill {
   border: 1px solid var(--lr-hairline);
   border-radius: var(--lr-radius-sm);

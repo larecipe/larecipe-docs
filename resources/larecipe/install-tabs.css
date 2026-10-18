@@ -1,0 +1,297 @@
+/*
+ * The Introduction's install box (InstallTabs). It reads LaRecipe's theme
+ * tokens, so it follows the accent, dark mode and direction. The same rules
+ * style the server fallback and the React tabs.
+ */
+.lr-install {
+  margin-block: 24px 32px;
+  overflow: hidden;
+  border: 1px solid var(--lr-hairline);
+  border-radius: var(--lr-radius-lg);
+  background: var(--lr-paper);
+  box-shadow: var(--lr-shadow-xs);
+}
+
+.lr-prose .lr-install p,
+.lr-install p {
+  margin: 0;
+}
+
+/* ---- Tabs ----------------------------------------------------------------- */
+
+.lr-install-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  border-bottom: 1px solid var(--lr-hairline);
+  background: var(--lr-surface);
+}
+
+.lr-install-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--lr-radius-md);
+  background: transparent;
+  color: var(--lr-ink-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--lr-duration-hover) var(--lr-ease), background-color var(--lr-duration-hover) var(--lr-ease), box-shadow var(--lr-duration-hover) var(--lr-ease);
+}
+
+.lr-install-tab:hover {
+  color: var(--lr-ink);
+}
+
+.lr-install-tab[aria-selected='true'] {
+  background: var(--lr-paper);
+  color: var(--lr-ink);
+  box-shadow: 0 0 0 1px var(--lr-hairline), var(--lr-shadow-xs);
+}
+
+.lr-install-tab:focus-visible {
+  outline: 2px solid var(--lr-accent-ring);
+  outline-offset: 1px;
+}
+
+.lr-install-tab .lr-icon {
+  color: var(--lr-ink-faint);
+}
+
+.lr-install-tab[aria-selected='true'] .lr-icon {
+  color: var(--lr-ink-muted);
+}
+
+/* ---- The AI mark: a star that breathes, a spark and a dot that twinkle ---- */
+
+.lr-install-mark {
+  flex: none;
+  overflow: visible;
+}
+
+.lr-install-mark path,
+.lr-install-mark circle {
+  fill: var(--lr-accent-current);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lr-install-mark-star {
+  animation: lr-install-breathe 2.6s var(--lr-ease) infinite;
+}
+
+.lr-install-mark-spark {
+  opacity: 0.75;
+  animation: lr-install-twinkle 2.6s var(--lr-ease) 0.9s infinite;
+}
+
+.lr-install-mark-dot {
+  opacity: 0.6;
+  animation: lr-install-twinkle 2.6s var(--lr-ease) 1.6s infinite;
+}
+
+@keyframes lr-install-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.14) rotate(12deg); }
+}
+
+@keyframes lr-install-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.7); }
+  40% { opacity: 1; transform: scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lr-install-mark-star,
+  .lr-install-mark-spark,
+  .lr-install-mark-dot {
+    animation: none;
+  }
+}
+
+/* ---- Panels ---------------------------------------------------------------- */
+
+/*
+ * Without JavaScript the panels stack, each under its label. With it, both
+ * share one grid cell, and React eases the box to the open panel's height.
+ * Before React mounts, the cell is as tall as the agent panel, the open one.
+ */
+.lr-install-panels {
+  display: grid;
+}
+
+.lr-install-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+  padding: 20px;
+}
+
+html:not(.lr-js) .lr-install-panel + .lr-install-panel {
+  border-top: 1px solid var(--lr-hairline);
+}
+
+html.lr-js .lr-install-panels {
+  overflow: hidden;
+  transition: height var(--lr-duration-panel) var(--lr-ease-sidebar);
+}
+
+html.lr-js .lr-install-panel {
+  grid-area: 1 / 1;
+  align-self: start;
+  transition: opacity var(--lr-duration-state) var(--lr-ease), visibility var(--lr-duration-state);
+}
+
+html.lr-js .lr-install-panel:not([data-active]) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.lr-install-panel-label {
+  font-family: var(--lr-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lr-ink-muted);
+}
+
+html.lr-js .lr-install-panel-label {
+  display: none;
+}
+
+.lr-prose .lr-install-lead,
+.lr-install-lead {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--lr-ink-muted);
+}
+
+/* The prompt: a tinted card with its copy button in the corner. */
+.lr-install-prompt {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--lr-accent-current) 22%, var(--lr-hairline));
+  border-radius: var(--lr-radius-md);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lr-accent-current) 6%, transparent), transparent 70%),
+    var(--lr-surface);
+}
+
+.lr-install-prompt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 8px 0 16px;
+}
+
+[dir='rtl'] .lr-install-prompt-head {
+  padding: 8px 16px 0 8px;
+}
+
+.lr-install-prompt-label {
+  font-family: var(--lr-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lr-accent-current);
+}
+
+.lr-install-copy.lr-button {
+  height: 32px;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.lr-prose .lr-install-prompt-text,
+.lr-install-prompt-text {
+  padding: 6px 16px 16px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--lr-ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.lr-install-prompt-para {
+  display: block;
+}
+
+.lr-install-prompt-para + .lr-install-prompt-para {
+  margin-top: 10px;
+}
+
+.lr-install-prompt-text code {
+  font-size: 0.86em;
+}
+
+/* The commands: a regular LaRecipe code block, flush in the panel. */
+.lr-prose .lr-install .lr-code,
+.lr-install .lr-code {
+  margin: 0;
+}
+
+.lr-prose .lr-install-steps,
+.lr-install-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13.5px;
+  color: var(--lr-ink-muted);
+}
+
+.lr-prose .lr-install-steps > li,
+.lr-install-steps > li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.lr-prose .lr-install-steps > li::before,
+.lr-install-steps > li::before {
+  content: none;
+}
+
+.lr-install-step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--lr-accent-soft);
+  color: var(--lr-accent-current);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+:root:lang(ar) .lr-install-panel-label,
+:root:lang(ar) .lr-install-prompt-label {
+  font-family: var(--lr-font-sans);
+  font-size: 12.5px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+@media (max-width: 520px) {
+  .lr-install-panel {
+    padding: 16px;
+  }
+
+  .lr-install-tab {
+    flex: 1 1 0;
+    justify-content: center;
+    padding: 0 10px;
+  }
+}

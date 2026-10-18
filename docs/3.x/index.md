@@ -12,24 +12,17 @@ inserts: { article.after: false }
 
 # Docs that keep up with your code
 
-<Video title="The maintainer explains LaRecipe" />
+You write pages in Markdown, in your own repository, next to the code they describe. People read them as a fast site, and agents read the same pages as Markdown, through `llms.txt` and an MCP server.
 
-LaRecipe is a docs site that lives inside your Laravel app. You write pages in Markdown, in your own repository, next to the code they describe. People read them as a fast site that works without JavaScript. Agents read the same pages as Markdown, through `llms.txt` and an MCP server.
+Every page lists the code it describes. When that code changes, the coding agent that changed it updates the page before it pushes, and a hook holds the push once if it forgets. The docs land in the same pull request as the code, and you review them together.
+
+<DocsFlow />
 
 ## Install in two commands
 
-```bash
-composer require larecipe/larecipe
-php artisan larecipe:install
-```
+<InstallTabs />
 
-The installer asks a few questions, and the defaults suit most apps. Then open `/docs` in your browser. Your docs are already there, starting with an Introduction page written from facts about your app. There is no Node and no build step.
-
-## Push code, the docs follow
-
-Every page lists the code it describes. When you change that code, the coding agent that made the change also updates the page before it pushes. If it forgets, a hook holds the push once and names the pages to update. The docs land in the same pull request as the code, and you review them together.
-
-The installer sets this up for the coding agents you already use, such as Claude Code, Codex and Cursor. There is nothing to remember day to day.
+There is no Node and no build step. The installer also sets up the coding agents you already use, such as Claude Code, Codex and Cursor, so there is nothing to remember day to day.
 
 ## Next
 
@@ -57,6 +50,4 @@ Moving a site from LaRecipe 2? Read [Upgrade from v2](upgrade.md).
 
 ## Stay in the loop
 
-The form below is a custom React component this site adds to LaRecipe. [See how it is built](customize/custom-components.md).
-
-<Subscribe list="larecipe" />
+<Subscribe list="larecipe" showcase />

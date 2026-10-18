@@ -1,6 +1,6 @@
 ---
 title: Components
-description: The props of every built-in component, the live references, the gate blocks and this site's Subscribe component, with what each renders as server HTML and as agent Markdown.
+description: The props of every built-in component, the live references, the gate blocks and this site's own components, with what each renders as server HTML and as agent Markdown.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Markdown/Components/BuiltIn/**
   - vendor/larecipe/larecipe/src/Domains/Markdown/Components/BuiltInComponents.php
@@ -16,6 +16,8 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Access/Blocks/**
   - app/Providers/AppServiceProvider.php
   - resources/views/docs/subscribe.blade.php
+  - resources/views/docs/install-tabs.blade.php
+  - resources/views/docs/docs-flow.blade.php
 ---
 
 # Components
@@ -229,8 +231,27 @@ The newsletter form after every article on this site, registered in `app/Provide
 | Prop | Type | Required | Default | Allowed values | Description |
 | --- | --- | --- | --- | --- | --- |
 | `list` | string | no | `larecipe` | | The newsletter list to join. |
+| `showcase` | boolean | no | `false` | | Add a faded line under the form that links to how it is built. |
 
 - **HTML:** a plain `<form class="lr-subscribe" method="post" action="/newsletter/subscribe">` from `resources/views/docs/subscribe.blade.php`, in the page's language (English or Arabic), so the form works without JavaScript.
 - **Markdown:** one line, "Subscribe to the LaRecipe newsletter:" and the URL of the `/newsletter` page.
+
+### InstallTabs
+
+The install box on the [Introduction](../index.md), registered with `LaRecipe::component('InstallTabs')`. One tab gives a ready prompt to paste into an AI coding agent, the other the two commands to run by hand. It takes no props. **Island:** `InstallTabs`, in `resources/larecipe/InstallTabs.tsx`.
+
+- **HTML:** both panels, each under its label, from `resources/views/docs/install-tabs.blade.php`, in the page's language. With JavaScript they become two tabs in one box.
+- **Markdown:** the prompt in a `text` block, then the two commands in a `bash` block.
+
+### DocsFlow
+
+The animated diagram at the top of the [Introduction](../index.md), registered with `LaRecipe::component('DocsFlow')`: your code on one side, a docs page your agent updates in the middle, and agents and people reading on the other. **Island:** `DocsFlow`, in `resources/larecipe/DocsFlow.tsx`. It animates only while it is on screen, and stays still for readers who prefer reduced motion.
+
+| Prop | Type | Required | Default | Allowed values | Description |
+| --- | --- | --- | --- | --- | --- |
+| `caption` | string | no | | | An optional caption under the diagram. |
+
+- **HTML:** the same diagram at rest, from `resources/views/docs/docs-flow.blade.php`, in the page's language.
+- **Markdown:** the caption, then a short numbered list of the loop.
 
 See [custom components](../customize/custom-components.md) to add your own.

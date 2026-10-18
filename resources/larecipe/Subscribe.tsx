@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button, Input, request, useLaRecipe } from '@larecipe/ui'
+import { Button, Icon, Input, request, useLaRecipe } from '@larecipe/ui'
 
 /** The form's words in each language the site serves (lang/{en,ar}/newsletter.php on the server). */
 const STRINGS = {
@@ -13,6 +13,8 @@ const STRINGS = {
     doneTitle: 'You are on the list',
     doneBody: (email: string) => `The next release note goes to ${email}.`,
     failed: 'That did not work. Please try again.',
+    note: 'This form is a custom React component this site adds to LaRecipe.',
+    noteLink: 'See how it is built',
   },
   ar: {
     label: 'النشرة البريدية',
@@ -24,7 +26,14 @@ const STRINGS = {
     doneTitle: 'أنت الآن في القائمة',
     doneBody: (email: string) => `ستصل ملاحظة الإصدار التالي إلى ${email}.`,
     failed: 'لم ينجح ذلك. حاول مرة أخرى.',
+    note: 'هذا النموذج مكوّن React مخصّص يضيفه هذا الموقع إلى LaRecipe.',
+    noteLink: 'شاهد كيف بُني',
   },
+}
+
+/** Where "See how it is built" goes: the custom components guide, in the reader's language and version. */
+function guideUrl(base: string, locale: string, version: string): string {
+  return `${base.replace(/\/$/, '')}${locale === 'ar' ? '/ar' : ''}/${version}/customize/custom-components`
 }
 
 /**
@@ -37,8 +46,8 @@ const STRINGS = {
  * validation errors. The markup matches the server fallback in
  * resources/views/docs/subscribe.blade.php.
  */
-export function Subscribe({ list = 'larecipe' }: { list?: string }) {
-  const { page, locale } = useLaRecipe()
+export function Subscribe({ list = 'larecipe', showcase = false }: { list?: string; showcase?: boolean }) {
+  const { page, locale, boot, version } = useLaRecipe()
   const lang = locale.code === 'ar' ? 'ar' : 'en'
   const t = STRINGS[lang]
   const [email, setEmail] = useState('')
@@ -64,49 +73,66 @@ export function Subscribe({ list = 'larecipe' }: { list?: string }) {
     setStatus('idle')
   }
 
+  const note = showcase ? (
+    <p className="lr-subscribe-note">
+      {t.note} <a href={guideUrl(boot.urls.base, lang, version)}>{t.noteLink}</a>
+    </p>
+  ) : null
+
+  const head = (title: string, body: string) => (
+    <div className="lr-subscribe-head">
+      <span className="lr-subscribe-icon" aria-hidden="true">
+        <Icon name="Mail" size={18} />
+      </span>
+      <div className="lr-subscribe-copy">
+        <p className="lr-subscribe-label">{t.label}</p>
+        <p className="lr-subscribe-title">{title}</p>
+        <p className="lr-subscribe-body">{body}</p>
+      </div>
+    </div>
+  )
+
   if (status === 'done') {
     return (
-      <div className="lr-subscribe" data-lr-subscribe="react" role="status">
-        <div className="lr-subscribe-copy">
-          <p className="lr-subscribe-label">{t.label}</p>
-          <p className="lr-subscribe-title">{t.doneTitle}</p>
-          <p className="lr-subscribe-body">{t.doneBody(email)}</p>
+      <div className="lr-subscribe-wrap">
+        <div className="lr-subscribe" data-lr-subscribe="react" role="status">
+          {head(t.doneTitle, t.doneBody(email))}
         </div>
+        {note}
       </div>
     )
   }
 
   return (
-    <form className="lr-subscribe" data-lr-subscribe="react" onSubmit={submit}>
-      <div className="lr-subscribe-copy">
-        <p className="lr-subscribe-label">{t.label}</p>
-        <p className="lr-subscribe-title">{t.title}</p>
-        <p className="lr-subscribe-body">{t.body}</p>
-      </div>
-      <div className="lr-subscribe-row">
-        <label className="lr-subscribe-field">
-          <span className="lr-sr">{t.email}</span>
-          <Input
-            type="email"
-            name="email"
-            required
-            autoComplete="email"
-            placeholder="you@example.com"
-            dir="ltr"
-            value={email}
-            aria-invalid={error ? true : undefined}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </label>
-        <Button type="submit" variant="ink" loading={status === 'sending'}>
-          {status === 'sending' ? t.sending : t.submit}
-        </Button>
-      </div>
-      {error && (
-        <p className="lr-subscribe-error" role="alert">
-          {error}
-        </p>
-      )}
-    </form>
+    <div className="lr-subscribe-wrap">
+      <form className="lr-subscribe" data-lr-subscribe="react" onSubmit={submit}>
+        {head(t.title, t.body)}
+        <div className="lr-subscribe-row">
+          <label className="lr-subscribe-field">
+            <span className="lr-sr">{t.email}</span>
+            <Input
+              type="email"
+              name="email"
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              dir="ltr"
+              value={email}
+              aria-invalid={error ? true : undefined}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </label>
+          <Button type="submit" variant="primary" loading={status === 'sending'}>
+            {status === 'sending' ? t.sending : t.submit}
+          </Button>
+        </div>
+        {error && (
+          <p className="lr-subscribe-error" role="alert">
+            {error}
+          </p>
+        )}
+      </form>
+      {note}
+    </div>
   )
 }

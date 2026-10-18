@@ -119,7 +119,7 @@ Its CSS reads LaRecipe's [theme variables](theme.md), so the form follows a team
 
 Every custom component needs a definition in PHP, usually in `AppServiceProvider::boot()`. It names the component, describes its props, and gives its HTML fallback and its Markdown form:
 
-<<< @/app/Providers/AppServiceProvider.php
+<<< @/app/Providers/AppServiceProvider.php#subscribe
 
 `props()` describes each prop, `fallback()` returns the server HTML, `markdown()` returns what agents read, and `island()` lets React mount over the fallback. A tag with no PHP definition is an unknown component: it renders as escaped text, and `php artisan larecipe:validate` reports `components.unknown`. So a page can never ask the browser to run code your app did not register.
 

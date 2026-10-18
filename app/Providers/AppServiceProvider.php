@@ -145,6 +145,16 @@ class AppServiceProvider extends ServiceProvider
                 fn (array $feature) => "- [{$feature['title']}]({$feature['url']}): {$feature['line']}",
                 $this->features($component, markdown: true),
             )));
+
+        // The byline in the site footer, next to "Built with LaRecipe"
+        // (placed at the footer insert point in docs/larecipe.json). Server
+        // only, like FeaturedOn. Its words live in lang/{en,ar}/byline.php.
+        LaRecipe::component('Byline')
+            ->description('The site author\'s byline in the footer, next to the LaRecipe credit.')
+            ->fallback(fn (array $props, string $children, RenderedComponent $component) => view('docs.byline', [
+                'locale' => $this->pageLocale($component),
+            ]))
+            ->markdown(fn (array $props, string $children, RenderedComponent $component) => __('byline.by', [], $this->pageLocale($component)).' [@saleem-hadad](https://www.linkedin.com/in/saleemhadad)');
     }
 
     /** The page's language for this site's own strings: Arabic or English. */

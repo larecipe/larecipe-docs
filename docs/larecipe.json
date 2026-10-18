@@ -32,6 +32,9 @@
   "inserts": {
     "article.after": [
       "Subscribe"
+    ],
+    "footer": [
+      "Byline"
     ]
   },
   "agents": {

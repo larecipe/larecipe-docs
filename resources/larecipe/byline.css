@@ -1,0 +1,38 @@
+/*
+ * Byline: "· By @saleem-hadad" in the site footer, right after "Built with
+ * LaRecipe". Server only (resources/views/docs/byline.blade.php).
+ *
+ * The footer insert point normally takes a full row before the footer's
+ * links. Here it holds only the Byline, so it moves after the credit and
+ * pulls in from the footer's 24px gap to sit beside it.
+ */
+.lr-footer-inner > .lr-insert[data-lr-insert='footer'] {
+  flex-basis: auto;
+  order: 1;
+  margin-inline-start: -14px;
+}
+
+.lr-byline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  color: var(--lr-ink-muted);
+  font-size: 12.5px;
+}
+
+.lr-byline-dot {
+  margin-inline-end: 4px;
+  color: var(--lr-ink-faint);
+}
+
+.lr-byline-link {
+  color: var(--lr-ink-muted);
+  text-decoration: none;
+  border-radius: var(--lr-radius-xs);
+  transition: color var(--lr-duration-hover) var(--lr-ease);
+}
+
+.lr-byline-link:hover {
+  color: var(--lr-ink);
+}

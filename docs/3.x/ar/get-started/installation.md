@@ -8,6 +8,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Enums/Agent.php
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Services/IntroductionPage.php
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Services/ProjectFacts.php
+  - vendor/larecipe/larecipe/stubs/docs-migration.stub
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/InstallSkillsAction.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/LinkClaudeMdAction.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/DetectBoostAction.php
@@ -77,6 +78,8 @@ php artisan larecipe:install
 
 وهناك خياران آخران: `--no-index` يستبعد فهرس التوثيق من `AGENTS.md`، و `--dry-run` يعرض كل ملف سيغيّره المثبّت من دون أن يكتب شيئًا.
 
+يجب أن يكون مجلد التوثيق داخل تطبيقك. ويرفض المثبّت قيمة `--path` إن كانت المجلد الجذر للتطبيق نفسه، أو مجلدًا خارجه.
+
 يكتشف المثبّت الوكلاء بطريقتين: أداة سطر أوامر موجودة في `PATH` (`claude` و `codex` و `cursor-agent` و `gemini` و `copilot`)، أو ملفات الوكيل داخل المشروع (`.claude` و `CLAUDE.md` و `.codex` و `.cursor` و `.gemini` و `GEMINI.md` و `.github/copilot-instructions.md`). ولا يكتب الإعدادات إلا للوكلاء الذين تستخدمهم.
 
 ## ما الذي يكتبه
@@ -85,6 +88,7 @@ php artisan larecipe:install
 | --- | --- |
 | `docs/larecipe.json` | [ملف التعريف](/3.x/reference/manifest) لمجموعة التوثيق: الاسم من `APP_NAME` ومؤشّر `$schema`. |
 | `docs/index.md` | صفحة المقدمة، وفيها `sources:` يشير إلى `README.md` و `composer.json`، فتظهر قديمة حين يتغيّران. يُتخطّى إن وُجد `docs/index.md` أو `docs/README.md` أو `docs/introduction.md`. |
+| `database/migrations/docs/{timestamp}_docs_introduction.php` | مع `--driver=database` فقط، بدلًا من الملفين السابقين: ترحيل توثيق يمنح المجموعة اسمها وصفحة المقدمة نفسها. |
 | `config/larecipe.php` | يُنشر فقط حين تختار غير الإعدادات الافتراضية (مشغّل قاعدة البيانات، أو مجلدًا آخر، أو المراجعة `auto`). |
 | `AGENTS.md` | كتلة LaRecipe محدّدة بعلامات: ما يجب فعله بالتوثيق قبل كل push، وفهرس مختصر لصفحاتك. راجع [تعليمات الوكلاء](/3.x/keeping-current/agent-instructions). |
 | `CLAUDE.md` | السطر `@AGENTS.md`، ولا يُضاف إلا بموافقتك، ليقرأ Claude Code التعليمات نفسها. |
@@ -122,9 +126,9 @@ php artisan larecipe:install --no-interaction \
 
 ## مع مشغّل قاعدة البيانات
 
-يحفظ الخيار `--driver=database` التوثيق في قاعدة بياناتك، مع واجهة إدارة وترحيلات توثيق (docs migrations) للتغييرات التي تجري في طلبات الدمج. لا يكتب المثبّت مجلد `docs/` في هذه الحالة، بل:
+يحفظ الخيار `--driver=database` التوثيق في قاعدة بياناتك، مع واجهة إدارة وترحيلات توثيق (docs migrations) للتغييرات التي تجري في طلبات الدمج. لا يكتب المثبّت مجلد `docs/` في هذه الحالة، بل يكتب [ترحيل توثيق](../sources/docs-migrations.md) أوليًا هو `database/migrations/docs/{timestamp}_docs_introduction.php`، فيه اسم المجموعة وصفحة المقدمة نفسها. ولا يكتب ترحيلًا ثانيًا إن شغّلته مرة أخرى. بعد ذلك:
 
-1. شغّل `php artisan migrate`. تُحمَّل الجداول من الحزمة (وانشرها بالأمر `php artisan vendor:publish --tag=larecipe-migrations` إن أردت تخصيصها).
+1. شغّل `php artisan migrate`. ينشئ جداول LaRecipe، وهي تُحمَّل من الحزمة (وانشرها بالأمر `php artisan vendor:publish --tag=larecipe-migrations` إن أردت تخصيصها)، ثم يطبّق الترحيل الأولي، فيفتح `/docs` على صفحة المقدمة مباشرة.
 2. استخدم مخزن ذاكرة مؤقتة دائمًا. تعمل مجموعة قاعدة البيانات دائمًا خلف ذاكرة مؤقتة، ويحذّرك المثبّت إن كان المخزن `array` أو `null`. اضبط `LARECIPE_CACHE_STORE` على `redis` أو `database` أو `file`.
 
 اقرأ صفحة [مصدر قاعدة البيانات](/3.x/sources/database) قبل أن تختاره. تبدأ معظم الفرق بالمستودع.

@@ -8,6 +8,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Enums/Agent.php
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Services/IntroductionPage.php
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Services/ProjectFacts.php
+  - vendor/larecipe/larecipe/stubs/docs-migration.stub
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/InstallSkillsAction.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/LinkClaudeMdAction.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/DetectBoostAction.php
@@ -77,6 +78,8 @@ Every question has a flag, so you can answer up front or run the installer in a 
 
 Two more flags help: `--no-index` leaves the docs index out of `AGENTS.md`, and `--dry-run` shows every file the installer would change without writing anything.
 
+The docs folder must be inside your app. The installer refuses a `--path` that is the app's root folder itself, or a folder outside it.
+
 The installer detects agents in two ways: a CLI on your `PATH` (`claude`, `codex`, `cursor-agent`, `gemini`, `copilot`), or the agent's files in the project (`.claude`, `CLAUDE.md`, `.codex`, `.cursor`, `.gemini`, `GEMINI.md`, `.github/copilot-instructions.md`). It only writes config for agents you use.
 
 ## What it writes
@@ -85,6 +88,7 @@ The installer detects agents in two ways: a CLI on your `PATH` (`claude`, `codex
 | --- | --- |
 | `docs/larecipe.json` | The doc set's [manifest](../reference/manifest.md): the name from `APP_NAME` and the `$schema` pointer. |
 | `docs/index.md` | The Introduction page, with `sources:` pointing at `README.md` and `composer.json`, so it shows up as stale when they change. Skipped when `docs/index.md`, `docs/README.md` or `docs/introduction.md` exists. |
+| `database/migrations/docs/{timestamp}_docs_introduction.php` | With `--driver=database` only, in place of the two files above: a docs migration that gives the set its name and the same Introduction page. |
 | `config/larecipe.php` | Published only when you pick something other than the defaults (the database driver, another folder, or `auto` review). |
 | `AGENTS.md` | A marked LaRecipe block: what to do with the docs before every push, and a compact index of your pages. See [agent instructions](../keeping-current/agent-instructions.md). |
 | `CLAUDE.md` | `@AGENTS.md`, added only with your consent, so Claude Code reads the same instructions. |
@@ -122,9 +126,9 @@ When `laravel/boost` is installed (in `vendor/` or `composer.json`), Boost manag
 
 ## With the database driver
 
-`--driver=database` keeps the docs in your database, with an admin UI and docs migrations for changes made in pull requests. The installer writes no `docs/` folder in this case. Instead:
+`--driver=database` keeps the docs in your database, with an admin UI and docs migrations for changes made in pull requests. The installer writes no `docs/` folder in this case. It writes a starter [docs migration](../sources/docs-migrations.md) instead, `database/migrations/docs/{timestamp}_docs_introduction.php`, with the set's name and the same Introduction page. Running the installer again never writes a second one. Then:
 
-1. Run `php artisan migrate`. The tables load from the package (publish them with `php artisan vendor:publish --tag=larecipe-migrations` to customize them).
+1. Run `php artisan migrate`. It creates LaRecipe's tables, which load from the package (publish them with `php artisan vendor:publish --tag=larecipe-migrations` to customize them), and applies the starter migration, so `/docs` opens on the Introduction right away.
 2. Use a persistent cache store. A database set always runs behind a cache, and the installer warns when the store is `array` or `null`. Set `LARECIPE_CACHE_STORE` to `redis`, `database` or `file`.
 
 Read [the database source](../sources/database.md) before you choose it. Most teams start with the repository.

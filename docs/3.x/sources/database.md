@@ -76,7 +76,7 @@ Move an existing repository set with `larecipe:source:move repository database`,
 </Step>
 </Steps>
 
-`php artisan larecipe:install --driver=database` sets this up for a new app. See [installation](../get-started/installation.md).
+`php artisan larecipe:install --driver=database` sets this up for a new app, with a starter docs migration (`database/migrations/docs/{timestamp}_docs_introduction.php`) that gives the set its name and an Introduction page, so `/docs` works right after `php artisan migrate`. See [installation](../get-started/installation.md).
 
 ## The tables
 

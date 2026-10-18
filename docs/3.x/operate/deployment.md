@@ -66,7 +66,7 @@ The "Updated" line under each title, with its author, agent and pull request, co
 
 Run it where the full history is. A shallow clone gives every page the same last commit, and without a compiled file a page falls back to its file's modification time, which after a fresh checkout is the time of the deploy. If you build an artifact in CI and ship it, run the command in CI and ship `bootstrap/cache/larecipe/` with it.
 
-`php artisan optimize` does not compile provenance, and `php artisan optimize:clear` deletes it, so run this step after any `optimize:clear`.
+`php artisan optimize` does not compile provenance, so keep this step in the deploy. `php artisan optimize:clear` leaves the compiled file alone.
 
 </Step>
 
@@ -81,6 +81,7 @@ LaRecipe registers `larecipe:optimize` with Laravel's `optimize`, so this one co
 - **Route caching** includes LaRecipe's routes. Run `optimize` again after you change a set's `route.prefix` or `route.domain`.
 - **Run it against the production cache store.** `larecipe:optimize` writes into the store your app uses for LaRecipe (`larecipe.cache.store`, or your default store). On a build machine with a different store, the compiled pages land where production never reads them.
 - **Zero-downtime deploys** are safe: cache keys come from page content, so compiling a new release never disturbs the release that is still serving.
+- **After upgrading LaRecipe**, the cache starts cold: every cache key carries a format version, and a new release never reads what an older one wrote. This step warms it again before the first reader.
 
 </Step>
 

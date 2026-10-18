@@ -13,6 +13,9 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Sources/Drivers/RepositorySource.php
   - vendor/larecipe/larecipe/src/Domains/Sources/Listeners/WarmChangedSet.php
   - vendor/larecipe/larecipe/src/Domains/References/Actions/ReferencesFingerprintAction.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Controllers/SitemapController.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Support/ResponseHeaders.php
+  - vendor/larecipe/larecipe/src/Support/CacheFormat.php
   - vendor/larecipe/larecipe/config/larecipe.php
 ---
 
@@ -27,7 +30,7 @@ LaRecipe caches by content, not by time. A rendered page is stored under a key m
 | Rendered articles (HTML, table of contents, components) | the renderer version, the page (set, version, locale, path), its content hash, the Markdown environment version and the variant (the set's mount, plus the audience when gate blocks apply) | the page, LaRecipe, a component definition, a Markdown extension or the code theme changes |
 | Page lists and navigation | the set, version and locale, plus the source's fingerprint | any file in the version changes |
 | Search records | the set, version and locale, plus the source's fingerprint | any file in the version changes |
-| The sitemap | the fingerprints of every version and the set's URL | any file in the set changes |
+| The sitemap | the fingerprints of every version and the set's URL, for your app's own host (`APP_URL`) or the set's `route.domain` only | any file in the set changes |
 
 The Markdown environment version covers the component registry, so registering or changing a component with `LaRecipe::component()` renders every page again on the next request.
 
@@ -37,6 +40,10 @@ Two kinds of dependencies sit outside a page's content hash, and LaRecipe tracks
 - **Live references.** A page that uses `<Route>`, `<Artisan>`, `<Model>` or `<Event>` is cached under the fingerprint of the part of the app it reads. Rename a route and exactly the pages that show it render again. When the routes are cached with `php artisan route:cache`, the route fingerprint is the hash of the route cache file. See [live references](../writing/live-references.md).
 
 Renders with errors (an unknown component, a missing snippet, a reference that no longer resolves) are never cached, so a fix shows up on the next request. Warnings, such as a video placeholder, do not block caching.
+
+Every cache key LaRecipe writes starts with a format version (`larecipe:v2:`), and rendered pages also carry the renderer's version. A release that changes what LaRecipe stores, or how it renders, moves them, so entries an older release wrote are never read: right after you upgrade LaRecipe, the cache starts cold and pages render again. Run `php artisan optimize` on that deploy, as you already do, and readers get warm pages from the first request. An entry in a shape LaRecipe does not expect is read as a miss, never an error.
+
+`PageRendered` fires whenever an article is rendered because the cache did not have it, and on every request for a Markdown twin, if you want to follow what is rendered. See the [events reference](../reference/events.md#pagerendered).
 
 ## The cache store
 
@@ -51,7 +58,7 @@ LaRecipe uses your app's default cache store unless you name another one:
 
 Any persistent store works: `database`, `file`, `redis`, `memcached`. A repository set reads its files from disk, so a cold cache costs render time, not correctness. A database set always runs behind this store, and `larecipe:validate` reports an error when a database set uses the `array` or `null` store outside tests.
 
-Everything LaRecipe caches is plain data (strings and arrays), so it works with Laravel 13's default `cache.serializable_classes => false`.
+Everything LaRecipe caches is plain data (strings and arrays), so it works with Laravel 13's default `cache.serializable_classes => false`, with no cache configuration in your app.
 
 ## Compile on deploy
 
@@ -75,12 +82,11 @@ INFO LaRecipe docs compiled.
 
 The list of what it compiled is written to `bootstrap/cache/larecipe/optimized.php`. Database sets are skipped: they are cached as they publish.
 
-`larecipe:clear` forgets what was compiled, and `php artisan optimize:clear` runs it.
+`larecipe:clear` forgets what was compiled: the rendered pages and search records listed in `optimized.php`, then that list. `php artisan optimize:clear` runs it.
 
 <Artisan command="larecipe:clear" />
 
-> [!NOTE]
-> `larecipe:clear` removes the whole `bootstrap/cache/larecipe/` folder. That folder also holds the compiled provenance index, the live reference snapshot and the compiled hook patterns, so after `optimize:clear` run `larecipe:provenance` again, and `larecipe:agents` if you changed `hooks.push_commands`.
+It deletes `bootstrap/cache/larecipe/optimized.php` and nothing else in that folder, so the compiled provenance index, the live reference snapshot and the compiled hook patterns survive `optimize:clear`.
 
 ## Provenance
 
@@ -104,6 +110,10 @@ After `php artisan migrate` applies new docs migrations on deploy, warm the cach
 <Artisan command="larecipe:cache:warm" />
 
 Without `--set`, it warms every database set. See [the database source](../sources/database.md).
+
+## Responses and shared caches
+
+Each response says how a browser, a proxy or a CDN may keep it. A public page served to a guest is cacheable for everyone. A response for a signed-in reader is personal in every format (HTML, the JSON the UI fetches, and Markdown), because its navigation can list pages guests never see: it goes out `private`, with `Vary: Accept, Cookie` and an `ETag` of its own, so a shared cache never hands it to anyone else. [Gate blocks and private docs](../writing/gate-blocks.md#response-headers) lists every case.
 
 ## UI assets
 

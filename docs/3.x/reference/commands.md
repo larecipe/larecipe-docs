@@ -171,7 +171,7 @@ Compiles page lists, navigation, every rendered page and the search records of r
 
 ### larecipe:clear
 
-Forgets what `larecipe:optimize` compiled. It runs as part of `php artisan optimize:clear`.
+Forgets what `larecipe:optimize` compiled: the rendered pages and search records it listed, then its list, `bootstrap/cache/larecipe/optimized.php`. The provenance index, the reference snapshot and the hook patterns in the same folder stay. It runs as part of `php artisan optimize:clear`.
 
 <Artisan command="larecipe:clear" />
 

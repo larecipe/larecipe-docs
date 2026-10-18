@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Http\Controllers\SubscribeController;
-use App\Support\LaRecipeCommands;
 use Illuminate\Support\ServiceProvider;
 use LaRecipe\Domains\Markdown\Components\RenderedComponent;
 use LaRecipe\Facades\LaRecipe;
@@ -36,10 +35,5 @@ class AppServiceProvider extends ServiceProvider
             ]))
             ->markdown(fn () => 'Subscribe to the LaRecipe newsletter: '.url('/newsletter'))
             ->island();
-
-        // Let <Artisan command="larecipe:..." /> read LaRecipe's own commands on the web.
-        if (! $this->app->runningInConsole()) {
-            LaRecipeCommands::registerForWeb();
-        }
     }
 }

@@ -6,7 +6,6 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Delivery/Services/RenderCache.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Services/CodeMentions.php
   - vendor/larecipe/larecipe/config/larecipe.php
-  - app/Support/LaRecipeCommands.php
 ---
 
 # Live references
@@ -41,9 +40,6 @@ The event LaRecipe dispatches for every page view, for your own analytics:
 <Event name="PageViewed" />
 
 Agents get the same facts. The Markdown twin of this page ([live-references.md](https://larecipe.saleem.dev/3.x/writing/live-references.md)) renders each reference as a bold line followed by its tables, with the command's usage in a `bash` block.
-
-> [!NOTE]
-> LaRecipe registers its own artisan commands only when the app runs in the console. To show them on web pages, this site lists them for the console kernel on web requests too, in `app/Support/LaRecipeCommands.php`. Your app's own commands need nothing: `<Artisan>` finds them as they are.
 
 ## Write a reference
 

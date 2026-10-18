@@ -14,7 +14,6 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Access/Commands/**
   - vendor/larecipe/larecipe/src/Domains/References/Commands/**
   - vendor/larecipe/larecipe/src/LaRecipeServiceProvider.php
-  - app/Support/LaRecipeCommands.php
 ---
 
 # Artisan commands

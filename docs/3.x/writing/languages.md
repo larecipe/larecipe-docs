@@ -84,7 +84,9 @@ The language switcher relies on this: switching language keeps you on the same p
 
 ## Navigation in each language
 
-The sidebar of a language lists every page of the original, in the same order, with the translated title wherever a translation exists. It reads the version's `navigation.json` unless the language folder has its own (`docs/3.x/ar/navigation.json`), which can give the groups translated labels or a different order. `larecipe:validate` checks a language's own `navigation.json` against the pages written in that language and reports every entry without a translation, so add one when the language is fully translated, and borrow the version's until then. In the same way, it reports a link from a translated page to a page that exists only in the original as broken, although readers reach the fallback: link those pages by their original URL (`/3.x/agents/mcp`) until they are translated.
+The sidebar of a language lists every page of the original, in the same order, with the translated title wherever a translation exists. It reads the version's `navigation.json` unless the language folder has its own (`docs/3.x/ar/navigation.json`), which can give the groups translated labels or a different order. A language's own file lists the same pages as the version's: entries for pages not translated yet show the original, as readers get it. This site's Arabic sidebar works that way, with Arabic group labels over a mix of translated and English pages.
+
+Link between pages the usual way, with relative `.md` links, from a translation too: a link to a page that exists only in the original reaches its fallback in the reader's language. `larecipe:validate` follows the same rule as the reader, so neither a navigation entry nor a link to an untranslated page is reported.
 
 ## Right to left
 

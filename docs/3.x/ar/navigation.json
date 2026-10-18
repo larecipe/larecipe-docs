@@ -1,0 +1,77 @@
+{
+  "$schema": "https://larecipe.saleem.dev/schemas/3.x/navigation.json",
+  "groups": [
+    { "group": "مقدمة", "pages": [{ "page": "index", "label": "المقدمة" }] },
+    {
+      "group": "ابدأ من هنا",
+      "pages": [
+        "get-started/installation",
+        "get-started/your-first-docs",
+        "get-started/configuration",
+        "get-started/project-structure"
+      ]
+    },
+    {
+      "group": "الكتابة",
+      "pages": [
+        "writing/markdown",
+        "writing/components",
+        "writing/code-blocks",
+        "writing/navigation",
+        "writing/versions",
+        "writing/languages",
+        "writing/live-references",
+        "writing/gate-blocks"
+      ]
+    },
+    {
+      "group": "إبقاء التوثيق محدّثًا",
+      "pages": [
+        "keeping-current/how-it-works",
+        "keeping-current/agent-instructions",
+        "keeping-current/pre-push-hook",
+        "keeping-current/skills",
+        "keeping-current/review-modes",
+        "keeping-current/sync",
+        "keeping-current/ci-check"
+      ]
+    },
+    {
+      "group": "للوكلاء",
+      "pages": ["agents/surfaces", "agents/mcp", "agents/ask-ai"]
+    },
+    {
+      "group": "مصادر التوثيق",
+      "pages": ["sources/repository", "sources/database", "sources/docs-migrations", "sources/switching"]
+    },
+    {
+      "group": "التخصيص",
+      "pages": ["customize/theme", "customize/custom-components", "customize/insert-points", "customize/eject"]
+    },
+    {
+      "group": "التشغيل",
+      "pages": [
+        "operate/search",
+        "operate/analytics",
+        "operate/caching",
+        "operate/static-export",
+        "operate/validation",
+        "operate/deployment",
+        "operate/security"
+      ]
+    },
+    { "group": "الترقية", "pages": ["upgrade"] },
+    {
+      "group": "المرجع",
+      "pages": [
+        "reference/commands",
+        "reference/configuration",
+        "reference/frontmatter",
+        "reference/manifest",
+        "reference/components",
+        "reference/events",
+        "reference/mcp-tools"
+      ]
+    }
+  ]
+}

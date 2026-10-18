@@ -57,7 +57,7 @@ php artisan larecipe:install
 
 </Steps>
 
-هذا موقع يعمل. وإن أردت أن يكتب وكيل البرمجة توثيقًا أوليًا حقيقيًا من الكود، فاقرأ [توثيقك الأول](/3.x/get-started/your-first-docs).
+هذا موقع يعمل. وإن أردت أن يكتب وكيل البرمجة توثيقًا أوليًا حقيقيًا من الكود، فاقرأ [توثيقك الأول](your-first-docs.md).
 
 ## ما الذي يسأل عنه المثبّت
 
@@ -86,17 +86,17 @@ php artisan larecipe:install
 
 | الملف | ما هو |
 | --- | --- |
-| `docs/larecipe.json` | [ملف التعريف](/3.x/reference/manifest) لمجموعة التوثيق: الاسم من `APP_NAME` ومؤشّر `$schema`. |
+| `docs/larecipe.json` | [ملف التعريف](../reference/manifest.md) لمجموعة التوثيق: الاسم من `APP_NAME` ومؤشّر `$schema`. |
 | `docs/index.md` | صفحة المقدمة، وفيها `sources:` يشير إلى `README.md` و `composer.json`، فتظهر قديمة حين يتغيّران. يُتخطّى إن وُجد `docs/index.md` أو `docs/README.md` أو `docs/introduction.md`. |
 | `database/migrations/docs/{timestamp}_docs_introduction.php` | مع `--driver=database` فقط، بدلًا من الملفين السابقين: ترحيل توثيق يمنح المجموعة اسمها وصفحة المقدمة نفسها. |
 | `config/larecipe.php` | يُنشر فقط حين تختار غير الإعدادات الافتراضية (مشغّل قاعدة البيانات، أو مجلدًا آخر، أو المراجعة `auto`). |
-| `AGENTS.md` | كتلة LaRecipe محدّدة بعلامات: ما يجب فعله بالتوثيق قبل كل push، وفهرس مختصر لصفحاتك. راجع [تعليمات الوكلاء](/3.x/keeping-current/agent-instructions). |
+| `AGENTS.md` | كتلة LaRecipe محدّدة بعلامات: ما يجب فعله بالتوثيق قبل كل push، وفهرس مختصر لصفحاتك. راجع [تعليمات الوكلاء](../keeping-current/agent-instructions.md). |
 | `CLAUDE.md` | السطر `@AGENTS.md`، ولا يُضاف إلا بموافقتك، ليقرأ Claude Code التعليمات نفسها. |
-| `.claude/skills/` و `.agents/skills/` | مهارات LaRecipe الأربع. راجع [المهارات](/3.x/keeping-current/skills). |
+| `.claude/skills/` و `.agents/skills/` | مهارات LaRecipe الأربع. راجع [المهارات](../keeping-current/skills.md). |
 | `.mcp.json` و `.codex/config.toml` و `.cursor/mcp.json` و `.gemini/settings.json` و `.vscode/mcp.json` | خادم MCP المحلي `larecipe` (`php artisan larecipe:mcp`)، في الملف الذي يقرؤه كل وكيل مكتشَف. |
-| `.claude/settings.json` و `.codex/hooks.json` | خطّافا pre-push و SessionStart لـ Claude Code و Codex. راجع [خطّاف pre-push](/3.x/keeping-current/pre-push-hook). |
+| `.claude/settings.json` و `.codex/hooks.json` | خطّافا pre-push و SessionStart لـ Claude Code و Codex. راجع [خطّاف pre-push](../keeping-current/pre-push-hook.md). |
 | `.git/hooks/pre-push` | مع `--git-hook` فقط. ويحترم الإعداد `core.hooksPath`. |
-| `.github/workflows/larecipe-docs-check.yml` | مع `--ci` فقط. راجع [فحص CI الاختياري](/3.x/keeping-current/ci-check). |
+| `.github/workflows/larecipe-docs-check.yml` | مع `--ci` فقط. راجع [فحص CI الاختياري](../keeping-current/ci-check.md). |
 | `composer.json` | الأمر `@php artisan larecipe:agents --ansi` في `post-update-cmd`، بموافقتك فقط. |
 | `bootstrap/cache/larecipe/hooks.php` | أنماط push المُجمَّعة التي يقرؤها الخطّاف، كي لا تُشغِّل أوامر الطرفية العادية تطبيق Laravel. لا يُضاف إلى git. |
 
@@ -131,14 +131,14 @@ php artisan larecipe:install --no-interaction \
 1. شغّل `php artisan migrate`. ينشئ جداول LaRecipe، وهي تُحمَّل من الحزمة (وانشرها بالأمر `php artisan vendor:publish --tag=larecipe-migrations` إن أردت تخصيصها)، ثم يطبّق الترحيل الأولي، فيفتح `/docs` على صفحة المقدمة مباشرة.
 2. استخدم مخزن ذاكرة مؤقتة دائمًا. تعمل مجموعة قاعدة البيانات دائمًا خلف ذاكرة مؤقتة، ويحذّرك المثبّت إن كان المخزن `array` أو `null`. اضبط `LARECIPE_CACHE_STORE` على `redis` أو `database` أو `file`.
 
-اقرأ صفحة [مصدر قاعدة البيانات](/3.x/sources/database) قبل أن تختاره. تبدأ معظم الفرق بالمستودع.
+اقرأ صفحة [مصدر قاعدة البيانات](../sources/database.md) قبل أن تختاره. تبدأ معظم الفرق بالمستودع.
 
 ## Codex و Ask AI
 
 خطوتان يعرضهما المثبّت حين تنطبقان:
 
 - **Codex**: اجعل المشروع موثوقًا في `~/.codex/config.toml` ووافق على خطّافات LaRecipe عبر `/hooks`، ليحمّلها Codex.
-- **Ask AI** يحتاج إلى الحزمة `laravel/ai` ومفتاح مزوّد خاص بك: `composer require laravel/ai`. وكل ما عدا ذلك يعمل من دونه. راجع [Ask AI](/3.x/agents/ask-ai).
+- **Ask AI** يحتاج إلى الحزمة `laravel/ai` ومفتاح مزوّد خاص بك: `composer require laravel/ai`. وكل ما عدا ذلك يعمل من دونه. راجع [Ask AI](../agents/ask-ai.md).
 
 ## كل الخيارات
 
@@ -148,6 +148,6 @@ php artisan larecipe:install --no-interaction \
 
 ## التالي
 
-- [توثيقك الأول](/3.x/get-started/your-first-docs): دع وكيل البرمجة يكتب صفحات أولية من تطبيقك.
-- [الإعدادات](/3.x/get-started/configuration): المسارات والوصول ومجموعات التوثيق وبقية `config/larecipe.php`.
-- [بنية المشروع](/3.x/get-started/project-structure): ما الذي يوضع وأين في `docs/`.
+- [توثيقك الأول](your-first-docs.md): دع وكيل البرمجة يكتب صفحات أولية من تطبيقك.
+- [الإعدادات](configuration.md): المسارات والوصول ومجموعات التوثيق وبقية `config/larecipe.php`.
+- [بنية المشروع](project-structure.md): ما الذي يوضع وأين في `docs/`.

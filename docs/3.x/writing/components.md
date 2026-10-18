@@ -5,6 +5,9 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Markdown/Components/**
   - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/ComponentStartParser.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/ComponentRenderer.php
+  - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/UndeclaredPropsFilter.php
+  - vendor/larecipe/larecipe/ui/src/islands/Video.tsx
+  - vendor/larecipe/larecipe/resources/lang/en/ui.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/DirectiveStartParser.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Services/DocumentTransformer.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Services/AgentMarkdownRenderer.php
@@ -20,7 +23,7 @@ Each section below shows the component live, then the source that produced it. T
 
 A component is a PascalCase tag on its own line, with a blank line before and after. Content inside it is Markdown. A component without content closes itself (`<Video ... />`), and a short one can sit on a single line (`<Badge tone="success">Stable</Badge>`). Props are quoted strings; a bare prop means true and JSON goes in braces (`cols={3}`). Each component also has a `:::directive` form, described in [Markdown](markdown.md#directives).
 
-An unknown tag, or a typo such as `<Calout>`, renders as escaped text and never as HTML. `php artisan larecipe:validate` reports it as `components.unknown`, and a missing or invalid prop as `components.props`.
+An unknown tag, or a typo such as `<Calout>`, renders as escaped text and never as HTML. `php artisan larecipe:validate` reports it as `components.unknown`, and a missing or invalid prop as `components.props`. A built-in component ignores props it does not declare, so a misspelled prop has no effect: check the [components reference](../reference/components.md) for the exact names.
 
 ## Callout
 
@@ -366,9 +369,9 @@ Without JavaScript it is a `<figure>` with a `<figcaption>`. Agents read the med
 
 ## Video
 
-A video that loads only when the reader asks for it. `src` takes a video file, or a YouTube or Vimeo URL; `poster`, `title` and `duration` fill the frame and its caption. A video file plays in a native `<video>` element. A YouTube or Vimeo URL renders as a "Watch on YouTube" link until the reader starts it, so nothing from a third party loads with the page.
+A video that loads only when the reader asks for it. `src` takes a video file, or a YouTube or Vimeo URL; `poster`, `title` and `duration` fill the frame and its caption. A video file plays in a native `<video>` element. A YouTube or Vimeo URL renders as a "Watch on YouTube" link until the reader starts it, so nothing from a third party loads with the page. LaRecipe works out the player's address from `src` itself, so a page cannot point the player anywhere else.
 
-Until a recording exists, leave out `src` and set `placeholder`. The frame says what is coming instead of showing an empty box, and `php artisan larecipe:validate` keeps reminding you with a `media.placeholder` warning.
+Until a recording exists, leave out `src`. The frame says what is coming instead of showing an empty box: your `placeholder` text, or "Demo video coming soon" in the page's language when you set none. `php artisan larecipe:validate` keeps reminding you with a `media.placeholder` warning.
 
 <Video placeholder="An example placeholder: this frame stays until the recording exists" />
 

@@ -146,6 +146,8 @@ Every list in the file holds the same four kinds of entry:
 | A group | `{ "group": "Billing", "collapsed": true, "pages": [...] }` | A labelled group; its `pages` can hold any entry, groups included |
 | A link | `{ "label": "Changelog", "href": "https://example.com/changelog" }` | A link to anywhere, marked as external |
 
+A link's `href` must be an `http`, `https` or `mailto` URL, or a path on your site. Any other link, such as `javascript:` or a protocol-relative `//host`, is left out of every page and reported as `links.unsafe`.
+
 A page's `label` changes only its sidebar entry; the page keeps its own title everywhere else. A group may be named with `label` instead of `group`.
 
 `icon` takes a [Lucide](https://lucide.dev/icons/) icon name on pages, groups, links and tabs. LaRecipe passes it to the reader UI, but the default sidebar does not draw navigation icons yet.
@@ -260,6 +262,7 @@ To redirect URLs outside the docs, or a whole old prefix, use your app's routes.
 | `navigation.schema` | error | `navigation.json` is not valid JSON, or not a shape the schema allows |
 | `navigation.missing-page` | error | An entry names a page that does not exist, with the closest path as a fix |
 | `pages.orphan` | warning | The version has a `navigation.json`, and a page is neither in it nor `hidden` |
+| `links.unsafe` | error | A link entry whose `href` is not `http`, `https`, `mailto` or a path on your site |
 
 Derived navigation lists every page by construction, so it never has orphans.
 

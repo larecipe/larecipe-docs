@@ -39,7 +39,7 @@ List the versions in the set's [manifest](../reference/manifest.md):
 | `label` | the `id` | What the version switcher shows. |
 | `status` | `current` | `current`, `maintained`, `deprecated` or `archived`. `llms.txt` describes each version by it, so agents know which one to prefer. |
 | `default` | `false` | The version readers land on. When no version says `true`, the first one is the default. |
-| `visibility` | `public` | `private` versions need the `viewLarecipe` gate on every surface. See [gate blocks and private docs](gate-blocks.md). |
+| `visibility` | `public` | `private` versions need the `viewLarecipe` gate on every surface, and any value other than `public` counts as private. See [gate blocks and private docs](gate-blocks.md). |
 
 A version can also be written as a plain string (`"versions": ["3.x", "2.x"]`) when it needs nothing but an id.
 

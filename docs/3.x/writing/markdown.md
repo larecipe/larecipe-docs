@@ -7,6 +7,9 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Markdown/Services/DocumentProcessor.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Services/Slugger.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Services/PageRenderer.php
+  - vendor/larecipe/larecipe/src/Domains/Markdown/Services/PageSanitizer.php
+  - vendor/larecipe/larecipe/src/Domains/Markdown/Enums/HtmlInput.php
+  - vendor/larecipe/larecipe/src/Domains/Markdown/MarkdownServiceProvider.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/**
   - vendor/larecipe/larecipe/src/Domains/Content/Services/FrontmatterParser.php
   - vendor/larecipe/larecipe/src/Domains/Content/DTOs/Page.php
@@ -166,7 +169,22 @@ Run `php artisan optimize` so the first reader never waits.
 
 ## Raw HTML
 
-Raw HTML is escaped: `<div>` or `<details>` in a page shows up as text, never as markup. Component tags are recognized by LaRecipe's own parser, which is why they work while HTML does not. This keeps every page safe to render and keeps the agent Markdown clean. When you need something HTML would give you, there is usually a component for it ([Accordion](components.md) for `<details>`, [Frame](components.md) for a figure), or you can [build one](../customize/custom-components.md).
+Raw HTML is escaped by default: `<div>` or `<details>` in a page shows up as text, never as markup. Component tags are recognized by LaRecipe's own parser, which is why they work while HTML does not. This keeps every page safe to render and keeps the agent Markdown clean. When you need something HTML would give you, there is usually a component for it ([Accordion](components.md) for `<details>`, [Frame](components.md) for a figure), or you can [build one](../customize/custom-components.md).
+
+HTML comments are the exception: `<!-- a note for the next writer -->` is removed from the page, its Markdown twin and search, so you can leave notes in the source. Inside inline code and code blocks, comments stay as written.
+
+A repository set whose pages need raw HTML can allow it with `html_input` in its entry in `config/larecipe.php`:
+
+```php title="config/larecipe.php"
+'sets' => [
+    'docs' => [
+        // route, source and access as usual
+        'html_input' => 'allow',
+    ],
+],
+```
+
+Raw HTML then passes as written, except the tags GitHub filters, such as `<script>`, `<iframe>` and `<style>`, which stay escaped. Its pages are reviewed in git with your code, so that choice is yours. A database set always escapes raw HTML and also runs every page it renders through an HTML sanitizer, because people editing in the admin UI may be less trusted than your codebase; `html_input` has no effect there.
 
 LaRecipe 2 compiled Blade inside Markdown. Version 3 does not evaluate Blade or PHP in a page, on any source.
 

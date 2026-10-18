@@ -48,6 +48,7 @@ The tables follow the order of the file. "Per set" says whether a doc set can gi
 | `sets.{key}.source.cache` | string or null | not set | Database sets: the cache store in front of the database. Falls back to `cache.store`, then the app's default store. `array` and `null` stores are refused outside tests. |
 | `sets.{key}.source.disk` | string or null | not set | Database sets: the filesystem disk for assets. `null` uses the default disk. |
 | `sets.{key}.access.mode` | string | `public` | `public`: anyone. `auth`: any signed-in user. `gate`: every page is checked by the `viewLarecipe` gate. Private versions and pages need `viewLarecipe` in every mode. |
+| `sets.{key}.html_input` | string | `escape` | `escape`: raw HTML in Markdown shows as text. `allow`, for a repository set only: raw HTML passes as written, except the tags GitHub filters (`<script>`, `<iframe>`, `<style>` and a few more). A database set always escapes raw HTML and sanitizes every page it renders. See [Markdown](../writing/markdown.md#raw-html). |
 | `sets.{key}.integrations.analytics` | object | not set | GA4, Plausible, Fathom, PostHog or a custom `https` script on every page of the set, with the same keys as in [larecipe.json](manifest.md#integrationsanalytics). The only place a database set reads them from, and the only place a self-hosted Plausible, Fathom or PostHog host counts. For a repository set it wins per tool over `larecipe.json`. See [analytics](../operate/analytics.md). |
 
 ## Defaults for every set
@@ -58,7 +59,7 @@ The tables follow the order of the file. "Per set" says whether a doc set can gi
 | `cache.store` | string or null | `null` (`LARECIPE_CACHE_STORE`) | database source only | The cache store for rendered pages, page lists, navigation and search. `null` uses the app's default store. |
 | `search.driver` | string | `client` | yes | `client`: MiniSearch in the browser. `server`: the PHP ranker. Any other value names a driver registered with `LaRecipe::extendSearch()`. |
 | `search.budget_kb` | integer | `300` | yes | A client index larger than this, gzipped, is reported. |
-| `snippets.root` | string or null | `null` | yes | The folder snippet includes (`<<< @/...`) resolve in. `null` means the app's base path for repository sets; database sets include nothing unless they set their own. Dotfiles, keys, `storage/` and `auth.json` are never included. |
+| `snippets.root` | string or null | `null` | yes | The folder snippet includes (`<<< @/...`) resolve in. `null` means the app's base path for repository sets; database sets include nothing unless they set their own. Files that may hold secrets (dotfiles, `config/`, `storage/`, `vendor/`, keys and [the rest](../writing/code-blocks.md#what-can-be-included)) are never included. |
 | `migrations.path` | string | `database_path('migrations/docs')` | no | Where docs migrations are written and loaded from. |
 | `migrations.skip_in_tests` | boolean | `false` | no | Skip docs migrations when the app runs its tests. |
 

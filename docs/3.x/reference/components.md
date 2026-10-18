@@ -7,6 +7,9 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Markdown/Components/ComponentDefinition.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Components/COMPONENTS.md
   - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/ComponentRenderer.php
+  - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/UndeclaredPropsFilter.php
+  - vendor/larecipe/larecipe/src/Domains/Markdown/Services/DocumentTransformer.php
+  - vendor/larecipe/larecipe/ui/src/islands/Video.tsx
   - vendor/larecipe/larecipe/src/Domains/References/Markdown/ReferenceComponents.php
   - vendor/larecipe/larecipe/src/Domains/References/Services/ReferenceHtml.php
   - vendor/larecipe/larecipe/src/Domains/References/Services/ReferenceMarkdown.php
@@ -22,7 +25,7 @@ Every component a page on this site can use: the props each one takes, the HTML 
 ## How props are checked
 
 - A missing required prop, or a value outside the allowed values, is a `components.props` error. An unknown tag is a `components.unknown` error and renders as escaped text. `larecipe:validate` reports both, and a page that renders with errors is not cached.
-- Props a component does not declare pass through untouched.
+- Props a component does not declare are dropped before anything renders, for every built-in component and for every component on a database set. Only a custom component on a repository set keeps them, so it can accept data LaRecipe does not describe. Props LaRecipe derives, such as a video's `embed` or a tab group's `labels`, always come from LaRecipe, never from the page.
 - `boolean` props read `"false"`, `"0"`, `"no"` and `""` as false; `integer` props are converted from their string.
 - Components marked **island** are also mounted by the React UI. Their server HTML is wrapped in `<div data-lr-component="Name" data-lr-props='{...}'>`, where the props are JSON with defaults filled in. The server HTML is complete without JavaScript.
 - In agent Markdown, every URL is absolute.
@@ -162,7 +165,7 @@ A video that loads only when the reader asks. Without `src` it shows a labelled 
 | `duration` | string | no | | | The length, for example `2:40`. |
 | `placeholder` | string | no | | | The label of the frame shown until `src` is set. |
 
-- **HTML:** a file is `<figure class="lr-video"><video controls preload="none">`. A YouTube or Vimeo URL is a link (`a.lr-video-link`, "Watch on YouTube") and nothing from the provider loads until the reader asks; the island's props carry `embed` (a `youtube-nocookie.com` or `player.vimeo.com` URL) and `provider`. Without `src`: `figure.lr-video.lr-video-placeholder` with the placeholder, else "Demo video coming soon", and a `media.placeholder` warning. The caption is `title · duration`.
+- **HTML:** a file is `<figure class="lr-video"><video controls preload="none">`. A YouTube or Vimeo URL is a link (`a.lr-video-link`, "Watch on YouTube") and nothing from the provider loads until the reader asks; LaRecipe derives the island's `embed` (a `youtube-nocookie.com` or `player.vimeo.com` URL) and `provider` from `src`, and a page cannot set them. The island frames only `www.youtube-nocookie.com`, `player.vimeo.com` and `www.loom.com` over `https`. Without `src`: `figure.lr-video.lr-video-placeholder` with the placeholder, else the `video.placeholder` UI string in the page's language ("Demo video coming soon" in English), and a `media.placeholder` warning. The caption is `title · duration`.
 - **Markdown:** `[Video: Title · 2:40](src)`, or `*Video coming soon: {placeholder}*` without `src`.
 
 ### Mermaid

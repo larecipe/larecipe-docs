@@ -14,6 +14,8 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Sources/Events/**
   - vendor/larecipe/larecipe/src/Domains/Sources/SourcesServiceProvider.php
   - vendor/larecipe/larecipe/src/Domains/Access/Laravel/GateAuthorizer.php
+  - vendor/larecipe/larecipe/src/Domains/Markdown/Services/PageSanitizer.php
+  - vendor/larecipe/larecipe/src/Domains/Sources/Services/StructureValidator.php
   - vendor/larecipe/larecipe/src/Domains/Admin/**
   - vendor/larecipe/larecipe/ui/src/admin/**
   - vendor/larecipe/larecipe/database/migrations/2026_10_17_000000_create_larecipe_tables.php
@@ -170,6 +172,15 @@ Images and other files of a database set live on a Laravel filesystem disk, `sou
 ## Snippet includes
 
 Pages of a database set may be written by people outside the codebase, so `<<< @/...` includes resolve nowhere by default. To allow them, give the set a folder of its own in `sets.{key}.snippets.root`.
+
+## Raw HTML, props and analytics
+
+For the same reason, a database set holds its pages to tighter rules than a repository set:
+
+- **Raw HTML is always escaped**, and every page the set renders also goes through an HTML sanitizer. `html_input` has no effect on a database set. See [Markdown](../writing/markdown.md#raw-html).
+- **Every component keeps only the props it declares**, your own components included.
+- **Analytics come from `config/larecipe.php` only** (`sets.{key}.integrations.analytics`). Integrations in the set's `larecipe.json` are ignored, since it can be edited in the admin UI and over MCP. See [analytics](../operate/analytics.md).
+- **Links in navigation and `larecipe.json`** must be `http`, `https` or `mailto` URLs or paths on your site. A write with any other link is refused.
 
 ## The admin UI
 

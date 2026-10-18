@@ -198,12 +198,13 @@ A page whose render has an error like these is not cached, so the fix shows up o
 
 `@/` is the snippet root. For a repository doc set it is your project's base path. Set `snippets.root` in `config/larecipe.php` to narrow it to one folder, or `sets.{key}.snippets.root` for one doc set. A database doc set includes nothing unless its set configures a root, because its content may come from people outside the codebase.
 
-Some files are never included, even inside the root, so docs can never become a side door to your configuration:
+Some files are never included, even inside the root, so docs can never become a side door to your configuration. It is the same list [`larecipe:sync`](../keeping-current/sync.md) keeps its agent away from:
 
-- dotfiles and anything in a dotted folder (`.env`, `.git/`),
-- `storage/` and `bootstrap/cache/`,
-- Composer's `auth.json`,
-- keys, certificates and databases (`.key`, `.pem`, `.p12`, `.pfx`, `.crt`, `.cer`, `.der`, `.sqlite`, `.db`, `.env`).
+- dotfiles and anything in a dotted folder (`.env`, `.git/`, `.ssh/`),
+- `config/`, `bootstrap/cache/`, `storage/`, `vendor/` and `node_modules/`,
+- Composer's `auth.json` and PHPUnit's files (`phpunit.xml`, `phpunit.xml.dist`), which set environment values,
+- keys, certificates and key stores (`.key`, `.pem`, `.p8`, `.p12`, `.pfx`, `.ppk`, `.crt`, `.cer`, `.der`, `.jks`, `.keystore`, `.kdbx`), SSH keys (`id_rsa`) and key or secret files without an extension (`deploy_key`),
+- credential files (`firebase-credentials.json`), databases (`.sqlite`, `.sqlite3`, `.db`), dumps and logs (`.sql`, `.dump`, `.log`), files ending in `.env`, and JSON kept under `database/`, `backups/` or `dumps/`.
 
 A path with `..` that leaves the root is refused, and so is a symlink whose real file lives outside it.
 

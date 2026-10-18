@@ -80,7 +80,7 @@ Each item is a version id as a string, or an object:
 | `label` | string | the `id` | The name in the version switcher. |
 | `status` | `current`, `maintained`, `deprecated` or `archived` | `current` | `deprecated` and `archived` show a warning badge in the switcher. |
 | `default` | boolean | the first version | The version unversioned URLs and the root `llms.txt` use. |
-| `visibility` | `public` or `private` | `public` | A private version needs the `viewLarecipe` gate. |
+| `visibility` | `public` or `private` | `public` | A private version needs the `viewLarecipe` gate. Any value other than `public` (trimmed, in any case) counts as private. |
 
 See [versions](../writing/versions.md).
 
@@ -103,6 +103,8 @@ See [languages](../writing/languages.md).
 | --- | --- | --- |
 | `links` | list of `{ label, href, icon }` | Links in the header. `icon` is accepted; the current header shows the label only. |
 | `cta` | `{ label, href }` | One outlined button in the header. |
+
+Navbar, footer and repository links must be `http`, `https` or `mailto` URLs, or paths on your site. Any other link is left out of every page, and `larecipe:validate` reports it as `links.unsafe`.
 
 ### redirects
 

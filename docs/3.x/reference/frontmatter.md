@@ -47,18 +47,28 @@ order: 20
 | `deprecated` | boolean or string | Marks the page as deprecated. Accepted and validated; not displayed in this release. | `deprecated: true` |
 | `hidden` | boolean | The page is routable but left out of the navigation, search and the sitemap. | `hidden: true` |
 | `noindex` | boolean | Sends `X-Robots-Tag: noindex` and a robots meta tag, and leaves the page out of the sitemap. | `noindex: true` |
-| `visibility` | `public` or `private` | A private page needs the `viewLarecipe` gate on every surface: HTML, Markdown, search, `llms.txt` and MCP. | `visibility: private` |
+| `visibility` | `public` or `private` | A private page needs the `viewLarecipe` gate on every surface: HTML, Markdown, search, `llms.txt` and MCP. The value is trimmed and lowercased, and anything other than `public` counts as private, so a typo never publishes a page. | `visibility: private` |
 | `redirect_from` | string or list of strings | Old paths that answer with a `301` to this page. Write a path inside the version (`/hooks`) or the full URL path. | `redirect_from: [/hooks]` |
 | `layout` | `default`, `wide` or `full` | `default` has the sidebar and the page rail. `wide` drops the rail. `full` drops both. | `layout: wide` |
 | `inserts` | `false`, or an object of booleans | Opt this page out of insert points set in `larecipe.json`. `false` turns off all of them. | `inserts: { article.after: false }` |
 | `type` | `page` or `openapi` | The page type. `openapi` pages arrive in a later 3.x release; today the value only allows an empty body. | `type: page` |
 | `spec` | string | The spec for an `openapi` page. Accepted; not read in this release. | `spec: openapi.yaml` |
+| `meta` | object | Values for your own components, which read them as `page.meta`. The only frontmatter readers receive beyond the keys above. | `meta: { plan: enterprise }` |
 
 The insert points `inserts` can name are `header.actions`, `sidebar.before`, `sidebar.after`, `article.before`, `article.after`, `toc.after` and `footer`.
 
 ## Unknown keys
 
-Keys LaRecipe does not know are kept and passed to the UI as the page's `meta`, so your own components and extensions can read them. They are never an error.
+Keys LaRecipe does not know are kept on the server and are never an error, but they do not reach readers: they often hold notes for the team, such as an owner or a ticket. Values your own components and extensions read go under `meta:`, the one map passed to the UI, as `page.meta`:
+
+```yaml
+---
+title: Pricing
+owner: billing-team        # stays on the server
+meta:
+  plan: enterprise         # reaches the browser as page.meta.plan
+---
+```
 
 `larecipe:validate` checks every page's frontmatter under the `frontmatter.schema` rule:
 

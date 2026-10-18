@@ -55,7 +55,7 @@ Everything it imports from `@larecipe/ui` is provided by LaRecipe at runtime:
 
 | Export | What it does |
 | --- | --- |
-| `useLaRecipe()` | The current `page` (path, title, URLs, version and locale), the `set` (key, name, versions, locales), the `locale` (code and direction), the `theme` (mode and the reader's preference), the signed-in `user` when you share one, `t` for LaRecipe's own UI strings in the page's language, and a `navigate(url)` helper. |
+| `useLaRecipe()` | The current `page` (path, title, URLs, version, locale and `meta`), the `set` (key, name, versions, locales), the `locale` (code and direction), the `theme` (mode and the reader's preference), the signed-in `user` when you share one, `t` for LaRecipe's own UI strings in the page's language, and a `navigate(url)` helper. |
 | `request(path, options)` | A fetch to your app's own routes. It refuses other origins, sends the session cookie, Laravel's `XSRF-TOKEN` as `X-XSRF-TOKEN` and `Accept: application/json`, encodes `body` as JSON, and returns `{ ok: true, status, data }` or `{ ok: false, status, data, errors, message }`, with Laravel's 422 validation errors in `errors`. |
 | `Button`, `LinkButton`, `Input`, `Textarea`, `Field`, `Callout`, `Badge`, `Card`, `Kbd`, `Loader`, `Ticket`, `Perforation` | The parts the built-in UI is made of, in both themes and right to left. `Button` takes a `variant` (`primary`, `secondary`, `outline`, `ghost`, `ink`), a `size` and `loading`. |
 | `Icons`, `Icon` | The UI's own icon set. |
@@ -67,6 +67,18 @@ The signed-in user is shared only when you ask for it, field by field:
 ```php title="app/Providers/AppServiceProvider.php"
 LaRecipe::shareUser(fn ($user) => ['name' => $user->name]);
 ```
+
+Values a component needs from one page go under `meta:` in that page's frontmatter, and arrive as `page.meta`:
+
+```yaml
+---
+title: Pricing
+meta:
+  plan: enterprise
+---
+```
+
+`meta` is the only frontmatter beyond LaRecipe's own keys that reaches the browser. Other unknown keys stay on the server, because they often hold notes for the team, such as an owner or a ticket. See [frontmatter](../reference/frontmatter.md#unknown-keys).
 
 ## The extension entry
 
@@ -90,7 +102,7 @@ Every custom component needs a definition in PHP, usually in `AppServiceProvider
 
 | Method | What it sets |
 | --- | --- |
-| `props([...])` | Each prop's `type`, and optionally `default`, `required`, `enum` and `description` (or the short form `'list' => 'string'`). `larecipe:validate` and every render check them: a missing required prop or a value outside `enum` is a `components.props` error. Props you do not describe still reach React. |
+| `props([...])` | Each prop's `type`, and optionally `default`, `required`, `enum` and `description` (or the short form `'list' => 'string'`). `larecipe:validate` and every render check them: a missing required prop or a value outside `enum` is a `components.props` error. On a repository set, props you do not describe still reach React. On a database set, whose authors may be less trusted than your codebase, they are dropped, so describe every prop you read. |
 | `fallback(fn (array $props, string $children, RenderedComponent $context) => ...)` | The server HTML. Return a string, a view or anything `Htmlable`. `$children` is the rendered Markdown inside the tag, and `$context` carries the set, version, locale and page path. |
 | `markdown(fn (array $props, string $children, $context) => ...)` | The line or block agents read. Without it, agents get the children. |
 | `island()` | Wraps the fallback in a placeholder React mounts into. Without it, an inline tag stays as its fallback HTML and React never runs. At insert points, components are always wrapped. |
@@ -135,7 +147,7 @@ The controller validates the address and sends it to Nashra. It never fails with
 
 ## Build it
 
-Custom components are the one part of LaRecipe that needs Node, and only at build time, on your machine or in CI. Add `@larecipe/vite` and `@larecipe/ui` as dev dependencies, then add the plugin to your Vite config.
+Custom components are the one part of LaRecipe that needs Node, and only at build time, on your machine or in CI. Add `@larecipe/vite` and `@larecipe/ui` as dev dependencies, then add the plugin to your Vite config. `@larecipe/vite` works with Vite 6, 7 and 8; this site builds with Vite 8.
 
 This is this site's own config:
 

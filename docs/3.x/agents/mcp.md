@@ -208,14 +208,16 @@ The command uses a relative `artisan` path, so start your agent from the project
 | Tool | Does | Web endpoint | Local server |
 | --- | --- | --- | --- |
 | `search_docs` | Ranked pages for a query, each with its section, a snippet and its URLs | Yes | Yes |
-| `read_page` | One page as Markdown, the same text as its `.md` twin, or one `section` of it | Yes | Yes |
+| `read_page` | One page as Markdown, the same text as its `.md` twin, or one `section` of it, with its `content_hash` | Yes | Yes |
 | `list_pages` | The navigation: groups, then pages with title, path and description | Yes | Yes |
 | `submit_feedback` | Tells the owners whether a page helped, with an optional comment | When `feedback.enabled` | When `feedback.enabled` |
 | `validate_docs` | The `larecipe:validate --json` report for a set | For callers the `manageLarecipe` gate allows | Yes |
-| `affected_pages` | The pages a change made stale, from the `sources:` of each page | With the author tools | Yes |
+| `affected_pages` | The pages a change made stale, from the `sources:` of each page | Never | Yes |
 | `write_page`, `move_page`, `delete_page`, `update_navigation`, `update_manifest` | The author tools: change pages, navigation and `larecipe.json` | Database sets with `mcp.web.author_tools` | Yes |
 
 The read tools return only what the caller may see: private pages, private versions and gate blocks are left out exactly as they are on the HTML pages. `validate_docs` reads every page, private ones included, which is why the web endpoint offers it only to managers.
+
+Before an agent writes, moves or deletes a page, it reads the page with `read_page` and passes the `content_hash` from the end of the result as `based_on`, so a change never overwrites a newer edit. For `update_navigation` and `update_manifest`, `based_on` is the `revision.content_hash` the tool's last call returned. See [MCP tools](../reference/mcp-tools.md#author-tools).
 
 On the local server, the author tools write where the set lives. On a repository set they change files in your working tree, so the change becomes part of your next commit. On a database set they apply the change to your local database for preview and write it into the branch's [docs migration](../sources/docs-migrations.md), so it still travels in the pull request. Each change is attributed to the agent, named after the MCP client.
 
@@ -300,7 +302,7 @@ By default the web endpoint never writes. A database set can open its author too
 ],
 ```
 
-The tools appear only when all of this holds: the set uses the database source, `mcp.web.author_tools` is on, the caller is signed in, and the `manageLarecipe` gate allows them for the set. Their changes follow the set's [review mode](../keeping-current/review-modes.md): with `review: required` they wait as drafts until a person publishes them, with `review: auto` they publish at once, still revisioned and attributed.
+The tools appear only when all of this holds: the set uses the database source, `mcp.web.author_tools` is on, the caller is signed in, and the `manageLarecipe` gate allows them for the set. Each endpoint is bound to its own set: a call that names another set is refused, so a token for one set's endpoint never writes to another. `affected_pages` reads your working tree, so no web endpoint offers it. Their changes follow the set's [review mode](../keeping-current/review-modes.md): with `review: required` they wait as drafts until a person publishes them, with `review: auto` they publish at once, still revisioned and attributed.
 
 A repository set never exposes author tools on the web, whatever the config says. Its changes belong in git, in a pull request.
 

@@ -29,9 +29,10 @@ The web endpoint sits outside the `web` middleware group, so clients post JSON w
 | `search_docs`, `read_page`, `list_pages` | yes | yes |
 | `submit_feedback` | when `feedback.enabled` | when `feedback.enabled` |
 | `validate_docs` | yes | only for callers the `manageLarecipe` gate allows |
-| `write_page`, `move_page`, `delete_page`, `update_navigation`, `update_manifest`, `affected_pages` | yes | only on a database set with `mcp.web.author_tools` on, for a signed-in caller the `manageLarecipe` gate allows |
+| `write_page`, `move_page`, `delete_page`, `update_navigation`, `update_manifest` | yes | only on a database set with `mcp.web.author_tools` on, for a signed-in caller the `manageLarecipe` gate allows |
+| `affected_pages` | yes | never: it reads your working tree |
 
-A repository set never exposes author tools on the web: its changes belong in git.
+A repository set never exposes author tools on the web: its changes belong in git. Each web endpoint is bound to its own set: a call that names another set in `set` is refused, and points to that set's own endpoint.
 
 This site's web endpoint, asked for its tools with no credentials:
 
@@ -63,7 +64,7 @@ Returns structured results: `set`, `version`, `query` and `results`, each with `
 
 ### read_page
 
-> Read one docs page as Markdown. Pass the path from search_docs or list_pages (for example "guides/webhooks"), or the page URL. Pass section (a heading or its #anchor) to read only that part of the page.
+> Read one docs page as Markdown. Pass the path from search_docs or list_pages (for example "guides/webhooks"), or the page URL. Pass section (a heading or its #anchor) to read only that part of the page. The result ends with the page's content_hash (also in its _meta): pass it as based_on when you write, move or delete the page.
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -72,7 +73,7 @@ Returns structured results: `set`, `version`, `query` and `results`, each with `
 | `locale` | string | no | The language, as a locale code. Defaults to the main language. |
 | `section` | string | no | Only return this section: a heading text or its anchor id. |
 
-Returns the page's agent Markdown, with `title`, `path`, `version`, `locale`, `url` and `markdown_url` in the result's meta.
+Returns the page's agent Markdown, with `title`, `path`, `version`, `locale`, `url`, `markdown_url` and `content_hash` in the result's `_meta`. The text ends with a line that carries the same `content_hash`, for clients that show only the text. Ask AI gets the Markdown without that line.
 
 ### list_pages
 
@@ -128,14 +129,19 @@ Every author tool is annotated `destructiveHint: true`, and takes these argument
 | `version` | string | no | The version, for versioned sets. Defaults to the default version. Not on `update_manifest`. |
 | `locale` | string | no | The locale code. Defaults to the default locale. Not on `update_manifest`. |
 | `summary` | string | no | One line describing the change, for the revision list and the pull request. |
-| `based_on` | string | no | The content hash you read. The change is refused if the content changed since. |
-| `set` | string | no | The doc set key, when the app has more than one. Defaults to the default set. |
+| `based_on` | string | no | The content hash the change was written against. The change is refused if the content changed since. See below for where it comes from. |
+| `set` | string | no | The doc set key, when the app has more than one. Defaults to the default set. On a web endpoint, only its own set. |
 
-`read_page` does not return a content hash in this release. The `revision` an author tool returns carries `content_hash`, the hash of what it wrote, so an agent can pass it as `based_on` on its next change to the same page.
+Where `based_on` comes from:
+
+- **`write_page`, `move_page`, `delete_page`:** the `content_hash` that `read_page` returned for the page. Leave it out for a new page.
+- **`update_navigation`, `update_manifest`:** the `revision.content_hash` your last call of the same tool returned (for navigation, for that version and locale). Leave it out to change the navigation or the manifest as it is now.
+
+The `revision` every author tool returns carries `content_hash`, the hash of what it wrote, so an agent can chain several changes to the same page.
 
 ### write_page
 
-> Create or replace one docs page: frontmatter and Markdown body. Read the page first and pass its content_hash as based_on, so you never overwrite a newer edit. On a repository set the file changes in the working tree; on a database set the change is applied to the local database and written into the branch's docs migration (commit it with the code). Returns the revision and the validation result; fix every validation error it reports.
+> Create or replace one docs page: frontmatter and Markdown body. Read the page first with read_page and pass the content_hash it returns as based_on, so you never overwrite a newer edit (leave based_on out for a new page). On a repository set the file changes in the working tree; on a database set the change is applied to the local database and written into the branch's docs migration (commit it with the code). Returns the revision and the validation result; fix every validation error it reports.
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -145,7 +151,7 @@ Every author tool is annotated `destructiveHint: true`, and takes these argument
 
 ### move_page
 
-> Move one docs page to another path (or version, or locale) in the same set. Refused when the new path is taken. Update links and the navigation afterwards (update_navigation with a rename patch).
+> Move one docs page to another path (or version, or locale) in the same set. Refused when the new path is taken. Update links and the navigation afterwards (update_navigation with a rename patch). Pass the content_hash read_page returned as based_on.
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -156,7 +162,7 @@ Every author tool is annotated `destructiveHint: true`, and takes these argument
 
 ### delete_page
 
-> Delete one docs page. Remove it from the navigation too (update_navigation with a remove patch). On a database set the page stays in the revision history and can be restored.
+> Delete one docs page. Remove it from the navigation too (update_navigation with a remove patch). On a database set the page stays in the revision history and can be restored. Pass the content_hash read_page returned as based_on.
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -173,7 +179,7 @@ Every author tool is annotated `destructiveHint: true`, and takes these argument
 
 ### update_manifest
 
-> Change the set's larecipe.json (name, description, theme, versions, locales, navbar, redirects, agent description) with a JSON merge patch: keys replace, null removes a key, objects merge, lists are replaced whole. Presentation and structure only: routes, drivers, AI settings and secrets live in config/larecipe.php and never here.
+> Change the set's larecipe.json (name, description, theme, versions, locales, navbar, redirects, agent description) with a JSON merge patch: keys replace, null removes a key, objects merge, lists are replaced whole. Presentation and structure only: routes, drivers, AI settings and secrets live in config/larecipe.php and never here, and so do a database set's analytics integrations.
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -183,7 +189,7 @@ Every author tool is annotated `destructiveHint: true`, and takes these argument
 
 > List the docs pages whose `sources:` match files changed between `base` (default: the default branch) and `head`, plus uncommitted work. Each page says whether the change already updated it (status "updated") or left it stale (status "stale"). Update stale pages before you push.
 
-Registered with the author tools, so it is offered where they are. Annotated `readOnlyHint: true`, and it takes only its own arguments:
+Local server only: it reads your working tree and git, so no web endpoint offers it. Annotated `readOnlyHint: true`, and it takes only its own arguments:
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |

@@ -148,15 +148,15 @@ The PHP ranker serves the `/_search` endpoint, MCP `search_docs`, the `/ask` end
     "locale": "en",
     "hits": [
         {
-            "path": "operate/caching",
-            "title": "Caching and optimize",
-            "heading": "Database sets",
-            "anchor": "database-sets",
-            "snippet": "…set never reads the database to serve a cached page. Its fingerprint lives in the cache store, every publish bumps it, and the ContentChanged event queues a listener that warms the…",
-            "score": 10.3787,
-            "description": "How LaRecipe caches rendered pages, page lists and navigation, and what larecipe:optimize compiles on deploy.",
-            "url": "https://larecipe.saleem.dev/3.x/operate/caching#database-sets",
-            "markdown_url": "https://larecipe.saleem.dev/3.x/operate/caching.md"
+            "path": "reference/commands",
+            "title": "Artisan commands",
+            "heading": "larecipe:cache:warm",
+            "anchor": "larecipecachewarm",
+            "snippet": "Warms the cache of database sets. Run it in your deploy after php artisan migrate.",
+            "score": 9.3573,
+            "description": "Every larecipe:* artisan command, grouped by job, with its usage and options read from the running app.",
+            "url": "https://larecipe.saleem.dev/3.x/reference/commands#larecipecachewarm",
+            "markdown_url": "https://larecipe.saleem.dev/3.x/reference/commands.md"
         }
     ]
 }

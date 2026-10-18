@@ -41,6 +41,8 @@ curl -H "Accept: text/markdown" https://larecipe.saleem.dev/3.x
 
 LaRecipe picks the representation in this order: an explicit `.md` suffix wins; otherwise the `Accept` header decides, read in order of preference, so `text/markdown` wins only when the client ranks it above `text/html`. Browsers get HTML.
 
+The landing page has a Markdown twin at the set's own URL with `.md`: `/docs.md` for a set at `/docs`, and a version's or language's landing page the same way (`/3.x.md`, `/ar.md` on this site).
+
 The Markdown twin is not the source file. It is a projection of the same parsed page the HTML comes from, written for models:
 
 ```markdown
@@ -103,7 +105,8 @@ X-LaRecipe-Build: 1b7598e6f59b
 - `Vary: Accept` tells caches that the same URL answers with HTML or Markdown.
 - `Link` advertises the Markdown twin, the version's `llms.txt`, the MCP endpoint and `skill.md` to any client that reads headers. A link appears only when its surface is on.
 - `ETag` and `Last-Modified` let agents and caches revalidate cheaply. A matching `If-None-Match` gets a `304`.
-- Public pages are cacheable for a minute in browsers and ten minutes in shared caches. A private page, or one rendered for a signed-in reader, is `private, no-store` with `X-Robots-Tag: noindex`.
+- Public pages are cacheable for a minute in browsers and ten minutes in shared caches. A private page is `private, no-store` with `X-Robots-Tag: noindex`. A public page served to a signed-in reader, in HTML, JSON or Markdown, is `private, no-cache` with `Vary: Accept, Cookie`, since its navigation can list pages guests never see.
+- Every page body also holds a link to the version's `llms.txt`, hidden from sight and from the keyboard, for agents that read the HTML but not its headers.
 
 ## llms.txt
 

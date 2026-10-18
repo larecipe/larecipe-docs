@@ -83,9 +83,11 @@ A link block with a title and a short description.
 | --- | --- | --- | --- | --- | --- |
 | `title` | string | no | | | The card title. A card can be body only. |
 | `href` | string | no | | | Where the card links. A relative `.md` link works. |
-| `icon` | string | no | | | A Lucide icon name. |
+| `icon` | string | no | | | An icon from LaRecipe's content set, by its Lucide name, drawn above the title. Unknown names draw nothing. |
 
-- **HTML:** `<a class="lr-card" href="...">` with `.lr-card-title` and `.lr-card-body`, or `<div class="lr-card">` without `href`. `icon` becomes `data-icon`. A one-paragraph body is unwrapped.
+- **HTML:** `<a class="lr-card" href="...">` with `.lr-card-title` and `.lr-card-body`, or `<div class="lr-card">` without `href`. `icon` draws the icon in `.lr-card-icon` above the title (and stays on the card as `data-icon`). A one-paragraph body is unwrapped.
+
+The content icon set: `accessibility`, `activity`, `bell`, `blocks`, `book`, `book-open`, `bot`, `box`, `brain`, `bug`, `calendar`, `chart-column`, `circle-check`, `circle-question-mark`, `clipboard-list`, `clock`, `cloud`, `code`, `compass`, `cpu`, `credit-card`, `database`, `download`, `eye`, `file-code`, `file-text`, `flag`, `folder`, `gauge`, `gift`, `git-branch`, `git-merge`, `git-pull-request`, `globe`, `graduation-cap`, `hammer`, `heart`, `house`, `image`, `inbox`, `key`, `languages`, `layers`, `layout-grid`, `life-buoy`, `lightbulb`, `link`, `lock`, `mail`, `map`, `megaphone`, `message-circle`, `monitor`, `package`, `palette`, `pen-line`, `plug`, `puzzle`, `refresh-cw`, `rocket`, `scale`, `search`, `send`, `server`, `settings`, `shield-check`, `shopping-cart`, `smartphone`, `sparkles`, `star`, `terminal`, `timer`, `trophy`, `upload`, `user`, `users`, `wand-sparkles`, `workflow`, `wrench`, `zap`.
 - **Markdown:** `- [Title](url): description`, or `- **Title**: description` without `href`.
 
 ### CardGroup and Columns

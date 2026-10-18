@@ -33,19 +33,19 @@ LaRecipe's first README asked whether writing documentation was boring. Version 
 
 <CardGroup cols="2">
 
-<Card title="Write" href="get-started/your-first-docs.md">
+<Card title="Write" href="get-started/your-first-docs.md" icon="pen-line">
 Your coding agent writes pages from the code it read a moment ago, guided by four LaRecipe skills, MCP tools and a validator that catches broken links and stale samples.
 </Card>
 
-<Card title="Keep current" href="keeping-current/how-it-works.md">
+<Card title="Keep current" href="keeping-current/how-it-works.md" icon="refresh-cw">
 Each page lists the code it describes. Before every push, your agent updates the pages your change left stale, and a hook holds the push once if it forgot.
 </Card>
 
-<Card title="Serve" href="agents/surfaces.md">
+<Card title="Serve" href="agents/surfaces.md" icon="bot">
 People get a fast site that reads fine without JavaScript. Agents get every page as Markdown, plus llms.txt, skill.md and an MCP server, under the same access rules.
 </Card>
 
-<Card title="Own" href="sources/repository.md">
+<Card title="Own" href="sources/repository.md" icon="shield-check">
 Docs live in your repository or your database, behind your own gates, on your own deploy. Open source, your agent session or your keys, no meters.
 </Card>
 

@@ -33,19 +33,19 @@ php artisan larecipe:install
 
 <CardGroup cols="2">
 
-<Card title="الكتابة" href="get-started/your-first-docs.md">
+<Card title="الكتابة" href="get-started/your-first-docs.md" icon="pen-line">
 يكتب وكيل البرمجة الصفحات من الكود الذي قرأه للتو، مستعينًا بأربع مهارات من LaRecipe وأدوات MCP ومدقّقٍ يكشف الروابط المعطّلة والأمثلة القديمة.
 </Card>
 
-<Card title="الإبقاء على الحداثة" href="keeping-current/how-it-works.md">
+<Card title="الإبقاء على الحداثة" href="keeping-current/how-it-works.md" icon="refresh-cw">
 تذكر كل صفحة الكود الذي تصفه. وقبل كل push يحدّث وكيلك الصفحات التي أصبحت قديمة بسبب تغييرك، ويوقف خطّافٌ عملية الـ push مرة واحدة إن نسي.
 </Card>
 
-<Card title="التقديم" href="agents/surfaces.md">
+<Card title="التقديم" href="agents/surfaces.md" icon="bot">
 يحصل الناس على موقع سريع يُقرأ جيدًا حتى من دون JavaScript. ويحصل الوكلاء على كل صفحة بصيغة Markdown، إلى جانب llms.txt و skill.md وخادم MCP، وبقواعد الوصول نفسها.
 </Card>
 
-<Card title="الملكية" href="sources/repository.md">
+<Card title="الملكية" href="sources/repository.md" icon="shield-check">
 يعيش التوثيق في مستودعك أو في قاعدة بياناتك، خلف صلاحياتك (gates)، وضمن عملية النشر الخاصة بك. مفتوح المصدر، يعمل بجلسة وكيلك أو بمفاتيحك، ومن دون عدّادات.
 </Card>
 

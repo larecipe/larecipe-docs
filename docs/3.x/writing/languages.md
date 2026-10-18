@@ -46,7 +46,7 @@ Then put each translation in a folder named after its code, inside the version, 
 
 The default language stays at the version root, and on a set without versions the language folders sit directly in `docs/`. A page you have not translated yet still opens in every language: readers get the original, with a note that says so.
 
-This site serves English and Arabic. The [Arabic Introduction](/ar/3.x) and the [Arabic installation guide](/ar/3.x/get-started/installation) are translated; every other page falls back to English.
+This site serves English and Arabic, and it is fully translated: every page has an Arabic version, starting with the [Arabic Introduction](/ar/3.x). A page added later shows the English original at its Arabic URL until its translation is added.
 
 ## URLs
 
@@ -93,7 +93,7 @@ The language switcher relies on this: switching language keeps you on the same p
 
 <Accordion title="Navigation and links in each language">
 
-The sidebar of a language lists every page of the original, in the same order, with the translated title wherever a translation exists. It reads the version's `navigation.json` unless the language folder has its own (`docs/3.x/ar/navigation.json`), which can give the groups translated labels or a different order. A language's own file lists the same pages as the version's: entries for pages not translated yet show the original. This site's Arabic sidebar works that way, with Arabic group labels over a mix of translated and English pages.
+The sidebar of a language lists every page of the original, in the same order, with the translated title wherever a translation exists. It reads the version's `navigation.json` unless the language folder has its own (`docs/3.x/ar/navigation.json`), which can give the groups translated labels or a different order. A language's own file lists the same pages as the version's: entries for pages not translated yet show the original. This site's Arabic sidebar works that way, with Arabic group labels.
 
 Link between pages the usual way, with relative `.md` links, from a translation too: a link to a page that exists only in the original reaches its fallback in the reader's language. `larecipe:validate` follows the same rule as the reader, so neither a navigation entry nor a link to an untranslated page is reported.
 

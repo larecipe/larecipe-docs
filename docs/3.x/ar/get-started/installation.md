@@ -13,6 +13,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/LinkClaudeMdAction.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/DetectBoostAction.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/WriteInstructionsBlockAction.php
+translated_from: sha256:0c8e55f3a3f2007e4eb064691a9330ddfa759dd64099bf7fa053bdeaceb7226a
 ---
 
 # التثبيت

@@ -12,6 +12,10 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Agents/Mcp/ToolContext.php
   - vendor/larecipe/larecipe/src/Domains/Agents/Mcp/Tools/**
   - vendor/larecipe/larecipe/src/Domains/Ask/Controllers/AskController.php
+  - vendor/larecipe/larecipe/src/Domains/Search/Controllers/SearchController.php
+  - vendor/larecipe/larecipe/src/Domains/Search/Controllers/SearchReportController.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Services/RenderCache.php
+  - vendor/larecipe/larecipe/ui/src/palette/report.ts
   - vendor/larecipe/larecipe/src/Domains/Sources/Services/ChangeEvents.php
   - vendor/larecipe/larecipe/src/Domains/Sources/Actions/**
   - config/larecipe.php
@@ -77,13 +81,25 @@ Fires for every tool call on a set's web MCP endpoint or on the local server (`t
 
 ### SearchPerformed
 
-Fires when a server-side search runs: the MCP `search_docs` tool (`source` is `mcp`), the `/ask` endpoint (`endpoint`) or Ask AI's retrieval (`assistant`). `zeroResults` marks the searches your docs could not answer. The reader's search box fires nothing, with either search driver.
+Fires for every search, with its `source`:
+
+| `source` | The search |
+| --- | --- |
+| `mcp` | The MCP `search_docs` tool. |
+| `endpoint` | The `/ask` endpoint for agents. |
+| `assistant` | Ask AI's retrieval. |
+| `server` | The `/_search` endpoint: the palette on the `server` driver or a custom driver, and scripts. |
+| `palette` | A search the palette answered in the browser, from the client index, reported afterwards. |
+
+The palette reports its own searches in small batches to `POST {prefix}/_search/report` (with the locale and version in front for other scopes). Only a settled query counts: one the reader stopped typing, not each keystroke. The route is rate limited to 30 reports a minute per reader, stores nothing and only dispatches the events. A static export leaves the reporting out. The counts come from the reader's browser, so treat them as analytics, never as a security signal.
+
+`zeroResults` marks the searches your docs could not answer.
 
 <Event name="SearchPerformed" />
 
 ### FeedbackSubmitted
 
-Fires when a reader answers "Was this page helpful?" (`source` is `reader`) or an agent calls the MCP `submit_feedback` tool (`agent`). LaRecipe keeps nothing: forward it.
+Fires when a reader answers "Was this page helpful?" (`source` is `reader`), when a reader gives an Ask AI answer a thumbs up or down (`ask`, with the `question` the answer was for, and the page the reader asked from), or when an agent calls the MCP `submit_feedback` tool (`agent`). LaRecipe keeps nothing: forward it.
 
 <Event name="FeedbackSubmitted" />
 
@@ -92,6 +108,12 @@ Fires when a reader answers "Was this page helpful?" (`source` is `reader`) or a
 Fires when Ask AI finishes an answer. `covered` is false when the assistant said the docs do not cover the question, `citations` lists the page URLs it cited, and the token counts come from the provider.
 
 <Event name="AskAiAnswered" />
+
+### PageRendered
+
+Fires when LaRecipe renders a page, an extension point for work that should follow a render, such as warming another cache. `format` is `html` when the article was rendered because the render cache did not have it (a changed page, a cold cache, or `larecipe:optimize` compiling it): a request answered from the cache does not fire it. `format` is `markdown` on every request for a page's Markdown twin, which is not cached. It carries the page and its content hash, never anything about the reader; count readers with `PageViewed` and `MarkdownServed`. The MCP `read_page` tool and `llms-full.txt` do not fire it.
+
+<Event name="PageRendered" />
 
 ## Content events
 

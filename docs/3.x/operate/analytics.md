@@ -1,17 +1,22 @@
 ---
 title: Analytics and events
-description: Add GA4, Plausible, Fathom, PostHog or your own script from larecipe.json, collect page feedback, and forward every request, agents included, to your own tools with Laravel events.
+description: Add GA4, Plausible, Fathom, PostHog or your own script from your config, collect page and answer feedback, and forward every request, agents included, to your own tools with Laravel events.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Delivery/Support/AnalyticsTags.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Support/RequestClassifier.php
   - vendor/larecipe/larecipe/src/Domains/Agents/Laravel/TrafficKind.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Events/**
   - vendor/larecipe/larecipe/src/Domains/Delivery/Controllers/FeedbackController.php
+  - vendor/larecipe/larecipe/src/Domains/Search/Controllers/SearchReportController.php
+  - vendor/larecipe/larecipe/src/Domains/Content/DTOs/SetConfig.php
+  - vendor/larecipe/larecipe/src/Domains/Validation/Rules/ManifestSchemaRule.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Controllers/PageController.php
   - vendor/larecipe/larecipe/src/Domains/Agents/AgentsServiceProvider.php
   - vendor/larecipe/larecipe/src/Domains/Agents/Laravel/AgentRoutes.php
   - vendor/larecipe/larecipe/src/Domains/Agents/Mcp/Tools/SubmitFeedbackTool.php
   - vendor/larecipe/larecipe/ui/src/regions/PageFooter.tsx
+  - vendor/larecipe/larecipe/ui/src/ask/AnswerFeedback.tsx
+  - vendor/larecipe/larecipe/ui/src/palette/report.ts
   - vendor/larecipe/larecipe/resources/schemas/larecipe.schema.json
   - vendor/larecipe/larecipe/config/larecipe.php
 ---
@@ -20,14 +25,27 @@ sources:
 
 LaRecipe has no dashboards and stores no traffic. It feeds the tools you already use, in two ways:
 
-- **Script tags** for GA4, Plausible, Fathom, PostHog or a script of your own, configured in `larecipe.json`. They see readers whose browsers run JavaScript.
+- **Script tags** for GA4, Plausible, Fathom, PostHog or a script of your own, configured in `config/larecipe.php` or, for a repository set, in `larecipe.json`. They see readers whose browsers run JavaScript.
 - **Laravel events** for every page, Markdown twin, `llms.txt`, skill and MCP call LaRecipe serves, each with the kind of request that made it: a person, a crawler or an agent. Agents never run your analytics script, so events are the only way to see them.
 
-This site runs no analytics integration. Its `larecipe.json` has no `integrations` key.
+This site runs no analytics integration: neither its `config/larecipe.php` nor its `larecipe.json` has an `integrations` key.
 
 ## Analytics integrations
 
-Add the tool under `integrations.analytics` in `larecipe.json`. LaRecipe prints its tags into the head of every page of the set:
+Add the tool under `integrations.analytics`, in the set's entry in `config/larecipe.php`. LaRecipe prints its tags into the head of every page of the set:
+
+```php title="config/larecipe.php"
+'sets' => [
+    'docs' => [
+        // route, source and access as usual
+        'integrations' => ['analytics' => [
+            'plausible' => ['domain' => 'docs.acme.dev'],
+        ]],
+    ],
+],
+```
+
+A repository set may also declare them in `larecipe.json`, with the same keys:
 
 ```json title="docs/larecipe.json"
 {
@@ -39,15 +57,21 @@ Add the tool under `integrations.analytics` in `larecipe.json`. LaRecipe prints 
 }
 ```
 
+These scripts run with every reader's session, so where they come from matters:
+
+- **`config/larecipe.php` counts for every set, and wins per tool** over `larecipe.json`.
+- **`larecipe.json` counts only for a repository set**, whose manifest is reviewed with your code. A database set's `larecipe.json` can be changed in the admin UI and over MCP, so a database set ignores integrations there, and `larecipe:validate` warns about them as `manifest.integrations`.
+- **A self-hosted host or a proxy counts only from `config/larecipe.php`**: Plausible's and Fathom's `src`, and PostHog's `host`. From `larecipe.json`, they load from their official hosts only (`plausible.io`, `cdn.usefathom.com`, and PostHog's `us`, `eu` and `app` hosts), over `https`.
+
 | Tool | Keys | Notes |
 | --- | --- | --- |
 | `ga4` | `measurementId` | `G-` followed by 4 to 20 capital letters or digits. Loads Google's `gtag.js`. |
-| `plausible` | `domain`, `src` | `domain` may list several, separated by commas. `src` defaults to `https://plausible.io/js/script.js`. |
-| `fathom` | `siteId`, `src` | `siteId` is 4 to 20 capital letters or digits. `src` defaults to `https://cdn.usefathom.com/script.js`. |
-| `posthog` | `apiKey`, `host` | `apiKey` starts with `phc_`. `host` defaults to `https://us.i.posthog.com`. |
+| `plausible` | `domain`, `src` | `domain` may list several, separated by commas. `src` defaults to `https://plausible.io/js/script.js`; another host only from config. |
+| `fathom` | `siteId`, `src` | `siteId` is 4 to 20 capital letters or digits. `src` defaults to `https://cdn.usefathom.com/script.js`; another host only from config. |
+| `posthog` | `apiKey`, `host` | `apiKey` starts with `phc_`. `host` defaults to `https://us.i.posthog.com`; a host of your own only from config. |
 | `custom` | `src`, `defer`, `async`, `attributes` | Any script, by `https` URL. Deferred unless you set `defer` to `false`. `attributes` takes `data-*` attributes only. |
 
-Every value comes from a content file, so LaRecipe checks it against the shape its provider uses before it reaches the page, and drops a tag whose values do not fit. Script sources must be `https` URLs, and nothing in `larecipe.json` can add inline code to the page. `php artisan larecipe:validate` reports values that break the schema as `manifest.schema` errors. When your app sets a Content Security Policy nonce with `LaRecipe::useCspNonce()`, every tag carries it.
+LaRecipe checks every value against the shape its provider uses before it reaches the page, and drops a tag whose values do not fit. Script sources must be `https` URLs, and no setting can add inline code to the page. `php artisan larecipe:validate` reports `larecipe.json` values that break the schema as `manifest.schema` errors. When your app sets a Content Security Policy nonce with `LaRecipe::useCspNonce()`, every tag carries it.
 
 ## Page feedback
 
@@ -62,7 +86,11 @@ The route runs in the set's middleware group (`web` by default), so your session
 What it does instead:
 
 1. **Dispatches `FeedbackSubmitted`** with the page, the answer, the comment and the request kind, with `source` set to `reader`. The MCP `submit_feedback` tool dispatches the same event with `source` set to `agent`, so feedback from agents arrives the same way.
-2. **Reports to your analytics**, when an integration is configured. The widget fires a `larecipe:feedback` browser event, and LaRecipe's tags forward it: a `larecipe_feedback` event in GA4 and PostHog, a `Docs Feedback` event in Plausible, and `docs feedback: helpful` or `docs feedback: not helpful` in Fathom. Analytics get the page, version, locale and the answer. The comment goes only to your Laravel listeners.
+2. **Reports to your analytics**, when an integration is configured. The widget fires a `larecipe:feedback` browser event, and LaRecipe's tags forward it: a `larecipe_feedback` event in GA4 and PostHog, a `Docs Feedback` event in Plausible, and `docs feedback: helpful` or `docs feedback: not helpful` in Fathom. Analytics get the page, version, locale, the answer and the source. The comment goes only to your Laravel listeners.
+
+### Answer feedback
+
+When [Ask AI](../agents/ask-ai.md) is on, every finished answer has a thumbs up and a thumbs down. A vote posts to the same feedback route with the question the answer was for, so `FeedbackSubmitted` arrives with `source` set to `ask` and the `question` filled in, and the page is the one the reader asked from. Your analytics get the same `larecipe:feedback` event, with the source `ask`. The thumbs follow `feedback.enabled` too.
 
 Turn the widget off with `feedback.enabled` set to `false` in `config/larecipe.php`. That removes the widget, the route and the `submit_feedback` tool.
 
@@ -77,11 +105,11 @@ LaRecipe fires a Laravel event for each kind of request it serves. They live in 
 | `LlmsTxtServed` | `llms.txt` or `llms-full.txt` is served |
 | `SkillServed` | `skill.md`, a hand-written skill file or `/.well-known/agent-skills/index.json` is served |
 | `McpToolCalled` | An MCP tool is called, on the web endpoint or the local server |
-| `SearchPerformed` | A server-side search runs: MCP `search_docs`, Ask AI or `/ask` |
+| `SearchPerformed` | A search runs on the server (MCP `search_docs`, Ask AI, `/ask` or the `/_search` endpoint), or the palette reports searches it answered in the browser |
 | `AskAiAnswered` | Ask AI finishes an answer |
-| `FeedbackSubmitted` | A reader or an agent sends page feedback |
+| `FeedbackSubmitted` | A reader or an agent sends page feedback, or a reader rates an Ask AI answer |
 
-The [events reference](../reference/events.md) lists every field. Here is `PageViewed`, read from the running app:
+`PageRendered` lives in the same namespace, but it is about rendering, not readers, and carries no `kind`. The [events reference](../reference/events.md) lists every field. Here is `PageViewed`, read from the running app:
 
 <Event name="PageViewed" />
 

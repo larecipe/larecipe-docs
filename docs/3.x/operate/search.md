@@ -4,6 +4,7 @@ description: How search works with no service to run, what gets indexed, how to 
 sources:
   - vendor/larecipe/larecipe/src/Domains/Search/**
   - vendor/larecipe/larecipe/ui/src/palette/search.ts
+  - vendor/larecipe/larecipe/ui/src/palette/report.ts
   - vendor/larecipe/larecipe/ui/src/overlays/Overlays.tsx
   - vendor/larecipe/larecipe/ui/src/app/shortcuts.ts
   - vendor/larecipe/larecipe/src/LaRecipe.php
@@ -45,12 +46,13 @@ Every page's boot data tells the palette where its index lives. This site's 3.x 
 ```json
 "search": {
     "driver": "client",
-    "index_url": "/3.x/_search/4d40f12a0a16.fed1749a3fe4.json",
-    "endpoint": "/3.x/_search"
+    "index_url": "/3.x/_search/e83bc2e9096f.a8aa52d86b61.json",
+    "endpoint": "/3.x/_search",
+    "report_url": "/3.x/_search/report"
 }
 ```
 
-The file name is `{audience}.{fingerprint}.json`, under the set's prefix, locale and version:
+`report_url` is where the palette reports the searches it answers in the browser; see [searches as events](#searches-as-events). The file name is `{audience}.{fingerprint}.json`, under the set's prefix, locale and version:
 
 - **The fingerprint** changes whenever the version's content changes, so the URL is immutable. Guests on a public set get it with `Cache-Control: public, max-age=31536000, immutable`, and a CDN can keep it forever.
 - **The audience** is a short hash of the pages a reader may see and the gate abilities they hold. Every guest shares one public file. A signed-in reader gets the file for what they may see, served `private`, and it holds only those records.
@@ -174,7 +176,10 @@ use LaRecipe\Domains\Search\DTOs\SearchResults;
  * LaRecipe pushes every record (private pages and gated blocks included) when
  * the set's content changes. Records carry the abilities they require, so a
  * driver must filter by the reader's: the query carries the pages the reader
- * may see and the abilities they hold (the Same-Rules Rule).
+ * may see and the abilities they hold (the Same-Rules Rule). LaRecipe checks
+ * every hit again and drops what the reader may not see; set SearchHit's
+ * $record to the matched record's id, or a hit in a section with gated
+ * blocks loses its snippet for readers who lack an ability there.
  */
 interface SearchDriver
 {
@@ -187,7 +192,9 @@ interface SearchDriver
 }
 ```
 
-LaRecipe calls `index()` with every record of a version and language, private pages and gated blocks included, the first time that version is searched after its content changed. Each record carries the abilities it requires, and every `SearchQuery` carries the pages the reader may see (`visible`, keyed by path) and the abilities they hold. **Your driver must filter by them.** `SearchRecord::allows()` does the ability check for you:
+LaRecipe calls `index()` with every record of a version and language, private pages and gated blocks included, the first time that version is searched after its content changed. Each record carries the abilities it requires, and every `SearchQuery` carries the pages the reader may see (`visible`, keyed by path) and the abilities they hold. **Your driver must filter by them.** `SearchRecord::allows()` does the ability check for you.
+
+LaRecipe checks every hit your driver returns again before anyone sees it, so access never rests on the driver alone. It drops a hit outside the query's version and language, on a page the reader may not see, or at text the reader may not read. Set `record` on each `SearchHit` to the id of the record that matched: a section can hold gated blocks that share its anchor, and without the id a hit in such a section loses its snippet for a reader who lacks one of their abilities.
 
 ```php title="app/Search/EngineDriver.php"
 <?php
@@ -236,6 +243,7 @@ final class EngineDriver implements SearchDriver
                 heading: $record->heading,
                 anchor: $record->anchor,
                 snippet: mb_substr($record->text, 0, 180),
+                record: $record->id,
             );
 
             if (count($hits) === $query->limit) {
@@ -279,7 +287,9 @@ LaRecipe does not call `flush()` itself yet; keep it for your own maintenance. B
 
 ## Searches as events
 
-Server-side searches fire `SearchPerformed`: MCP `search_docs` (source `mcp`), Ask AI's retrieval (source `assistant`) and the `/ask` endpoint (source `endpoint`). Searches typed into the palette run in the browser and fire nothing, and neither does `GET /_search`.
+Every search fires `SearchPerformed`, with a `source`: MCP `search_docs` (`mcp`), Ask AI's retrieval (`assistant`), the `/ask` endpoint (`endpoint`) and the `/_search` endpoint (`server`), which is what the palette queries on the `server` driver or a custom one.
+
+Searches the palette answers in the browser, from the client index, never reach the server on their own, so the palette reports them in small batches to the set's `_search/report` route, and each one fires `SearchPerformed` with the source `palette`. Only a settled query counts, one the reader stopped typing, so a word typed letter by letter is one search. The route is rate limited to 30 reports a minute per reader and stores nothing. A [static export](static-export.md) has no server, so its pages report nothing. The counts come from the reader's browser: use them for analytics, never as a security signal.
 
 <Event name="SearchPerformed" />
 

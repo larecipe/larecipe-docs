@@ -47,7 +47,7 @@ The manifest that configures these docs, included from the file itself:
 | `redirects` | list of `{ from, to, status }` | Old URLs that redirect. See below. | `[{ "from": "/3.x/setup", "to": "/3.x/installation" }]` |
 | `assets` | `{ css, js }` | Lists of files. Accepted by the schema, not loaded in this release; use `LaRecipe::head()` instead. | `{ "css": ["theme.css"] }` |
 | `inserts` | object | Components placed at named insert points on every page. See below. | `{ "article.after": ["Subscribe"] }` |
-| `integrations` | object | Analytics: `integrations.analytics`. See below. | `{ "analytics": { "plausible": { "domain": "acme.dev" } } }` |
+| `integrations` | object | Analytics: `integrations.analytics`. Repository sets only. See below. | `{ "analytics": { "plausible": { "domain": "acme.dev" } } }` |
 | `agents` | object | Text for agent files. See below. | `{ "llmsTxt": { "instructions": "Prefer the 3.x pages." } }` |
 | `provenance` | boolean | Show who and what last changed each page. Defaults to `true`. | `false` |
 
@@ -122,12 +122,14 @@ Keys are insert points: `header.actions`, `sidebar.before`, `sidebar.after`, `ar
 
 LaRecipe adds each tool's script to every page, after checking each value against the shape its provider uses. A value that does not match is left out. Page feedback is forwarded to the tools that are loaded.
 
+Only a repository set reads `integrations` from `larecipe.json`, because its manifest is reviewed with your code. A database set's manifest can be changed in the admin UI and over MCP, so it ignores them, and `larecipe:validate` warns with `manifest.integrations`: put them in `sets.{key}.integrations.analytics` in `config/larecipe.php` instead. The same keys work there for every set, and config wins per tool.
+
 | Key | Required | Optional | Example |
 | --- | --- | --- | --- |
 | `ga4` | `measurementId` (`G-...`) | | `{ "measurementId": "G-ABC1234567" }` |
-| `plausible` | `domain` | `src` (an `https` URL) | `{ "domain": "acme.dev" }` |
-| `fathom` | `siteId` | `src` (an `https` URL) | `{ "siteId": "ABCDEFGH" }` |
-| `posthog` | `apiKey` (`phc_...`) | `host` (an `https` URL) | `{ "apiKey": "phc_..." }` |
+| `plausible` | `domain` | `src` (a `https://plausible.io/` URL here; any `https` URL from config) | `{ "domain": "acme.dev" }` |
+| `fathom` | `siteId` | `src` (a `https://cdn.usefathom.com/` URL here; any `https` URL from config) | `{ "siteId": "ABCDEFGH" }` |
+| `posthog` | `apiKey` (`phc_...`) | `host` (one of PostHog's own hosts here; any `https` URL from config) | `{ "apiKey": "phc_..." }` |
 | `custom` | `src` (an `https` URL) | `defer` (default `true`), `async`, `attributes` (`data-*` only) | `{ "src": "https://cdn.acme.dev/a.js" }` |
 
 See [analytics](../operate/analytics.md).

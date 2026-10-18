@@ -48,6 +48,7 @@ The tables follow the order of the file. "Per set" says whether a doc set can gi
 | `sets.{key}.source.cache` | string or null | not set | Database sets: the cache store in front of the database. Falls back to `cache.store`, then the app's default store. `array` and `null` stores are refused outside tests. |
 | `sets.{key}.source.disk` | string or null | not set | Database sets: the filesystem disk for assets. `null` uses the default disk. |
 | `sets.{key}.access.mode` | string | `public` | `public`: anyone. `auth`: any signed-in user. `gate`: every page is checked by the `viewLarecipe` gate. Private versions and pages need `viewLarecipe` in every mode. |
+| `sets.{key}.integrations.analytics` | object | not set | GA4, Plausible, Fathom, PostHog or a custom `https` script on every page of the set, with the same keys as in [larecipe.json](manifest.md#integrationsanalytics). The only place a database set reads them from, and the only place a self-hosted Plausible, Fathom or PostHog host counts. For a repository set it wins per tool over `larecipe.json`. See [analytics](../operate/analytics.md). |
 
 ## Defaults for every set
 

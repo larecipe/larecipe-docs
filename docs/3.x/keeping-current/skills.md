@@ -132,7 +132,7 @@ To have every teammate's Claude Code offer it, register the marketplace and enab
 }
 ```
 
-The plugin's hooks run the plugin's own copy of `larecipe-hook`, which then runs `php artisan larecipe:hook` in your app. Your app still needs `larecipe/larecipe` installed; without it the hooks let every command through.
+The plugin's hooks run the plugin's own copy of `larecipe-hook`, which then runs `php artisan larecipe:hook` in your app. The plugin is installed for you, not for one project, so the hook does nothing in a project without LaRecipe: it looks for the nearest Laravel app, stops at the git repository's root, and acts only when that app has `larecipe/larecipe` installed or required. Elsewhere it lets every command through.
 
 Three things to know before you choose the plugin over the installer's files:
 

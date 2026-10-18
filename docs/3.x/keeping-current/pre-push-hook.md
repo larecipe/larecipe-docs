@@ -91,7 +91,7 @@ The installer adds two hooks to `.claude/settings.json`. This is this site's own
 
 The installer merges these into your existing settings and never overwrites them. Other hooks stay where they are, a file that already has a LaRecipe hook is left alone, and a file that is not valid JSON is skipped with a note. `larecipe:install --no-hooks` skips this step.
 
-The script finds your app from `$CLAUDE_PROJECT_DIR`, the payload's working directory or the current directory, walking up to the nearest folder with an `artisan` file, so it also works when the Laravel app sits in a subfolder of the repository.
+The script finds your app from `$CLAUDE_PROJECT_DIR`, the payload's working directory or the current directory, walking up to the nearest folder with an `artisan` file, so it also works when the Laravel app sits in a subfolder of the repository. It stops at the git repository's root, and it acts only when that nearest app has LaRecipe (`vendor/larecipe/larecipe`, or `larecipe/larecipe` in `composer.json`); it never passes it for an app further up. Anywhere else it lets every command through.
 
 ## Codex
 
@@ -106,7 +106,7 @@ Codex reads the same hook shape from `.codex/hooks.json`. Codex gives hooks no p
         "hooks": [
           {
             "type": "command",
-            "command": "\"$(git rev-parse --show-toplevel)/vendor/bin/larecipe-hook\" pre-push --client=codex",
+            "command": "\"$(git rev-parse --show-toplevel)\"/'vendor/bin/larecipe-hook' pre-push --client=codex",
             "timeout": 60
           }
         ]
@@ -118,7 +118,7 @@ Codex reads the same hook shape from `.codex/hooks.json`. Codex gives hooks no p
         "hooks": [
           {
             "type": "command",
-            "command": "\"$(git rev-parse --show-toplevel)/vendor/bin/larecipe-hook\" session-start --client=codex",
+            "command": "\"$(git rev-parse --show-toplevel)\"/'vendor/bin/larecipe-hook' session-start --client=codex",
             "timeout": 30
           }
         ]
@@ -128,7 +128,7 @@ Codex reads the same hook shape from `.codex/hooks.json`. Codex gives hooks no p
 }
 ```
 
-When the app lives in a subfolder of the repository, the path includes that folder. Codex loads project hooks only once you trust the project in `~/.codex/config.toml` and approve the hooks with `/hooks`; the installer reminds you.
+The repository's top folder and the path inside it are quoted separately for the shell, so a folder name can never run as a command. When the app lives in a subfolder of the repository, the path includes that folder. Codex loads project hooks only once you trust the project in `~/.codex/config.toml` and approve the hooks with `/hooks`; the installer reminds you.
 
 ## What the agent is told
 

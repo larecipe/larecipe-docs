@@ -9,6 +9,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Access/Laravel/GateAuthorizer.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Events/AskAiAnswered.php
   - vendor/larecipe/larecipe/src/Domains/Delivery/Events/FeedbackSubmitted.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Controllers/FeedbackController.php
   - vendor/larecipe/larecipe/ui/src/ask/**
   - vendor/larecipe/larecipe/ui/src/regions/AskBar.tsx
   - vendor/larecipe/larecipe/ui/src/regions/Header.tsx
@@ -50,7 +51,7 @@ Set `LARECIPE_ASK=true` in `.env`, or `ai.ask.enabled` in `config/larecipe.php`.
 </Step>
 <Step title="Choose the provider and model (optional)">
 
-`LARECIPE_AI_PROVIDER` names a provider from `config/ai.php`, and `LARECIPE_AI_MODEL` a model. Leave them empty to use `laravel/ai`'s defaults.
+`LARECIPE_AI_PROVIDER` names a provider from `config/ai.php`, and `LARECIPE_AI_MODEL` a model. Leave them empty to use `laravel/ai`'s defaults. For a provider to fall back on, set a list in `config/larecipe.php` (see [settings](#settings)).
 
 </Step>
 </Steps>
@@ -69,9 +70,10 @@ All under `ai.ask` in `config/larecipe.php`:
         'model' => env('LARECIPE_AI_MODEL'),
         'max_steps' => 6,
         'rate_limit' => '10,1',
-        'daily_budget' => null,
+        'daily_budget' => 500,
         'max_messages' => 20,
         'max_question_length' => 2000,
+        'max_history_length' => 20000,
     ],
 ],
 ```
@@ -79,13 +81,14 @@ All under `ai.ask` in `config/larecipe.php`:
 | Key | Controls |
 | --- | --- |
 | `enabled` | Ask AI for the set. Off by default. |
-| `provider` | A provider name from `config/ai.php`. Empty uses `laravel/ai`'s default provider. |
-| `model` | The model. Empty uses the provider's default model. |
+| `provider` | A provider name from `config/ai.php`. Empty uses `laravel/ai`'s default provider. Or a failover list, tried in order when a provider fails: `['anthropic', 'openai']`, or with a model for each: `['anthropic' => '{model}', 'openai' => '{model}']`. |
+| `model` | The model. Empty uses the provider's default model. It applies to a single provider only: a failover list names each provider's model itself. |
 | `max_steps` | How many steps the assistant may take per question: each search, each page read and the answer. |
-| `rate_limit` | Questions per reader, as `"requests,minutes"`. |
-| `daily_budget` | Questions per set per day. `null` means no cap. |
+| `rate_limit` | Questions per reader, as `"requests,minutes"`, counted separately for each set. |
+| `daily_budget` | Questions per set per day, `500` by default. `null` means no cap. |
 | `max_messages` | The longest conversation a reader can send, in messages. |
-| `max_question_length` | The longest question, in characters. |
+| `max_question_length` | The longest question, in characters. It applies to the earlier questions in the conversation too. |
+| `max_history_length` | The most characters the earlier turns of a conversation may hold, all together. |
 
 A set can override any of these in its own entry under `sets`, except `rate_limit`, which is read from the top-level config only.
 
@@ -109,7 +112,7 @@ Keep the user parameter nullable if guests should ever pass: Laravel refuses a g
 1. The reader asks. The reader UI posts the conversation to the version's `_ask` endpoint.
 2. The rate limiter runs first. Then LaRecipe checks, in order: Ask AI is on for the set, the reader may see the version, the `askLarecipe` gate allows them, the conversation and the question are within their limits, and the daily budget has room.
 3. The assistant, a `laravel/ai` agent, gets two tools: the MCP server's own `search_docs` and `read_page`, bound to this reader's set, version and language. Search results and pages pass through the same access checks as every other surface, so private pages and gate blocks the reader may not see never reach the model.
-4. It searches, reads, and writes the answer, within `max_steps`.
+4. It searches, reads, and writes the answer, within `max_steps`. The conversation the browser sends back comes along as history, but only its text: tool results, files and any role other than the reader and the assistant are dropped before the model sees it, since anything in the browser may be forged.
 5. The answer streams back as it is written, followed by its sources.
 
 The assistant works from these instructions, with your set's name and version filled in:
@@ -147,15 +150,15 @@ It runs in the set's own route group, so the set's route middleware applies (`we
 | `200` | The answer, as a stream. |
 | `403` | The `askLarecipe` gate refuses the reader. |
 | `404` | Ask AI is off for the set, or the version does not exist or is hidden from the reader. |
-| `422` | No messages, more than `max_messages`, or an empty question or one longer than `max_question_length`. |
+| `422` | No messages, more than `max_messages`, an empty question, a question (this one or an earlier one) longer than `max_question_length`, or earlier turns longer than `max_history_length` in all. |
 | `429` | The reader hit the rate limit, or the set spent its daily budget. |
 
 ### Rate limit and daily budget
 
 Two limits keep Ask AI's cost in your hands:
 
-- **The rate limit** (`larecipe-ask`) allows `rate_limit` questions per reader, counted per signed-in user, or per IP address for guests. The default `"10,1"` is ten a minute.
-- **The daily budget** caps how many questions a set answers per calendar day, across all readers. It counts in LaRecipe's cache store (`larecipe.cache.store`), and a question counts once it passes the other checks, before the model runs. Past the cap, readers get `429` with "Ask AI has answered all the questions it can today. Search the docs, or try again tomorrow." The count starts again the next day.
+- **The rate limit** (`larecipe-ask`) allows `rate_limit` questions per reader and set, counted per signed-in user, or per IP address for guests. The default `"10,1"` is ten a minute.
+- **The daily budget** caps how many questions a set answers per calendar day, across all readers: 500 unless you change it. It counts in LaRecipe's cache store (`larecipe.cache.store`), and a question counts once it passes the other checks, before the model runs. Past the cap, readers get `429` with "Ask AI has answered all the questions it can today. Search the docs, or try again tomorrow." The count starts again the next day.
 
 ## The stream
 
@@ -184,7 +187,7 @@ LaRecipe stores no questions and no answers. The conversation lives in the reade
 
 `covered` is `false` when the answer opened with "The docs do not cover this": the questions to read first when you look for missing pages. `citations` holds the checked page URLs, and the token counts tell you what the answer cost. Ask AI's tool calls do not fire `McpToolCalled`; each of its searches fires `SearchPerformed` with the source `assistant`.
 
-The Ask panel has no thumbs up or down yet. Feedback still reaches you as `FeedbackSubmitted`, from the "Was this page helpful?" widget under every page and from the MCP `submit_feedback` tool. See [analytics and events](../operate/analytics.md).
+Every finished answer has a thumbs up and a thumbs down. A vote posts to the set's feedback route and fires `FeedbackSubmitted` with `source` set to `ask`, the `question` the answer was for, and the page the reader asked from, so you can read the votes next to `AskAiAnswered`. Configured analytics get the same vote as a `larecipe:feedback` event. The thumbs follow `feedback.enabled`, like the page widget. See [analytics and events](../operate/analytics.md#answer-feedback).
 
 ## What readers see
 
@@ -193,7 +196,7 @@ When Ask AI is on and the gate allows the reader:
 - **An Ask the docs button** in the header. **⌘I** (**Ctrl I** on Windows and Linux) opens it from anywhere.
 - **An Ask bar** docked at the bottom of the article column on wide screens. It is a field, not a floating bubble: type a question, press Enter, and it opens in the Ask panel.
 - **A row in search.** In the command palette (**⌘K**), the first row reads "Ask AI about “your query”" whenever you have typed something, and **Ask the docs** is listed under Actions. Search results stay selected first; the Ask row is selected only when nothing matched.
-- **The Ask panel**, a side sheet next to the page. It opens with "Answers come only from these docs and always cite the pages they used." Answers stream in as formatted Markdown, and each one lists its **Sources** as numbered links with the page title and path. When an answer cites no page, the panel says "No page was cited for this answer, so the docs may not cover it yet." and offers to search for the question instead. Readers can stop an answer while it streams, start a new question, or close the panel with Escape.
+- **The Ask panel**, a side sheet next to the page. It opens with "Answers come only from these docs and always cite the pages they used." Answers stream in as formatted Markdown, and each one lists its **Sources** as numbered links with the page title and path. When an answer cites no page, the panel says "No page was cited for this answer, so the docs may not cover it yet." and offers to search for the question instead. Under each finished answer, a thumbs up and a thumbs down say whether it helped. Readers can stop an answer while it streams, start a new question, or close the panel with Escape.
 
 The panel's code is a separate chunk that loads a moment after the page, or as soon as the reader asks. Readers who cannot use Ask AI get none of this, and none of its code.
 

@@ -178,14 +178,15 @@ Ask AI answers readers' questions from your docs, with citations. It is off by d
         'model' => env('LARECIPE_AI_MODEL'),
         'max_steps' => 6,
         'rate_limit' => '10,1',
-        'daily_budget' => null,
+        'daily_budget' => 500,
         'max_messages' => 20,
         'max_question_length' => 2000,
+        'max_history_length' => 20000,
     ],
 ],
 ```
 
-`rate_limit` is requests and minutes for each reader (`10,1` allows ten questions a minute), and `daily_budget` caps answers per set per day (`null` for no cap). See [Ask AI](../agents/ask-ai.md). The `ai.sync` keys configure [`larecipe:sync`](../keeping-current/sync.md), the docs agent you run on demand, on the same provider unless you set them apart.
+`rate_limit` is requests and minutes for each reader (`10,1` allows ten questions a minute), and `daily_budget` caps answers per set per day (`null` for no cap). `provider` also takes a failover list, tried in order when a provider fails. See [Ask AI](../agents/ask-ai.md). The `ai.sync` keys configure [`larecipe:sync`](../keeping-current/sync.md), the docs agent you run on demand, on the same provider unless you set them apart.
 
 ## Everything else
 

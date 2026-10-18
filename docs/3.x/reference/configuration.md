@@ -84,13 +84,14 @@ Ask AI and `larecipe:sync` need `laravel/ai` installed. Without it, the `ai.ask`
 | Key | Type | Default | Per set | Meaning |
 | --- | --- | --- | --- | --- |
 | `ai.ask.enabled` | boolean | `false` (`LARECIPE_ASK`) | yes | Turns on Ask AI. When the app defines an `askLarecipe` gate, only readers it allows may ask; without one, every reader may. |
-| `ai.ask.provider` | string or null | `null` (`LARECIPE_AI_PROVIDER`) | yes | The `laravel/ai` provider. `null` uses its default. |
-| `ai.ask.model` | string or null | `null` (`LARECIPE_AI_MODEL`) | yes | The model. `null` uses the provider's default. |
-| `ai.ask.max_steps` | integer | `6` | yes | Tool calls the assistant may make for one answer. |
-| `ai.ask.rate_limit` | string | `'10,1'` | no | `requests,minutes` per reader (user, else IP). |
-| `ai.ask.daily_budget` | integer or null | `null` | yes | Answers per set per day. `null` means no cap. |
+| `ai.ask.provider` | string, list or null | `null` (`LARECIPE_AI_PROVIDER`) | yes | The `laravel/ai` provider. `null` uses its default. A list is a failover order, tried when a provider fails: `['anthropic', 'openai']`, or `['anthropic' => '{model}', 'openai' => '{model}']`. |
+| `ai.ask.model` | string or null | `null` (`LARECIPE_AI_MODEL`) | yes | The model. `null` uses the provider's default. Applies to a single provider only. |
+| `ai.ask.max_steps` | integer | `6` | yes | Steps the assistant may take for one answer. |
+| `ai.ask.rate_limit` | string | `'10,1'` | no | `requests,minutes` per reader (user, else IP), counted separately for each set. |
+| `ai.ask.daily_budget` | integer or null | `500` | yes | Answers per set per day. `null` means no cap. |
 | `ai.ask.max_messages` | integer | `20` | yes | Messages one conversation may hold. |
-| `ai.ask.max_question_length` | integer | `2000` | yes | The longest question, in characters. |
+| `ai.ask.max_question_length` | integer | `2000` | yes | The longest question, in characters, this one and the earlier ones. |
+| `ai.ask.max_history_length` | integer | `20000` | yes | The most characters the earlier turns of a conversation may hold, all together. |
 | `ai.sync.provider` | string or null | `null` (`LARECIPE_AI_PROVIDER`) | no | The `laravel/ai` provider for [`larecipe:sync`](../keeping-current/sync.md). `null` uses `laravel/ai`'s default. `--provider` overrides it for one run. |
 | `ai.sync.model` | string or null | `null` (`LARECIPE_AI_MODEL`) | no | The model. `null` uses the provider's default. `--model` overrides it for one run. |
 | `ai.sync.max_pages` | integer | `20` | no | Pages one run may change. `--max-pages` overrides it for one run. |

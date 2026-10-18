@@ -37,7 +37,7 @@ One `larecipe.json` per doc set, at the root of its content. It holds presentati
 | `assets.css` | list of string |  |
 | `assets.js` | list of string |  |
 | `inserts` | object |  |
-| `integrations` | object |  |
+| `integrations` | object | Repository sets only. A database set takes its analytics from config/larecipe.php (sets.{key}.integrations), and so does a self-hosted Plausible, Fathom or PostHog host. |
 | `integrations.analytics` | object |  |
 | `integrations.analytics.ga4` | object |  |
 | `integrations.analytics.plausible` | object |  |

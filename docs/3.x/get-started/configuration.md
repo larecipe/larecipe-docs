@@ -185,7 +185,7 @@ Ask AI answers readers' questions from your docs, with citations. It is off by d
 ],
 ```
 
-`rate_limit` is requests and minutes for each reader (`10,1` allows ten questions a minute), and `daily_budget` caps answers per set per day (`null` for no cap). The `ai.sync` keys are for `larecipe:sync`, the server-side docs agent, which is not released yet. See [Ask AI](../agents/ask-ai.md).
+`rate_limit` is requests and minutes for each reader (`10,1` allows ten questions a minute), and `daily_budget` caps answers per set per day (`null` for no cap). See [Ask AI](../agents/ask-ai.md). The `ai.sync` keys configure [`larecipe:sync`](../keeping-current/sync.md), the docs agent you run on demand, on the same provider unless you set them apart.
 
 ## Everything else
 
@@ -226,6 +226,7 @@ Sets read `review`, `search`, `ai`, `mcp`, `agents` and `migrations` this way, p
 | `LARECIPE_CACHE_STORE` | `cache.store` |
 | `LARECIPE_ASK` | `ai.ask.enabled` |
 | `LARECIPE_AI_PROVIDER`, `LARECIPE_AI_MODEL` | The AI provider and model |
+| `LARECIPE_SYNC_TOKEN`, `LARECIPE_SYNC_QUEUE` | The token for `larecipe:sync --remote`, and the queue for `--queue` runs |
 | `LARECIPE_HOOKS` | `off` turns the pre-push check off for a session |
 | `LARECIPE_DEFAULT_BRANCH` | The branch the agent instructions compare against (detected from `origin/HEAD` when empty) |
 

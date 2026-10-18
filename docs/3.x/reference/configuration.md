@@ -1,5 +1,4 @@
 ---
-# TODO(verify): the ai.sync.* rows say "not read yet" because larecipe:sync is not in src yet; update them when it lands.
 title: Configuration
 description: Every key in config/larecipe.php with its type, default and meaning, which keys a doc set may override, and the environment variables the file reads.
 sources:
@@ -79,7 +78,7 @@ These keys are read from the top level only.
 
 ## AI
 
-Ask AI needs `laravel/ai` installed. Without it, the `ai.ask` keys have no effect.
+Ask AI and `larecipe:sync` need `laravel/ai` installed. Without it, the `ai.ask` keys have no effect and `larecipe:sync` stops with the install steps.
 
 | Key | Type | Default | Per set | Meaning |
 | --- | --- | --- | --- | --- |
@@ -91,10 +90,14 @@ Ask AI needs `laravel/ai` installed. Without it, the `ai.ask` keys have no effec
 | `ai.ask.daily_budget` | integer or null | `null` | yes | Answers per set per day. `null` means no cap. |
 | `ai.ask.max_messages` | integer | `20` | yes | Messages one conversation may hold. |
 | `ai.ask.max_question_length` | integer | `2000` | yes | The longest question, in characters. |
-| `ai.sync.provider` | string or null | `null` (`LARECIPE_AI_PROVIDER`) | not read yet | For `larecipe:sync`, which is not in this release. |
-| `ai.sync.model` | string or null | `null` (`LARECIPE_AI_MODEL`) | not read yet | For `larecipe:sync`. |
-| `ai.sync.max_pages` | integer | `20` | not read yet | For `larecipe:sync`. |
-| `ai.sync.max_steps` | integer | `30` | not read yet | For `larecipe:sync`. |
+| `ai.sync.provider` | string or null | `null` (`LARECIPE_AI_PROVIDER`) | no | The `laravel/ai` provider for [`larecipe:sync`](../keeping-current/sync.md). `null` uses `laravel/ai`'s default. `--provider` overrides it for one run. |
+| `ai.sync.model` | string or null | `null` (`LARECIPE_AI_MODEL`) | no | The model. `null` uses the provider's default. `--model` overrides it for one run. |
+| `ai.sync.max_pages` | integer | `20` | no | Pages one run may change. `--max-pages` overrides it for one run. |
+| `ai.sync.max_steps` | integer | `30` | no | Steps one run may take. `--max-steps` overrides it for one run. |
+| `ai.sync.timeout` | integer | `120` | no | Seconds per provider request. |
+| `ai.sync.remote_token` | string or null | `null` (`LARECIPE_SYNC_TOKEN`) | no | The token a `--remote` run sends to a production set's MCP endpoint, for a user its `manageLarecipe` gate allows. |
+| `ai.sync.deny` | list of strings | `[]` | no | Paths or globs the docs agent may never read, added to the built-in list (dotfiles, `config/`, `storage/`, `vendor/`, keys and the rest). |
+| `ai.sync.queue` | string or null | `null` (`LARECIPE_SYNC_QUEUE`) | no | The queue for `--queue` runs. `null` uses the default queue. |
 
 ## MCP
 
@@ -195,6 +198,8 @@ The file reads these variables. Their values belong in `.env`, never in the docs
 - `LARECIPE_ASK`
 - `LARECIPE_AI_PROVIDER`
 - `LARECIPE_AI_MODEL`
+- `LARECIPE_SYNC_TOKEN`
+- `LARECIPE_SYNC_QUEUE`
 - `LARECIPE_HOOKS` (also read by `larecipe:hook` directly, so `LARECIPE_HOOKS=off` turns the check off for one session)
 - `LARECIPE_DEFAULT_BRANCH`
 - `LARECIPE_UI_DEV`

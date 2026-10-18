@@ -1,5 +1,4 @@
 ---
-# TODO(verify): larecipe:sync is listed under "Coming later"; move it into a group with a live <Artisan> when it lands.
 title: Artisan commands
 description: Every larecipe:* artisan command, grouped by job, with its usage and options read from the running app.
 sources:
@@ -91,6 +90,12 @@ The command the agent hooks and the git hook call. You do not run it by hand: `p
 Installs or removes the git pre-push check, for people who push without an agent. It warns by default; `--strict` holds a push that leaves pages stale. It never replaces an existing hook.
 
 <Artisan command="larecipe:hooks:git" />
+
+### larecipe:sync
+
+Runs a docs agent inside your app, on your own `laravel/ai` provider key, to update the pages a change left stale, the pages you name, or the whole set with `--audit`. It shows its plan and asks before it spends a token. On demand only, never in CI. See [larecipe:sync](../keeping-current/sync.md).
+
+<Artisan command="larecipe:sync" />
 
 ## Agents
 
@@ -200,7 +205,6 @@ These commands are not in this release. Do not script against them yet.
 
 | Command | Status | What it will do |
 | --- | --- | --- |
-| `larecipe:sync` | Coming soon, being merged | Run a docs agent built on `laravel/ai`, on your provider key, on demand. |
 | `larecipe:ui:eject` | Coming soon | Copy the reader UI's source, or one component of it, into your app. |
 | `larecipe:ui:diff` | Coming soon | Show upstream UI changes since an eject. |
 

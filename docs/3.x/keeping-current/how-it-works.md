@@ -1,6 +1,6 @@
 ---
 title: How it works
-description: How LaRecipe maps each code change to the docs pages it affects, and the four layers that get those pages updated in the same push as the code.
+description: Every page lists the code it describes, larecipe:affected maps each change to the pages it made stale, and your coding agent updates them in the same push as the code.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Sync/**
   - vendor/larecipe/larecipe/config/larecipe.php
@@ -8,11 +8,9 @@ sources:
 
 # How it works
 
-Keeping docs current is a detection problem first and a writing problem second. Every page lists the code it describes in `sources:`. When code changes, `php artisan larecipe:affected` maps the changed files to the pages that describe them, with no AI and no network. The coding agent that made the change then updates those pages before it pushes, so the docs land in the same pull request as the code.
+Every page lists the code it describes in its `sources:` frontmatter. When code changes, `php artisan larecipe:affected` maps the changed files to the pages that describe them, with no AI and no network. The coding agent that made the change then updates those pages before it pushes, so the docs land in the same pull request as the code.
 
-You do not need to remember any of this day to day. The installer sets it up, and your agent follows it.
-
-## The loop
+You do not run any of this by hand. The installer sets it up, and your agent follows it.
 
 ```text
 Change the code
@@ -22,21 +20,11 @@ Your agent updates the affected pages in the same pull request
 You review them with the code (or let them through, in auto mode)
    ↓
 Every reader, human or agent, gets the current answer
-   ↓
-Your agent reads the docs back while making the next change
 ```
-
-In kitchen terms: the code change fires the ticket, your agent plates the docs, and you sign them off at the pass.
-
-## The Same-PR rule
-
-Docs ship in the same push as the code they describe: as Markdown files for a [repository set](../sources/repository.md), as a [docs migration](../sources/docs-migrations.md) for a database set. There is no separate docs pull request and no AI agent running in CI.
-
-The reason is context. The agent that changed the code knows exactly what changed and why, right now. In an hour, or in a follow-up pull request written by someone else, that context is gone.
 
 ## Declare what a page documents
 
-A page's `sources:` frontmatter lists the code it documents, as globs from the project root:
+List the code a page documents as paths or globs from the project root:
 
 ```yaml
 ---
@@ -45,20 +33,29 @@ description: Receive signed events from the app and verify them.
 sources:
   - app/Webhooks/**
   - routes/webhooks.php
-  - routes/api.php#webhooks
 ---
 ```
 
+A page without `sources:` is invisible to drift detection. [`larecipe:sources:suggest`](#find-sources-for-pages-that-have-none) proposes them from what the page already mentions.
+
+<Accordion title="Glob syntax and regions">
+
 - `*` stays inside one folder, `**` crosses folders, `?` is one character, `{a,b}` picks one of several and `[abc]` is a character class: the dialect of `.gitignore` and GitHub Actions.
 - A path without wildcards matches that file, or everything inside it when it names a folder. `app/Billing` and `app/Billing/**` are the same.
-- `path#region` narrows a source to the lines between `#region webhooks` and the next `#endregion` in that file, behind any comment prefix (`// #region webhooks`). The page is affected only when a change touches those lines. When LaRecipe cannot find the region or the changed lines, the whole file counts: a false "stale" costs a look, a false "fine" costs a wrong page.
+- `path#region` narrows a source to the lines between `#region webhooks` and the next `#endregion` in that file, behind any comment prefix (`// #region webhooks`). Write it as `routes/api.php#webhooks`. The page is affected only when a change touches those lines. When LaRecipe cannot find the region or the changed lines, the whole file counts: a false "stale" costs a look, a false "fine" costs a wrong page.
 - Changes inside the docs folder never count as code changes for other pages.
 
-A page without `sources:` is invisible to drift detection. [`larecipe:sources:suggest`](#find-sources-for-pages-that-have-none) proposes them.
+</Accordion>
+
+## Docs ship with the code
+
+Docs ship in the same push as the code they describe: as Markdown files for a repository set, as a [docs migration](../sources/docs-migrations.md) for a database set. There is no separate docs pull request and no AI agent running in CI.
+
+The reason is context. The agent that changed the code knows exactly what changed and why, right now. In an hour, or in a follow-up pull request written by someone else, that context is gone.
 
 ## The layers
 
-Four layers, each optional above the first, and all of them ask the same question of the same code. The agent instructions, the pre-push hook, the git hook and the CI check can never disagree about which pages are stale.
+Four layers, each optional above the first. All of them ask the same question of the same code, so they never disagree about which pages are stale.
 
 | Layer | What it is | When it runs | Writes |
 | --- | --- | --- | --- |
@@ -67,14 +64,13 @@ Four layers, each optional above the first, and all of them ask the same questio
 | L2, the pre-push check | An agent hook on `git push` and `gh pr create` that holds the push once and lists the stale pages; an optional git hook for people | When a change is about to leave the machine | Nothing |
 | L3, the optional CI check | `larecipe:validate` and `larecipe:affected` on each pull request | On pull requests | Nothing |
 
-- **L0** is free and reproducible: the same inputs always give the same answer. Everything else builds on it.
-- **L1** is plain text every AI session reads: update the affected docs before you push. See [agent instructions](agent-instructions.md) and [skills](skills.md).
-- **L2** catches the moment an agent forgets. It never calls an LLM. See [the pre-push hook](pre-push-hook.md).
-- **L3** is a safety net for pushes made without an agent. It fails or comments, and never writes. See [the optional CI check](ci-check.md).
+- **L1** is plain text every AI session reads. See [agent instructions](agent-instructions.md) and [skills](skills.md).
+- **L2** catches the moment an agent forgets, and never calls an LLM. See [the pre-push hook](pre-push-hook.md).
+- **L3** is a safety net for pushes made without an agent. See [the CI check](ci-check.md).
 
-The agent writes the docs because it has the context. Nothing downstream writes them for it. When you want an agent to draft an update without a local session, [`larecipe:sync`](sync.md) runs one on demand.
+The agent writes the docs because it has the context. Nothing downstream writes them for it. To have an agent draft an update without a local session, run [`larecipe:sync`](sync.md) on demand.
 
-## Recommended defaults
+<Accordion title="Recommended setups">
 
 | Team | Turn on | Install with |
 | --- | --- | --- |
@@ -83,11 +79,13 @@ The agent writes the docs because it has the context. Nothing downstream writes 
 | No local coding agents | L0, L2 (git hook), L3; `larecipe:sync` on demand when someone wants an agent to draft the update | `php artisan larecipe:install --agents=none --git-hook=warn --ci=fail` |
 | Database set | L0, L1, L2 (the local MCP server writes docs migrations into the same push), L3 | `php artisan larecipe:install --driver=database --ci=fail` |
 
-Every flag is explained in [installation](../get-started/installation.md). You can add a layer later by running the installer again or the command for that layer.
+Every flag is explained in [installation](../get-started/installation.md). Add a layer later by running the installer again, or the command for that layer.
+
+</Accordion>
 
 ## larecipe:affected
 
-`larecipe:affected` answers one question: which docs pages does this change touch, and did the change update them?
+`larecipe:affected` answers one question: which docs pages does this change touch, and did the change update them? This is what your agent runs before it pushes:
 
 ```bash
 php artisan larecipe:affected --uncommitted --base=main
@@ -108,15 +106,15 @@ Drifted earlier (what they document changed after they were last updated):
 Update the stale pages with the larecipe-update-docs skill, then run php artisan larecipe:validate.
 ```
 
-### Stale, updated and drifted
-
 - **Stale**: a changed file matches the page's `sources:`, and the page itself did not change in the same range. These are the pages to update.
-- **Updated**: the page changed in the same range as its code. For a repository set that means its Markdown file changed. For a database set it means a changed docs migration in the migrations folder names the page.
-- **Drifted earlier**: pages this change does not touch, whose sources changed in a commit after the page was last updated. LaRecipe names that commit (`stale since`), so you can see when the page fell behind and why. Drift looks at whole files, even for `path#region` sources. For a database page, "last updated" is the page's own update time.
+- **Updated**: the page changed in the same range as its code: its Markdown file, or, for a database set, a changed docs migration that names it.
+- **Drifted earlier**: pages this change does not touch, whose sources changed in a commit after the page was last updated. LaRecipe names that commit, so you can see when the page fell behind. `--no-drift` skips this part.
 
-`--no-drift` skips the drift report. The pre-push hook and the CI check use it, because they only care about the change at hand.
+The same check is the `affected_pages` tool on the local [MCP server](../agents/mcp.md).
 
-### Choose the range
+<AccordionGroup>
+
+<Accordion title="Choose the range">
 
 | You run | It compares |
 | --- | --- |
@@ -127,7 +125,9 @@ Update the stale pages with the larecipe-update-docs skill, then run php artisan
 
 When the base is not a known branch or commit, the report says so and suggests `git fetch origin`. In CI the base is the pull request's target, `--base=origin/${{ github.base_ref }}`.
 
-### Formats
+</Accordion>
+
+<Accordion title="Formats: text, json, github and markdown">
 
 `--format` picks who reads the report:
 
@@ -135,6 +135,8 @@ When the base is not a known branch or commit, the report says so and suggests `
 - `json`: for programs and agents. A `summary` with counts, `changed_files`, each affected page with its `status` (`stale` or `updated`), `reason`, `matched_sources` and `changed_files`, the `drift` list with each page's `stale_since` commit, and any `notes`.
 - `github`: GitHub Actions annotations. Each stale page becomes a warning on its file (an error with `--fail-on-stale`), drift becomes a notice, and inside a GitHub Actions run the command also adds a Markdown report to the job summary and sets a `stale` step output.
 - `markdown`: a pull request comment, with a table of stale pages, the sources that matched and the files that changed. It also sets the `stale` step output.
+
+An abridged `json` report (each page also carries its `version`, `locale` and full `sources`):
 
 ```json
 {
@@ -154,54 +156,58 @@ When the base is not a known branch or commit, the report says so and suggests `
 }
 ```
 
-The JSON above is abridged: each page also carries its `version`, `locale` and full `sources`.
-
-### Fail a build
-
 `--fail-on-stale` makes the command exit with `1` when the change leaves any page stale. The [CI check](ci-check.md) uses it in fail mode.
 
-### Narrow it down
+</Accordion>
+
+<Accordion title="Sets, versions and translations">
 
 - `--set=handbook` checks one doc set instead of all of them.
-- `--docs-version=2.x` checks another version. `--docs-version=all` checks every version. By default each set's default version is checked.
-- `--locale=ar` checks translations, below.
-
-### Translations
-
-With `--locale`, LaRecipe checks a language's pages against the default language:
+- `--docs-version=2.x` checks another version, and `--docs-version=all` checks every version. By default each set's default version is checked.
+- `--locale=ar` checks a language's pages against the default language:
 
 ```bash
 php artisan larecipe:affected --uncommitted --base=main --locale=ar
 ```
 
-A translation is listed as stale when the code it documents changed (a translation without `sources:` of its own uses its original's), or when its original page changed in the range and the translation did not. Under drift, it lists translations whose original changed in a commit after the translation was last updated. See [languages](../writing/languages.md).
+A translation is stale when the code it documents changed (a translation without `sources:` of its own uses its original's), or when its original page changed in the range and the translation did not. Under drift, it lists translations whose original changed in a commit after the translation was last updated. See [languages](../writing/languages.md).
 
-### Database sets
+</Accordion>
 
-A database set's pages are rows, so `larecipe:affected` reads their `sources:` from the local database. When that database has no pages, the report says so. Refresh it from a production export with `larecipe:pull` (`--from` takes a bundle made on production with `larecipe:source:export`). See [the database source](../sources/database.md).
+<Accordion title="Database sets">
 
-### Every option
+A database set's pages are rows, so `larecipe:affected` reads their `sources:` from the local database. "Updated" means a changed docs migration in the migrations folder names the page, and for drift, "last updated" is the page's own update time. When the local database has no pages, the report says so. Refresh it from a production export with `larecipe:pull` (`--from` takes a bundle made on production with `larecipe:source:export`). See [docs migrations](../sources/docs-migrations.md#start-from-what-is-live).
+
+</Accordion>
+
+<Accordion title="Every option">
 
 Read live from this site's command registry:
 
 <Artisan command="larecipe:affected" />
 
-The same check is available to agents as the `affected_pages` tool on the local MCP server. See [the MCP server](../agents/mcp.md).
+</Accordion>
+
+</AccordionGroup>
 
 ## Find sources for pages that have none
 
-`larecipe:sources:suggest` proposes `sources:` for pages that declare none, from what the page already mentions:
+`larecipe:sources:suggest` proposes `sources:` for pages that declare none, from the classes, commands and routes they mention. Add `--apply` to write them into the pages:
+
+```bash
+php artisan larecipe:sources:suggest
+```
+
+<Accordion title="What it reads, and its options">
+
+It looks for:
 
 - fully qualified class names in inline code, such as `App\Billing\Invoice` or `App\Billing\Invoice::refund()`;
 - artisan commands in inline code (`orders:prune`, `php artisan orders:prune`) and in shell code blocks;
 - route names, as `route('orders.store')` or a bare `orders.store`;
 - live references: `<Route name="...">`, `<Artisan command="...">`, `<Model name="...">` (short names in `App\Models`) and `<Event name="...">` (short names in `App\Events`).
 
-It asks the running app where each one is defined (Composer's class map, the console kernel, the router) and keeps only files inside your project, never `vendor/`.
-
-```bash
-php artisan larecipe:sources:suggest
-```
+It asks the running app where each one is defined (Composer's class map, the console kernel, the router) and keeps only files inside your project, never `vendor/`. Without `--apply` it prints its suggestions:
 
 ```text
 docs/billing/refunds.md
@@ -210,15 +216,17 @@ docs/billing/refunds.md
     app/Http/Controllers/RefundController.php  <Route name="refunds.store" />
 ```
 
-- `--apply` adds the suggestions to repository pages that declare no sources yet. It inserts one `sources:` line and leaves the rest of the frontmatter exactly as it was. Add `--dry-run` to see what it would change first.
+- `--apply` adds the suggestions to repository pages that declare no sources yet. It inserts one `sources:` line and leaves the rest of the frontmatter exactly as it was. `--dry-run` shows what it would change.
 - `--page=billing/refunds` limits it to one page, `--set` to one doc set, and `--all` also suggests for pages that already declare sources.
 - `--json` prints the suggestions for an agent.
-- It reads each set's default version and language. Database pages are never edited by `--apply`; update their `sources:` through the MCP author tools.
+- It reads each set's default version and language. `--apply` never edits database pages; update their `sources:` through the MCP author tools.
 
 <Artisan command="larecipe:sources:suggest" />
+
+</Accordion>
 
 ## Next
 
 - [Agent instructions](agent-instructions.md): the `AGENTS.md` block every AI session reads.
 - [The pre-push hook](pre-push-hook.md): what happens when an agent pushes stale docs.
-- [The optional CI check](ci-check.md): the safety net for pushes made without an agent.
+- [The CI check](ci-check.md): go deeper with a safety net for pushes made without an agent.

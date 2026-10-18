@@ -1,6 +1,6 @@
 ---
 title: Database and the admin UI
-description: Keep a doc set in your app's database, always behind a persistent cache, with a revision for every change, review for agent changes made outside a pull request, and an admin UI to manage it.
+description: Keep a doc set in your app's database, always behind a persistent cache, with a revision for every change and an admin UI to manage it.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Sources/Laravel/DatabaseSource.php
   - vendor/larecipe/larecipe/src/Domains/Sources/Laravel/DatabaseSourceFactory.php
@@ -24,29 +24,32 @@ sources:
 
 # Database and the admin UI
 
-The database source keeps a doc set's pages, navigation and manifest in your app's database instead of in files. Choose it when people who do not work in the repository manage the docs in an admin UI, when you generate pages from data, or when docs content must stay out of the repository.
-
-It keeps the same format as the [repository source](repository.md) (Markdown with frontmatter, `larecipe.json`, `navigation.json`), so you can [switch](switching.md) at any time. It always runs behind a persistent cache, every change is a revision with provenance, and changes made in a pull request travel as [docs migrations](docs-migrations.md). Most teams start with the repository.
-
-## Set it up
+The database source keeps a doc set's pages, navigation and manifest in your app's database instead of in files. Choose it when people who do not work in the repository manage the docs in an admin UI, when you generate pages from data, or when docs content must stay out of the repository. Most teams start with the [repository source](repository.md), and you can [switch](switching.md) at any time: both keep the same format.
 
 Point a set's source at the database:
 
-```php
-// config/larecipe.php
+```php title="config/larecipe.php"
 'sets' => [
     'handbook' => [
         'route' => ['prefix' => 'handbook'],
         'source' => [
             'driver' => 'database',
-            'connection' => null,
             'cache' => 'redis',
-            'disk' => 's3',
         ],
         'access' => ['mode' => 'auth'],
     ],
 ],
 ```
+
+Then create the tables, and give the set a persistent cache store (`redis`, `database`, `file` or `memcached`):
+
+```bash
+php artisan migrate
+```
+
+Fill it by [moving an existing set](switching.md), in [the admin UI](#the-admin-ui), or by letting your coding agent write pages through the local MCP author tools. A new app can start here with `php artisan larecipe:install --driver=database`, which also writes a starter [docs migration](docs-migrations.md) with an Introduction page.
+
+<Accordion title="Every source key">
 
 | Key | Controls |
 | --- | --- |
@@ -54,33 +57,153 @@ Point a set's source at the database:
 | `source.cache` | The cache store the set runs behind. Without it, `larecipe.cache.store`, then your default store. |
 | `source.disk` | The filesystem disk for assets. `null` uses the default disk. |
 
-Then:
-
-<Steps>
-<Step title="Create the tables">
-
-```bash
-php artisan migrate
-```
-
 When any set uses the database driver, LaRecipe loads its tables migration from the package, together with the docs migrations folder. To change the tables, publish the migration first with `php artisan vendor:publish --tag=larecipe-migrations`; once a `*_create_larecipe_tables.php` file exists in `database/migrations`, the package copy is no longer loaded.
 
-</Step>
-<Step title="Use a persistent cache store">
+</Accordion>
 
-`redis`, `database`, `file` or `memcached`. See [always behind a cache](#always-behind-a-cache).
+## How changes go live
 
-</Step>
-<Step title="Fill it">
+Every change to a database set is a revision, with who made it and where it came from. Whether it goes live at once depends on where it came from:
 
-Move an existing repository set with `larecipe:source:move repository database`, load a bundle with `larecipe:source:import`, write pages in [the admin UI](#the-admin-ui), or let your coding agent write them through the local MCP author tools. See [switching sources](switching.md).
+| The change came from | It goes live |
+| --- | --- |
+| A docs migration, applied by `php artisan migrate` on deploy | At once: the pull request was the review. |
+| Your coding agent's local MCP session | At once in your local database, and it is written into the branch's [docs migration](docs-migrations.md). |
+| A person in the admin UI | At once, unless they save it as a draft. |
+| An agent through the web MCP author tools, outside a pull request | As a draft under `review: required`, at once under `review: auto`. |
 
-</Step>
-</Steps>
+Every writer is validated (a page with errors is refused, and nothing is written) and can never silently overwrite a newer edit. Nothing is lost: a revert restores an earlier revision as a new one, and a deleted page can be restored. See [review modes](../keeping-current/review-modes.md).
 
-`php artisan larecipe:install --driver=database` sets this up for a new app, with a starter docs migration (`database/migrations/docs/{timestamp}_docs_introduction.php`) that gives the set its name and an Introduction page, so `/docs` works right after `php artisan migrate`. See [installation](../get-started/installation.md).
+<Accordion title="Revisions, conflicts and events">
 
-## The tables
+A writer can say which version of a page it read (its content hash). If the page changed since, the write is refused and the writer is told to read it again. A docs migration keeps its version as a `conflict` draft instead; see [docs migrations](docs-migrations.md).
+
+A revision is `draft`, `published`, `superseded`, `rejected`, `reverted` or `conflict`. At most one revision per page, navigation or manifest is `published` at a time. Publishing a draft marks the previous revision `superseded`. A revert marks the one it replaced `reverted`, so a revert can itself be reverted.
+
+Each step fires an event for your own tools: `PageWritten`, `DraftCreated`, `DraftPublished`, `DraftRejected` and `ContentChanged`. See the [events reference](../reference/events.md).
+
+</Accordion>
+
+## Always behind a cache
+
+A database set never reads the database to serve a cached page. Every database set runs behind a cache layer that cannot be turned off, and the store must keep data: the `array` and `null` stores are refused outside tests, `larecipe:validate` reports them as `cache.store`, and `larecipe:doctor` flags them.
+
+When live content changes, LaRecipe warms the set's cache on your queue, so run a queue worker. On deploy, run `php artisan larecipe:cache:warm` after `migrate`; [deployment](../operate/deployment.md) has the full script.
+
+<Accordion title="How the cache works">
+
+- **One fingerprint per set.** It comes from the highest published revision, the number of publishes and the state of the assets table, and it lives in the cache store. Every write, publish, reject and revert reads it again from the database.
+- **Everything else is cached under it, with no expiry:** the manifest, the page lists, each page, the navigation and assets up to 1 MB. A new fingerprint makes every old entry unreachable at once, so nothing is ever purged by hand. Larger assets are read from their disk.
+- **Review data is never cached.** Drafts and revision history are read only to review them, and must always be current.
+- **Warming.** When live content changes (a publish, a revert, a docs migration, a source move), LaRecipe dispatches `ContentChanged`. Its own queued listener warms the set after the database transaction commits. `larecipe:cache:warm` reads the fingerprint from the database, then caches the manifest and, for every version and locale, the page list, each page and the navigation. Without `--set`, it warms every database set.
+
+<Event name="ContentChanged" />
+
+</Accordion>
+
+## Stricter content rules
+
+People who edit a database set in the admin UI or over MCP may be less trusted than your codebase, so a database set holds its pages to tighter rules than a repository set:
+
+- **Raw HTML is always escaped**, and every page the set renders also goes through an HTML sanitizer. `html_input` has no effect. See [Markdown](../writing/markdown.md#raw-html).
+- **Every component keeps only the props it declares**, your own components included.
+- **Analytics come from `config/larecipe.php` only** (`sets.{key}.integrations.analytics`). Integrations in the set's `larecipe.json` are ignored. See [analytics](../operate/analytics.md).
+- **Links in navigation and `larecipe.json`** must be `http`, `https` or `mailto` URLs or paths on your site. A write with any other link is refused.
+- **Snippet includes** (`<<< @/...`) resolve nowhere until you give the set a folder of its own in `sets.{key}.snippets.root`.
+
+## The admin UI
+
+Every doc set gets an admin area at `/{prefix}/_admin`: for a set at `/handbook` that is `/handbook/_admin`. A database set gets the full editor. A repository set gets a read-only overview (the validation report, agent readiness and the stale pages), because its pages are edited in git.
+
+The `manageLarecipe` gate decides who gets in, with the set's key as its argument. Everyone else gets a 403. Until you define the gate, only signed-in users in a local environment pass, so define it for production:
+
+```php title="app/Providers/AppServiceProvider.php"
+Gate::define('manageLarecipe', fn (User $user, string $set) => $user->is_admin);
+```
+
+Every change made in the admin is validated, saved as a revision and attributed to the signed-in person.
+
+### The pass: the review queue
+
+The pass is where changes wait for a person, named after the counter in a restaurant kitchen where every plate is checked before it leaves. Docs migration conflicts come first, then drafts. Publish a change, reject it with a reason, or edit it and publish your own version.
+
+<Accordion title="Conflicts and drafts at the pass">
+
+Each change waiting there is a ticket, and the sidebar shows how many wait.
+
+A conflict is a deploy's change held back because production changed after the migration was written. It shows both sides, rendered by the server or as source, with three ways to resolve it: keep production, take the migration, or edit a merge.
+
+Drafts are changes from agents that worked outside a pull request, and drafts people saved. Each shows its provenance (who or which agent, and its summary), a rendered diff and a source diff. A rejection reason is readable by the agent that wrote the draft. With `review: auto`, agents publish on their own, so the pass also lists what they published lately, each one click from a revert.
+
+</Accordion>
+
+### History and activity
+
+Every page, each version's navigation and the settings have a history you can restore from. The activity screen lists every change to the set, and is where you export admin edits as a docs migration to commit with a pull request.
+
+<Accordion title="Restoring, and bringing admin edits back to git">
+
+A history lists every revision, newest first, each with a diff against the one it replaced, including the revisions each docs migration created. A revision readers once saw can be restored. The restore is a new revision, so it can be undone too.
+
+Edits in the admin UI are direct database changes, saved as revisions. They create no migration files on their own. To carry chosen changes to every environment through a pull request, select them on the activity screen and export them as one docs migration: the admin shows the file, to copy or download, and you commit it. Where those changes are already live, each of its operations does nothing; anywhere that drifted, it becomes a conflict at the pass instead of overwriting.
+
+To move the whole set into git, `php artisan larecipe:source:export` writes it out as files, and `larecipe:source:move database repository` moves it back for good. See [switching sources](switching.md).
+
+</Accordion>
+
+### Other screens
+
+<AccordionGroup>
+
+<Accordion title="Overview">
+
+The number of pages, the conflicts and drafts waiting for review, the review mode and the version. Under that are the validation report, the same one `larecipe:validate` prints, and an agent readiness card: the [`larecipe:doctor`](../operate/validation.md#larecipedoctor) report, graded, with a fix for each finding. There are no traffic dashboards: analytics go to your own tools.
+
+</Accordion>
+
+<Accordion title="Pages and navigation">
+
+The page tree is the version's navigation, for one language at a time. Drag pages and groups to reorder them or to move a page into another group, or focus a handle and press Alt with the arrow keys. Create pages and groups, rename or remove a group (its pages stay), take a page out of the navigation, or delete it. Pages the navigation does not list wait under the tree, ready to be listed, and new pages proposed as drafts link to their review. A JSON view edits the same navigation as raw `navigation.json`.
+
+A version without `navigation.json` starts from the tree its pages imply. There, hiding a page sets `hidden: true` in its frontmatter, and saving a new order writes the tree as the version's `navigation.json`.
+
+</Accordion>
+
+<Accordion title="The editor">
+
+Pages open in a Markdown editor (CodeMirror) with a live preview rendered by LaRecipe's own server renderer, so the preview is exactly what readers will see, components included. A component palette lists every component the server can render (the built-ins, live references, gate blocks and your own) and inserts one at the cursor with its props filled in. Validation issues show as you type, marked on the line they point at and listed under the editor. The frontmatter has a form generated from its JSON Schema, with a switch to edit the raw YAML.
+
+Saving publishes at once, or saves a draft for review instead. Cmd+S or Ctrl+S publishes. Each save is written against the version of the page the editor loaded. If someone changed the page in the meantime, nothing is overwritten: the editor shows their version against yours, and you load theirs or keep yours. A page can also be moved to a new path or deleted, and a deleted page stays in its history.
+
+</Accordion>
+
+<Accordion title="Assets">
+
+Drop images and files on the assets screen to upload them to the set's disk, under `larecipe/{set}/{version}/`. Each asset shows the path to paste into Markdown and the pages that use it. Deleting an asset that a page still uses asks you to confirm, and names those pages.
+
+Assets are not revisioned; the pages that use them are. Docs migrations do not carry assets: upload them here, or reference images by URL. A source move or a bundle import copies them.
+
+</Accordion>
+
+<Accordion title="Settings">
+
+The settings screen edits the set's `larecipe.json`: a form generated from its JSON Schema for the name, logo, theme tokens, versions, locales, navbar links, redirects and the description agents read, with a switch to raw JSON for the rest. A live theme preview shows your tokens on LaRecipe's own components while you change them. Infrastructure stays in `config/larecipe.php`: routes, the source, the cache, AI and analytics. The settings have a history too.
+
+</Accordion>
+
+<Accordion title="About the admin app">
+
+The admin is its own small app, built from the same design system as the reading UI, in light or dark. It needs JavaScript; the docs themselves do not. The version and language pickers in the header set the scope of every screen. Changes go through the same write path as an agent's. Its code loads only there, never on reader pages, and its pages are never cached or indexed. The admin is a tool, not content, so a refused user gets a 403 rather than a 404. The same `manageLarecipe` gate decides who may use the web MCP author tools and `validate_docs` on the web. Admin changes are recorded with the `admin_ui` channel.
+
+</Accordion>
+
+</AccordionGroup>
+
+## Details
+
+<AccordionGroup>
+
+<Accordion title="The tables">
 
 Every row carries its set's key, so one connection can hold many doc sets.
 
@@ -93,42 +216,19 @@ Every row carries its set's key, so one connection can hold many doc sets.
 | `larecipe_assets` | Each asset's path, disk, path on the disk, type, size and hash. |
 | `larecipe_docs_migrations` | What each docs migration changed, so a rollback can put it back. |
 
-A revision is `draft`, `published`, `superseded`, `rejected`, `reverted` or `conflict`. At most one revision per page, navigation or manifest is `published` at a time.
+</Accordion>
 
-## Always behind a cache
-
-A database set never reads the database to serve a cached page. LaRecipe wraps every database set in a cache layer, `CachedSource`, and it cannot be turned off.
-
-- **The store must keep data.** The `array` and `null` stores forget everything between requests, so a database set refuses them outside tests: the set fails to load with an error that names the store, `larecipe:validate` reports `cache.store`, and `larecipe:doctor` flags it.
-- **One fingerprint per set.** It comes from the highest published revision, the number of publishes and the state of the assets table, and it lives in the cache store. Every write, publish, reject and revert reads it again from the database.
-- **Everything else is cached under it, with no expiry:** the manifest, the page lists, each page, the navigation and assets up to 1 MB. A new fingerprint makes every old entry unreachable at once, so nothing is ever purged by hand. Larger assets are read from their disk.
-- **Review data is never cached.** Drafts and revision history are read only to review them, and must always be current.
-
-When live content changes (a publish, a revert, a docs migration, a source move), LaRecipe dispatches `ContentChanged`. Its own listener warms the set's cache on your queue, after the database transaction commits, so run a queue worker:
-
-<Event name="ContentChanged" />
-
-On deploy, warm the cache after the docs migrations run, so the first readers get warm pages:
-
-```bash
-php artisan migrate --force
-php artisan larecipe:cache:warm
-```
-
-`larecipe:cache:warm` reads the fingerprint from the database, then caches the manifest and, for every version and locale, the page list, each page and the navigation. Without `--set`, it warms every database set. See [caching and optimize](../operate/caching.md).
-
-## Your own models
+<Accordion title="Your own models">
 
 LaRecipe reads and writes these tables through Eloquent models you can replace, the way Sanctum and Cashier allow. Extend a model and point its key at your class, to add global scopes, tenancy or observers:
 
-```php
-// config/larecipe.php
+```php title="config/larecipe.php"
 'models' => [
     'page' => App\Models\DocsPage::class,
 ],
 ```
 
-```php
+```php title="app/Models/DocsPage.php"
 namespace App\Models;
 
 use App\Observers\DocsPageObserver;
@@ -143,111 +243,9 @@ class DocsPage extends Page
 
 The keys are `page`, `navigation`, `manifest`, `revision`, `asset` and `docs_migration`. Extend LaRecipe's own model rather than writing a new one, so the table and casts stay the same.
 
-## Revisions and review
+</Accordion>
 
-Every change to a database set is a revision, with who made it and where it came from. Whether it goes live at once depends on where it came from:
-
-| The change came from | It goes live |
-| --- | --- |
-| A docs migration, applied by `php artisan migrate` on deploy | At once: the pull request was the review. |
-| Your coding agent's local MCP session | At once in your local database, and it is written into the branch's docs migration. |
-| A person in the admin UI | At once, unless they save it as a draft. |
-| An agent through the web MCP author tools, outside a pull request | With `review: required`, as a draft for a person to publish. With `review: auto`, at once. |
-
-The review mode is `review` in `config/larecipe.php` (`LARECIPE_REVIEW`), `required` by default, and each set can set its own. See [review modes](../keeping-current/review-modes.md).
-
-Two checks apply to every writer:
-
-- **Validation.** A page with validation errors is refused, and nothing is written.
-- **No silent overwrites.** A writer can say which version of a page it read (its content hash). If the page changed since, the write is refused and the writer is told to read it again. A docs migration keeps its version as a `conflict` draft instead; see [conflict safety](docs-migrations.md).
-
-Nothing is lost. Publishing a draft marks the previous revision `superseded`. A revert restores an earlier revision as a new published one and marks the one it replaced `reverted`, so a revert can itself be reverted. A deleted page stays in the history and can be restored.
-
-Each step fires an event for your own tools: `PageWritten`, `DraftCreated`, `DraftPublished`, `DraftRejected` and `ContentChanged`. See the [events reference](../reference/events.md).
-
-## Assets
-
-Images and other files of a database set live on a Laravel filesystem disk, `source.disk`, under `larecipe/{set}/{version}/`. A row in `larecipe_assets` records each one. Assets are not revisioned; the pages that use them are. Docs migrations do not carry assets: upload them in the admin UI, or reference images by URL. A source move or a bundle import copies them.
-
-## Snippet includes
-
-Pages of a database set may be written by people outside the codebase, so `<<< @/...` includes resolve nowhere by default. To allow them, give the set a folder of its own in `sets.{key}.snippets.root`.
-
-## Raw HTML, props and analytics
-
-For the same reason, a database set holds its pages to tighter rules than a repository set:
-
-- **Raw HTML is always escaped**, and every page the set renders also goes through an HTML sanitizer. `html_input` has no effect on a database set. See [Markdown](../writing/markdown.md#raw-html).
-- **Every component keeps only the props it declares**, your own components included.
-- **Analytics come from `config/larecipe.php` only** (`sets.{key}.integrations.analytics`). Integrations in the set's `larecipe.json` are ignored, since it can be edited in the admin UI and over MCP. See [analytics](../operate/analytics.md).
-- **Links in navigation and `larecipe.json`** must be `http`, `https` or `mailto` URLs or paths on your site. A write with any other link is refused.
-
-## The admin UI
-
-Every doc set gets an admin area at `/{prefix}/_admin`: for a set at `/handbook` that is `/handbook/_admin`. A database set gets the full editor. A repository set gets a read-only overview, because its pages are edited in git.
-
-The admin is its own small app, built from the same design system as the reading UI, in light or dark. Its code loads only there, never on reader pages, and its pages are never cached or indexed. It needs JavaScript; the docs themselves do not.
-
-The `manageLarecipe` gate decides who gets in, with the set's key as its argument. Everyone else gets a 403: the admin is a tool, not content, so it does not pretend to be missing. Until you define the gate, only signed-in users in a local environment pass. Define it for production:
-
-```php
-use App\Models\User;
-use Illuminate\Support\Facades\Gate;
-
-Gate::define('manageLarecipe', function (User $user, string $set) {
-    return $user->is_admin;
-});
-```
-
-The same gate decides who may use the web MCP author tools and `validate_docs` on the web. Every change made in the admin goes through the same write path as an agent's or a docs migration's: it is validated, saved as a revision and attributed to the signed-in person, with the `admin_ui` channel.
-
-The version and language pickers in the header set the scope of every screen.
-
-### Overview
-
-The first screen says what state the docs are in: the number of pages, the conflicts and drafts waiting for review, the review mode and the version. Under that are the validation report, the same one `larecipe:validate` prints, and an agent readiness card: the [`larecipe:doctor`](../operate/validation.md#larecipedoctor) report, graded, with a fix for each finding. There are no traffic dashboards: analytics go to your own tools.
-
-### Pages and navigation
-
-The page tree is the version's navigation, for one language at a time. Drag pages and groups to reorder them or to move a page into another group, or focus a handle and press Alt with the arrow keys. Create pages and groups, rename or remove a group (its pages stay), take a page out of the navigation, or delete it. Pages the navigation does not list wait under the tree, ready to be listed, and new pages proposed as drafts link to their review. A JSON view edits the same navigation as raw `navigation.json`.
-
-A version without `navigation.json` starts from the tree its pages imply. There, hiding a page sets `hidden: true` in its frontmatter, and saving a new order writes the tree as the version's `navigation.json`.
-
-### The editor
-
-Pages open in a Markdown editor (CodeMirror) with a live preview rendered by LaRecipe's own server renderer, so the preview is exactly what readers will see, components included. A component palette lists every component the server can render (the built-ins, live references, gate blocks and your own) and inserts one at the cursor with its props filled in. Validation issues show as you type, marked on the line they point at and listed under the editor. The frontmatter has a form generated from its JSON Schema, with a switch to edit the raw YAML.
-
-Saving publishes at once, or saves a draft for review instead. Cmd+S or Ctrl+S publishes. Each save is written against the version of the page the editor loaded. If someone changed the page in the meantime, nothing is overwritten: the editor shows their version against yours, and you load theirs or keep yours. A page can also be moved to a new path or deleted, and a deleted page stays in its history.
-
-### The pass: the review queue
-
-The review queue is called the pass, after the counter in a restaurant kitchen where every plate is checked before it leaves. Each change waiting there is a ticket, and the sidebar shows how many wait.
-
-Docs migration conflicts come first: a deploy's change, held back because production changed after the migration was written. A conflict shows both sides, rendered by the server or as source, with three ways to resolve it: keep production, take the migration, or edit a merge.
-
-Then drafts: changes from agents that worked outside a pull request, and drafts people saved. Each shows its provenance (who or which agent, and its summary), a rendered diff and a source diff. Publish it, reject it with a reason, which the agent that wrote it can read, or edit it and publish your own version. With `review: auto`, agents publish on their own, so the pass also lists what they published lately, each one click from a revert.
-
-### History and activity
-
-Every page, each version's navigation and the settings have a history: every revision, newest first, each with a diff against the one it replaced, including the revisions each docs migration created. A revision readers once saw can be restored. The restore is a new revision, so it can be undone too.
-
-The activity screen lists every change to the set, newest first. Changes made in production, in the admin or by agents outside a pull request, live only in the database. Select them there and export them as one docs migration: the admin shows the file, to copy or download, and you commit it with a pull request. Where those changes are already live, each of its operations does nothing; anywhere that drifted, it becomes a conflict at the pass instead of overwriting.
-
-### Assets
-
-Drop images and files on the assets screen to upload them to the set's disk. Each asset shows the path to paste into Markdown and the pages that use it. Deleting an asset that a page still uses asks you to confirm, and names those pages.
-
-### Settings
-
-The settings screen edits the set's `larecipe.json`: a form generated from its JSON Schema for the name, logo, theme tokens, versions, locales, navbar links, redirects and the description agents read, with a switch to raw JSON for the rest. A live theme preview shows your tokens on LaRecipe's own components while you change them. Infrastructure stays in `config/larecipe.php`: routes, the source, the cache, AI and analytics. The settings have a history too.
-
-### Repository sets
-
-A repository set gets a read-only overview at the same path: the validation report, agent readiness and the stale pages, whose code changed after them. Its pages are edited in git, in a pull request.
-
-### Bringing admin edits back to git
-
-Edits in the admin UI are direct database changes, saved as revisions. They create no migration files on their own. To carry chosen changes to every environment through a pull request, export them from the activity screen as a docs migration. To move the whole set into git, `php artisan larecipe:source:export` writes it out as files, and `larecipe:source:move database repository` moves it back for good. See [switching sources](switching.md).
+</AccordionGroup>
 
 ## Next
 

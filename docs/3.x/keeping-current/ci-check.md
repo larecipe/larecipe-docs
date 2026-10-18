@@ -1,6 +1,6 @@
 ---
 title: The optional CI check
-description: Add a GitHub Actions check that validates the docs on every pull request and fails or comments when the change leaves pages stale, without running an AI agent or writing anything.
+description: An optional GitHub Actions check that validates the docs on every pull request and fails or comments when the change leaves pages stale, without running an AI agent or writing anything.
 sources:
   - vendor/larecipe/larecipe/stubs/larecipe-docs-check.yml
   - vendor/larecipe/larecipe/stubs/ci/**
@@ -15,27 +15,38 @@ sources:
 
 # The optional CI check
 
-The CI check is a safety net for pushes made without a coding agent, or by an agent without hooks. On every pull request it validates the docs and lists the pages whose code changed while the page did not. It fails the check or posts a comment, your choice.
-
-It only checks. It runs no AI agent, never writes, commits or pushes, and needs no secrets for docs in the repository, so it is safe on pull requests from forks. Your coding agent updates the docs before it pushes; this confirms that it did.
-
-## Add it
-
-The installer offers it, or you can ask for it up front:
+The CI check is an optional safety net for pushes made without a coding agent, or by an agent without hooks. On every pull request it validates the docs and lists the pages whose code changed while the page did not. Add it with the installer, in one of two modes:
 
 ```bash
 php artisan larecipe:install --ci=fail
 php artisan larecipe:install --ci=comment
 ```
 
-- **`fail`** makes a failing check, so you can require it before merging. A `skip-docs` label lets a pull request through when no docs change is needed.
+- **`fail`** makes a failing check, so you can require it before merging. Add the `skip-docs` label to a pull request that needs no docs change, and the check passes without a new push.
 - **`comment`** posts the list of stale pages on the pull request and never fails because of them.
 
-The installer writes `.github/workflows/larecipe-docs-check.yml`. When a workflow with that name already exists and differs from what LaRecipe would write, it is left alone: delete it and run the installer again to get a fresh one. The PHP version comes from the `php` constraint in your `composer.json` (8.3 at the lowest, 8.4 when there is none).
+Either way, a validation error fails the check. It only checks: it runs no AI agent, never writes, commits or pushes, and needs no secrets for docs in the repository, so it is safe on pull requests from forks. Your coding agent updates the docs before it pushes; this confirms that it did.
 
-## The workflow
+## What it runs
 
-This is the workflow `--ci=fail` writes for a repository set in an app that requires PHP `^8.3`:
+The installer writes `.github/workflows/larecipe-docs-check.yml`. Its two LaRecipe steps are:
+
+```bash
+php artisan larecipe:validate --json
+php artisan larecipe:affected --base=origin/${{ github.base_ref }} --format=github --fail-on-stale --no-drift
+```
+
+[`larecipe:validate`](../operate/validation.md) checks links, navigation, schemas, components, snippets and live references. [`larecipe:affected`](how-it-works.md#larecipeaffected) compares the pull request with its base branch and judges this change only: drift from before the pull request is left out (`--no-drift`).
+
+When a workflow with that name already exists and differs from what LaRecipe would write, the installer leaves it alone: delete it and run the installer again to get a fresh one.
+
+## Details
+
+<AccordionGroup>
+
+<Accordion title="The full workflow, step by step">
+
+This is the workflow `--ci=fail` writes for a repository set in an app that requires PHP `^8.3`. The PHP version comes from the `php` constraint in your `composer.json` (8.3 at the lowest, 8.4 when there is none).
 
 ```yaml
 # LaRecipe docs check (optional, no AI).
@@ -89,16 +100,16 @@ jobs:
         run: php artisan larecipe:affected --base=origin/${{ github.base_ref }} --format=github --fail-on-stale --no-drift
 ```
 
-Step by step:
-
 1. **Checkout with full history.** `fetch-depth: 0` gives git the base branch, so `larecipe:affected` can see what the pull request changed.
 2. **Install and prepare the app.** Composer, an `.env` from `.env.example`, an app key. LaRecipe's commands run inside your app, so the app must boot.
-3. **Validate the docs.** `larecipe:validate` checks links, navigation, schemas, components, snippets and live references. A validation error fails the check in either mode. See [validation](../operate/validation.md).
-4. **Check the docs changed with the code.** `larecipe:affected` compares the pull request with its base branch, `origin/${{ github.base_ref }}`. Drift from before the pull request is left out (`--no-drift`): the check judges this change, not the history.
+3. **Validate the docs.** A validation error fails the check in either mode.
+4. **Check the docs changed with the code.** It compares the pull request with its base branch, `origin/${{ github.base_ref }}`.
 
 The workflow runs again when a label is added or removed, so adding `skip-docs` turns a red check green without a new push.
 
-## Fail mode
+</Accordion>
+
+<Accordion title="Fail mode output">
 
 `--format=github --fail-on-stale` turns each stale page into an error annotation on the page's file, writes a Markdown report to the job summary, and exits with `1`:
 
@@ -109,7 +120,9 @@ LaRecipe: 1 docs page needs an update for this change.
 
 Make the check required in your branch protection rules, and every pull request either updates its docs, or carries the `skip-docs` label as a visible decision that it needs none.
 
-## Comment mode
+</Accordion>
+
+<Accordion title="Comment mode workflow and comment">
 
 `--ci=comment` gives the workflow permission to comment, and nothing else:
 
@@ -159,7 +172,9 @@ This pull request changes code that 1 docs page describes, and the page was not 
 Update them in this pull request (the `larecipe-update-docs` skill does it in your agent session), or add the `skip-docs` label when no docs change is needed.
 ```
 
-## Database sets
+</Accordion>
+
+<Accordion title="Database sets">
 
 When the app has a [database set](../sources/database.md), the workflow gets one more step after the app is prepared. It applies the pull request's [docs migrations](../sources/docs-migrations.md) to a throwaway SQLite database, so a broken docs migration fails the check:
 
@@ -176,7 +191,7 @@ When the app has a [database set](../sources/database.md), the workflow gets one
       # - run: php artisan larecipe:pull --set=handbook
 ```
 
-To map changes to pages, the check needs the set's pages, with their `sources:`, in the CI database. Without them, `larecipe:affected` says the set has no pages in the local database and only the validation and the docs migrations are checked. To load them, export the set on production and pull the bundle in CI before the check: `larecipe:pull` needs `--from`, the path to that bundle.
+To map changes to pages, the check needs the set's pages, with their `sources:`, in the CI database. Without them, `larecipe:affected` says the set has no pages in the local database, and only the validation and the docs migrations are checked. To load them, export the set on production and pull the bundle in CI before the check: `larecipe:pull` needs `--from`, the path to that bundle.
 
 ```bash
 php artisan larecipe:source:export --set=handbook --to=storage/handbook.tar.gz
@@ -185,7 +200,9 @@ php artisan larecipe:pull --set=handbook --from=storage/handbook.tar.gz
 
 The first command runs on production; the second in CI, once the bundle is there. How the bundle reaches CI is up to you, and that is the one place a database set's check needs access to something outside the repository.
 
-## Why it never writes
+</Accordion>
+
+<Accordion title="Why it never writes">
 
 The check exists to catch a missing docs change, not to make one:
 
@@ -196,8 +213,11 @@ The check exists to catch a missing docs change, not to make one:
 
 The docs change belongs in the same pull request as the code, written by the agent that made the change. See [how it works](how-it-works.md).
 
+</Accordion>
+
+</AccordionGroup>
+
 ## Next
 
-- [How it works](how-it-works.md): `larecipe:affected` and its formats in full.
 - [The pre-push hook](pre-push-hook.md): catch stale pages before the push, not after.
 - [Validation and doctor](../operate/validation.md): what `larecipe:validate` checks.

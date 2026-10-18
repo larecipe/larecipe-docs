@@ -9,6 +9,7 @@ return [
     'body' => 'LaRecipe release notes by email. Unsubscribe any time.',
     'email' => 'Email address',
     'submit' => 'Subscribe',
+    'markdown' => 'Subscribe to the LaRecipe newsletter, release notes by email to the address you give (unsubscribe any time): :url',
     'note' => 'This form is a custom React component this site adds to LaRecipe.',
     'note_link' => 'See how it is built',
     'subscribed' => 'Thanks. :email is on the list.',

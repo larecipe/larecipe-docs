@@ -8,7 +8,7 @@ return [
     'label' => 'Featured on',
     'count' => '3 million+',
     'downloads' => ':count downloads',
-    'markdown' => 'LaRecipe has been downloaded more than 3 million times. Featured on :outlets.',
+    'markdown' => 'LaRecipe has 3 million+ downloads. Featured on :outlets.',
     'separator' => ', ',
     'last_separator' => ' and ',
 ];

@@ -41,8 +41,8 @@ The twin is not your source file. It is rendered from the same parsed page as th
 
 ```markdown
 ---
-title: 'Docs that keep up with your code'
-description: 'LaRecipe lives inside your Laravel app. ...'
+title: 'Beautiful docs that keep up with your code'
+description: 'LaRecipe is a docs site that lives inside your Laravel app, written and kept current by ...'
 url: 'https://larecipe.saleem.dev/3.x'
 version: 3.x
 locale: en
@@ -51,9 +51,9 @@ last_updated: '2026-10-17'
 
 > Docs index: https://larecipe.saleem.dev/3.x/llms.txt · MCP: https://larecipe.saleem.dev/mcp · Skill: https://larecipe.saleem.dev/skill.md
 
-# Docs that keep up with your code
+# Beautiful docs that keep up with your code
 
-*Video coming soon: The maintainer explains LaRecipe*
+You write pages in Markdown, in your own repository, next to the code they describe. ...
 ```
 
 - **A stable header.** `title`, `description`, `url`, `version` (on a versioned set), `locale` (on a multilingual set) and `last_updated`. Never the page's frontmatter as written, which may hold anything.

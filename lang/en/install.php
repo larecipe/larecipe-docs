@@ -19,6 +19,6 @@ return [
         'Then tell me the URL of the docs site.',
     ],
     'manual_lead' => 'Run this in your Laravel app.',
-    'manual_markdown' => 'Or run the two commands yourself, then open `/docs`:',
+    'manual_markdown' => 'Manual: run this in your Laravel app. Paste it in your terminal, press Enter for the defaults, then open `/docs`:',
     'steps' => ['Paste it in your terminal', 'Press Enter for the defaults', 'Open `/docs`'],
 ];

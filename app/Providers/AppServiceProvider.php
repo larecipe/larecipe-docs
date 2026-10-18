@@ -72,7 +72,17 @@ class AppServiceProvider extends ServiceProvider
                     'guide' => url(($locale === 'ar' ? 'ar/' : '').($component->version ?? '3.x').'/customize/custom-components'),
                 ]);
             })
-            ->markdown(fn () => 'Subscribe to the LaRecipe newsletter: '.url('/newsletter'))
+            ->markdown(function (array $props, string $children, RenderedComponent $component) {
+                $locale = in_array($component->locale, SubscribeController::LOCALES, true) ? $component->locale : 'en';
+                $line = __('newsletter.markdown', ['url' => url('/newsletter')], $locale);
+
+                if (! $props['showcase']) {
+                    return $line;
+                }
+
+                return $line."\n\n".__('newsletter.note', [], $locale).' '.__('newsletter.note_link', [], $locale).': '
+                    .url(($locale === 'ar' ? 'ar/' : '').($component->version ?? '3.x').'/customize/custom-components');
+            })
             ->island();
         // #endregion
 

@@ -236,14 +236,14 @@ The newsletter form after every article on this site, registered in `app/Provide
 | `showcase` | boolean | no | `false` | | Add a faded line under the form that links to how it is built. |
 
 - **HTML:** a plain `<form class="lr-subscribe" method="post" action="/newsletter/subscribe">` from `resources/views/docs/subscribe.blade.php`, in the page's language (English or Arabic), so the form works without JavaScript.
-- **Markdown:** one line, "Subscribe to the LaRecipe newsletter:" and the URL of the `/newsletter` page.
+- **Markdown:** one line that says what the newsletter sends and links the `/newsletter` page, in the page's language; with `showcase`, the note and its link follow.
 
 ### InstallTabs
 
 The install box on the [Introduction](../index.md), registered with `LaRecipe::component('InstallTabs')`. One tab gives a ready prompt to paste into an AI coding agent, the other the two commands to run by hand. It takes no props. **Island:** `InstallTabs`, in `resources/larecipe/InstallTabs.tsx`.
 
 - **HTML:** both panels, each under its label, from `resources/views/docs/install-tabs.blade.php`, in the page's language. With JavaScript they become two tabs in one box.
-- **Markdown:** the prompt in a `text` block, then the two commands in a `bash` block.
+- **Markdown:** the prompt in a `text` block, then the manual steps and the two commands in a `bash` block.
 
 ### DocsFlow
 
@@ -254,7 +254,7 @@ The animated diagram near the top of the [Introduction](../index.md), registered
 | `caption` | string | no | | | An optional caption under the diagram. |
 
 - **HTML:** the same diagram at rest, from `resources/views/docs/docs-flow.blade.php`, in the page's language.
-- **Markdown:** the caption, then a short numbered list of the loop.
+- **Markdown:** the caption, a short numbered list of the loop, then the example the diagram draws, in words.
 
 ### FeaturedOn
 

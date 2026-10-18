@@ -11,7 +11,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Agents/**
   - vendor/larecipe/larecipe/resources/views/prerender/rail.blade.php
   - vendor/larecipe/larecipe/config/larecipe.php
-translated_from: sha256:4c4bda0c11bcf09c67dc16f993bf7a5a10ca0a89c9b49641107836d1585a3b10
+translated_from: sha256:937a7edf559126ee4882e5457f0e4d2bcf53da46640ec38988bfbceeb1dd4013
 ---
 
 # واجهات الوكلاء
@@ -42,8 +42,8 @@ curl https://larecipe.saleem.dev/3.x/index.md
 
 ```markdown
 ---
-title: 'Docs that keep up with your code'
-description: 'LaRecipe lives inside your Laravel app. ...'
+title: 'Beautiful docs that keep up with your code'
+description: 'LaRecipe is a docs site that lives inside your Laravel app, written and kept current by ...'
 url: 'https://larecipe.saleem.dev/3.x'
 version: 3.x
 locale: en
@@ -52,9 +52,9 @@ last_updated: '2026-10-17'
 
 > Docs index: https://larecipe.saleem.dev/3.x/llms.txt · MCP: https://larecipe.saleem.dev/mcp · Skill: https://larecipe.saleem.dev/skill.md
 
-# Docs that keep up with your code
+# Beautiful docs that keep up with your code
 
-*Video coming soon: The maintainer explains LaRecipe*
+You write pages in Markdown, in your own repository, next to the code they describe. ...
 ```
 
 - **ترويسة ثابتة.** `title` و `description` و `url` و `version` (في المجموعة ذات الإصدارات) و `locale` (في المجموعة متعددة اللغات) و `last_updated`. ولا تُنقل أبدًا ترويسة الصفحة كما كُتبت، فقد تحوي أي شيء.

@@ -15,7 +15,7 @@ sources:
   - lang/*/newsletter.php
   - routes/web.php
   - vite.config.js
-translated_from: sha256:b4e5655234d64878ef3104184fcd7986f7e74afa5a6826a6dd9e6f4749b8d766
+translated_from: sha256:919442ababc212328a5cfd533821a883d16023676de8fb2c19d299b0ce1c2005
 ---
 
 # مكوّنات React المخصّصة
@@ -147,10 +147,12 @@ meta:
 
 ### صيغة Markdown {#the-markdown-form}
 
-لا ينبغي للوكلاء أن يملؤوا النماذج، لذا فصيغة Markdown الخاصة بـ Subscribe سطر واحد فيه رابط. اقرأ [المقدمة بصيغة Markdown](https://larecipe.saleem.dev/3.x/index.md) وستجده قرب النهاية:
+لا ينبغي للوكلاء أن يملؤوا النماذج، لذا فصيغة Markdown الخاصة بـ Subscribe سطر واحد فيه رابط، ومعه السطر الباهت حين تُضبط الخاصية `showcase`. اقرأ [المقدمة بصيغة Markdown](https://larecipe.saleem.dev/3.x/index.md) وستجده قرب النهاية:
 
 ```markdown
-Subscribe to the LaRecipe newsletter: https://larecipe.saleem.dev/newsletter
+Subscribe to the LaRecipe newsletter, release notes by email to the address you give (unsubscribe any time): https://larecipe.saleem.dev/newsletter
+
+This form is a custom React component this site adds to LaRecipe. See how it is built: https://larecipe.saleem.dev/3.x/customize/custom-components
 ```
 
 <AccordionGroup>

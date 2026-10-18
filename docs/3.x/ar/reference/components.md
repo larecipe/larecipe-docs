@@ -20,7 +20,7 @@ sources:
   - resources/views/docs/docs-flow.blade.php
   - resources/views/docs/featured-on.blade.php
   - resources/views/docs/features.blade.php
-translated_from: sha256:5db04508e6cc42725df5bec703c1b34396c0b894f29c39525862c77db4336be4
+translated_from: sha256:ec7bf0cf1c290102b8ca903c3811e6ac72b6622273c06907dee40d7a76c60b2f
 ---
 
 # المكوّنات
@@ -237,14 +237,14 @@ translated_from: sha256:5db04508e6cc42725df5bec703c1b34396c0b894f29c39525862c77d
 | `showcase` | boolean | لا | `false` | | يضيف تحت النموذج سطرًا باهتًا يربط بطريقة بنائه. |
 
 - **HTML:** نموذج عادي `<form class="lr-subscribe" method="post" action="/newsletter/subscribe">` من `resources/views/docs/subscribe.blade.php`، بلغة الصفحة (الإنجليزية أو العربية)، فيعمل النموذج من دون JavaScript.
-- **Markdown:** سطر واحد: «Subscribe to the LaRecipe newsletter:» ثم رابط صفحة `/newsletter`.
+- **Markdown:** سطر واحد يذكر ما ترسله النشرة ويربط صفحة `/newsletter`، بلغة الصفحة؛ ومع `showcase` يليه السطر الباهت ورابطه.
 
 ### InstallTabs
 
 صندوق التثبيت في [المقدمة](../index.md)، مسجّل بالاستدعاء `LaRecipe::component('InstallTabs')`. يقدّم أحد تبويبيه طلبًا جاهزًا تلصقه في وكيل برمجة بالذكاء الاصطناعي، ويقدّم الآخر الأمرين لتشغيلهما بنفسك. لا يأخذ أي خاصية. **Island:** `InstallTabs`، في `resources/larecipe/InstallTabs.tsx`.
 
 - **HTML:** اللوحتان معًا، كل واحدة تحت عنوانها، من `resources/views/docs/install-tabs.blade.php`، بلغة الصفحة. ومع JavaScript تصيران تبويبين في صندوق واحد.
-- **Markdown:** الطلب في كتلة `text`، ثم الأمران في كتلة `bash`.
+- **Markdown:** الطلب في كتلة `text`، ثم الخطوات اليدوية والأمران في كتلة `bash`.
 
 ### DocsFlow
 
@@ -255,7 +255,7 @@ translated_from: sha256:5db04508e6cc42725df5bec703c1b34396c0b894f29c39525862c77d
 | `caption` | string | لا | | | تعليق اختياري تحت المخطط. |
 
 - **HTML:** المخطط نفسه ساكنًا، من `resources/views/docs/docs-flow.blade.php`، بلغة الصفحة.
-- **Markdown:** التعليق، ثم قائمة مرقّمة قصيرة بخطوات الدورة.
+- **Markdown:** التعليق، وقائمة مرقّمة قصيرة بخطوات الدورة، ثم المثال الذي يرسمه المخطط، بالكلمات.
 
 ### FeaturedOn
 

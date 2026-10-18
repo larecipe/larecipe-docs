@@ -8,7 +8,7 @@ return [
     'label' => 'ذُكر في',
     'count' => '3 ملايين',
     'downloads' => 'أكثر من :count تنزيل',
-    'markdown' => 'نُزّل LaRecipe أكثر من 3 ملايين مرة، وذُكر في :outlets.',
+    'markdown' => 'لـ LaRecipe أكثر من 3 ملايين تنزيل، وذُكر في :outlets.',
     'separator' => ' و ',
     'last_separator' => ' و ',
 ];

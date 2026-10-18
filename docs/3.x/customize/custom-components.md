@@ -146,10 +146,12 @@ Rendered articles are cached and shared between readers, so a fallback must not 
 
 ### The Markdown form
 
-Agents should not fill in forms, so Subscribe's Markdown form is one line with a link. Read the [Introduction as Markdown](https://larecipe.saleem.dev/3.x/index.md) and you will find it near the end:
+Agents should not fill in forms, so Subscribe's Markdown form is one line with a link, plus the faded note when `showcase` is set. Read the [Introduction as Markdown](https://larecipe.saleem.dev/3.x/index.md) and you will find it near the end:
 
 ```markdown
-Subscribe to the LaRecipe newsletter: https://larecipe.saleem.dev/newsletter
+Subscribe to the LaRecipe newsletter, release notes by email to the address you give (unsubscribe any time): https://larecipe.saleem.dev/newsletter
+
+This form is a custom React component this site adds to LaRecipe. See how it is built: https://larecipe.saleem.dev/3.x/customize/custom-components
 ```
 
 <AccordionGroup>

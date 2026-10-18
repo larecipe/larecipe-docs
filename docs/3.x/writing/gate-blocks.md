@@ -48,7 +48,7 @@ LaRecipe asks three gates. Define them in a service provider, like any other gat
 | Gate | Arguments after the user | Asked |
 | --- | --- | --- |
 | `viewLarecipe` | `?PageSummary $page`, `string $set` | In `gate` mode, for the set (with no page) and for every page. In any mode, for private versions (with no page) and private pages. |
-| `manageLarecipe` | `string $set` | Before the web MCP endpoint offers the `validate_docs` tool, and before it accepts remote author tools on a database set. |
+| `manageLarecipe` | `string $set` | Before the [admin UI](../sources/database.md#the-admin-ui) opens, before the web MCP endpoint offers the `validate_docs` tool, and before it accepts remote author tools on a database set. |
 | `askLarecipe` | `string $set` | Before showing the Ask AI panel and before answering a question, when Ask AI is enabled. |
 
 ```php title="app/Providers/AppServiceProvider.php"

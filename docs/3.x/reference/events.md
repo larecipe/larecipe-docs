@@ -95,7 +95,7 @@ Fires when Ask AI finishes an answer. `covered` is false when the assistant said
 
 ## Content events
 
-Content events fire when a change goes through LaRecipe's write path: the MCP author tools, a docs migration, `larecipe:source:import` or `larecipe:source:move`. Editing a Markdown file in your editor fires nothing; git records that change.
+Content events fire when a change goes through LaRecipe's write path: the MCP author tools, the admin UI, `larecipe:sync`, a docs migration, `larecipe:source:import` or `larecipe:source:move`. Editing a Markdown file in your editor fires nothing; git records that change.
 
 ### PageWritten
 
@@ -111,13 +111,13 @@ Fires when a change waits for review: under `review: required` for a change an a
 
 ### DraftPublished
 
-Fires when a reviewer publishes a draft. Publishing happens in the admin UI, which is being merged now, so nothing in this release fires it yet.
+Fires when a reviewer publishes a draft or resolves a conflict by taking the migration, at [the pass](../sources/database.md#the-pass-the-review-queue) in the admin UI.
 
 <Event name="DraftPublished" />
 
 ### DraftRejected
 
-Fires when a reviewer rejects a draft. Like `DraftPublished`, it waits for the admin UI.
+Fires when a reviewer rejects a draft, with their reason, or resolves a conflict by keeping production, at the pass in the admin UI.
 
 <Event name="DraftRejected" />
 

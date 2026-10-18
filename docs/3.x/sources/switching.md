@@ -104,7 +104,7 @@ What does not move:
 
 ## Bundles: export and import
 
-A bundle is a doc set written out as canonical files, to a directory or a `.tar.gz` file. It has the same layout as a repository set's folder. Use it for a backup, to hand docs to another app, or to bring admin UI edits back into git.
+A bundle is a doc set written out as canonical files, to a directory or a `.tar.gz` file. It has the same layout as a repository set's folder. Use it for a backup, to hand docs to another app, or to bring a whole set of admin UI edits back into git. To carry only some admin edits through a pull request, export them as a docs migration from the admin's activity screen instead; see [the admin UI](database.md#history-and-activity).
 
 ```bash
 php artisan larecipe:source:export --set=docs --to=storage/docs.tar.gz

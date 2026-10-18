@@ -67,7 +67,7 @@ Some changes reach a database set without a pull request. That is where the mode
 | --- | --- | --- |
 | An agent on the web MCP server's author tools | A draft | Published |
 | [`larecipe:sync`](sync.md) writing straight to a database set | A draft | Published |
-| A person in the admin UI (coming soon) | Published, or a draft if they choose | Same |
+| A person in the [admin UI](../sources/database.md#the-admin-ui) | Published, or a draft if they choose | Same |
 | A docs migration applied by `php artisan migrate` | Published | Same |
 | Your local coding session, through the local MCP server | Applied to your local database and written into the branch's docs migration | Same |
 
@@ -87,7 +87,7 @@ The author tools are off on the web by default. A database set turns them on wit
 
 Each author tool says what happened in its `outcome`: `published`, `drafted`, `conflicted` (the page changed since the agent read it), `unchanged` or `rejected` (validation errors; nothing was written). It returns the revision and the validation report with it. See [the MCP server](../agents/mcp.md).
 
-Drafts wait in a review queue until a person publishes or rejects them. Publishing validates the draft again first, because the rules may have changed since it was written. The admin UI where you work through the queue is coming soon.
+Drafts wait in a review queue until a person publishes or rejects them. Publishing validates the draft again first, because the rules may have changed since it was written. You work through the queue in the admin UI, at [the pass](../sources/database.md#the-pass-the-review-queue), where a reviewer can also edit a draft before publishing it. Under `auto`, the pass lists what agents published lately, each one click from a revert.
 
 ## Always true
 

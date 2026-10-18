@@ -152,7 +152,7 @@ To change the generated file, publish the stub with `php artisan vendor:publish 
 
 `basedOn` is the content hash a change was written against. Your agent's tools fill it from your local database, and `larecipe:make:docs-migration` fills it from the set. On deploy, before each update, move, delete, navigation or manifest change, LaRecipe compares it with what is live. If production changed in between (an edit in the admin UI, or an agent writing in `auto` review mode), the migration does not overwrite it:
 
-- The change is kept as a revision with the status `conflict`, holding the migration's version next to production's, in the admin UI's review queue.
+- The change is kept as a revision with the status `conflict`, holding the migration's version next to production's, at the top of the admin UI's [review queue](database.md#the-pass-the-review-queue), where a person keeps production, takes the migration or edits a merge.
 - `DocsMigrationConflicted` is dispatched.
 - `php artisan migrate` prints a warning and carries on, so a docs conflict never fails a deploy:
 

@@ -5,6 +5,7 @@ sources:
   - vendor/larecipe/larecipe/packages/ui/src/slots.tsx
   - vendor/larecipe/larecipe/packages/ui/src/registry.ts
   - vendor/larecipe/larecipe/src/Domains/Delivery/Support/ThemeCss.php
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Support/DocsStylesheets.php
   - vendor/larecipe/larecipe/src/LaRecipe.php
 ---
 
@@ -12,31 +13,17 @@ sources:
 
 <Badge tone="neutral">Coming soon</Badge>
 
-Ejecting copies LaRecipe's UI source into your app so you own it outright. It is planned, and it is not in this release: there is no `larecipe:ui:eject` or `larecipe:ui:diff` command yet. Everything below the first section works today.
-
-## What eject is planned to do
-
-Two sizes, so you take ownership of no more than you need:
-
-- **One component.** `larecipe:ui:eject Sidebar` will copy that one component's source into your extension as a [slot override](insert-points.md#replace-a-built-in-region). You own the sidebar; everything else keeps updating with LaRecipe.
-- **The whole UI.** `larecipe:ui:eject` with no argument will copy the full UI source into `resources/larecipe-ui/` and wire it into your Vite build. From then on, upgrades to the UI are yours to make by hand.
-
-In both cases, `larecipe:ui:diff` will show what changed upstream since you ejected, so you can bring fixes across.
+Ejecting will copy LaRecipe's UI source into your app so you own it outright. It is planned, and it is not in this release: there is no `larecipe:ui:eject` or `larecipe:ui:diff` command yet. The tools below work today, and each of them keeps you on LaRecipe's updates.
 
 ## What to use today
-
-Most reasons to eject are covered by the earlier rungs, and each of them keeps you on LaRecipe's updates:
 
 | You want to | Use |
 | --- | --- |
 | Change the accent, fonts, corners or default color mode | [Theme tokens](theme.md) in `larecipe.json` |
-| Restyle anything the tokens do not cover | Your own stylesheet, added with `LaRecipe::head()` (see [Theme](theme.md)) |
+| Restyle anything the tokens do not cover | A `theme.css` listed under `assets.css` in `larecipe.json`, or `LaRecipe::head()` (see [Theme](theme.md#add-your-own-stylesheet)) |
 | Add a form, a banner or a badge on every page | An [insert point](insert-points.md) |
 | Change or wrap a region such as the footer or the sidebar | A [slot override](insert-points.md#replace-a-built-in-region) with `useSlotDefault()` |
 | Use your own component inside a page | A [custom React component](custom-components.md) |
-
-> [!NOTE]
-> `larecipe.json` accepts `assets.css` for a `theme.css` that lives with the docs, but LaRecipe does not load those files yet. Add your stylesheet with `LaRecipe::head()` until it does.
 
 A slot override is the closest thing to a per-component eject today. It replaces one region by name, and `useSlotDefault()` lets you keep the original inside your version instead of copying its code:
 
@@ -56,6 +43,15 @@ function PageFooter() {
 
 export default defineExtension({ slots: { PageFooter } })
 ```
+
+## What eject is planned to do
+
+Two sizes, so you take ownership of no more than you need:
+
+- **One component.** `larecipe:ui:eject Sidebar` will copy that one component's source into your extension as a slot override. You own the sidebar; everything else keeps updating with LaRecipe.
+- **The whole UI.** `larecipe:ui:eject` with no argument will copy the full UI source into `resources/larecipe-ui/` and wire it into your Vite build. From then on, upgrades to the UI are yours to make by hand.
+
+In both cases, `larecipe:ui:diff` will show what changed upstream since you ejected, so you can bring fixes across.
 
 ## Next
 

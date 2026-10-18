@@ -25,7 +25,16 @@ When the built-in components are not enough (a newsletter form, a pricing table,
 - **HTML**, a server fallback for readers without JavaScript, for crawlers, and for the first paint.
 - **Markdown**, what agents get when they read the page as `.md` or through MCP.
 
-The newsletter form at the end of the [Introduction](../index.md) is one. This page walks through every file it needs, straight from this site's code.
+The newsletter form at the end of the [Introduction](../index.md) is one. This page builds it in four steps, straight from this site's code:
+
+1. [Write the React component](#the-react-component).
+2. [Register it in the extension entry](#the-extension-entry).
+3. [Define it in PHP](#the-php-definition), with its fallback and its Markdown form.
+4. [Build it](#build-it) with Vite.
+
+Then [use it](#use-it) in a page, or on every page.
+
+<Accordion title="Every file the Subscribe form needs">
 
 <FileTree>
 
@@ -45,13 +54,17 @@ The newsletter form at the end of the [Introduction](../index.md) is one. This p
 
 </FileTree>
 
+</Accordion>
+
 ## The React component
 
-A custom component is an ordinary React component. Its props are the tag's attributes, and Markdown between an opening and a closing tag arrives as `children`.
+A custom component is an ordinary React component. Its props are the tag's attributes, and Markdown between an opening and a closing tag arrives as `children`. Everything it imports from `@larecipe/ui` is provided by LaRecipe at runtime.
 
 <<< @/resources/larecipe/Subscribe.tsx
 
-Everything it imports from `@larecipe/ui` is provided by LaRecipe at runtime:
+<AccordionGroup>
+
+<Accordion title="What @larecipe/ui gives your component">
 
 | Export | What it does |
 | --- | --- |
@@ -60,7 +73,11 @@ Everything it imports from `@larecipe/ui` is provided by LaRecipe at runtime:
 | `Button`, `LinkButton`, `Input`, `Textarea`, `Field`, `Callout`, `Badge`, `Card`, `Kbd`, `Loader`, `Ticket`, `Perforation` | The parts the built-in UI is made of, in both themes and right to left. `Button` takes a `variant` (`primary`, `secondary`, `outline`, `ghost`, `ink`), a `size` and `loading`. |
 | `Icons`, `Icon` | The UI's own icon set. |
 | `Slot`, `useSlotDefault()` | Replace a built-in region of the page and still render the original. See [insert points and slots](insert-points.md). |
-| `defineExtension()` | Registers your components, insert points and slot overrides with the page (below). |
+| `defineExtension()` | Registers your components, insert points and slot overrides with the page. |
+
+</Accordion>
+
+<Accordion title="Share the signed-in user and page values">
 
 The signed-in user is shared only when you ask for it, field by field:
 
@@ -79,6 +96,10 @@ meta:
 ```
 
 `meta` is the only frontmatter beyond LaRecipe's own keys that reaches the browser. Other unknown keys stay on the server, because they often hold notes for the team, such as an owner or a ticket. See [frontmatter](../reference/frontmatter.md#unknown-keys).
+
+</Accordion>
+
+</AccordionGroup>
 
 ## The extension entry
 
@@ -100,6 +121,10 @@ Every custom component needs a definition in PHP, usually in `AppServiceProvider
 
 <<< @/app/Providers/AppServiceProvider.php
 
+`props()` describes each prop, `fallback()` returns the server HTML, `markdown()` returns what agents read, and `island()` lets React mount over the fallback. A tag with no PHP definition is an unknown component: it renders as escaped text, and `php artisan larecipe:validate` reports `components.unknown`. So a page can never ask the browser to run code your app did not register.
+
+<Accordion title="Every definition method">
+
 | Method | What it sets |
 | --- | --- |
 | `props([...])` | Each prop's `type`, and optionally `default`, `required`, `enum` and `description` (or the short form `'list' => 'string'`). `larecipe:validate` and every render check them: a missing required prop or a value outside `enum` is a `components.props` error. On a repository set, props you do not describe still reach React. On a database set, whose authors may be less trusted than your codebase, they are dropped, so describe every prop you read. |
@@ -109,7 +134,7 @@ Every custom component needs a definition in PHP, usually in `AppServiceProvider
 | `raw()` | Keeps the content between the tags as literal text instead of Markdown. |
 | `description('...')` | One sentence for the generated component reference agents read. |
 
-A tag with no PHP definition is an unknown component: it renders as escaped text and `php artisan larecipe:validate` reports `components.unknown`. That holds on every source, so a page can never ask the browser to run code your app did not register.
+</Accordion>
 
 ### The fallback
 
@@ -127,11 +152,15 @@ Agents should not fill in forms, so Subscribe's Markdown form is one line with a
 Subscribe to the LaRecipe newsletter: https://larecipe.saleem.dev/newsletter
 ```
 
-### In the reader's language
+<AccordionGroup>
+
+<Accordion title="In the reader's language">
 
 A component can follow the page's language like the built-in UI does. Subscribe reads `locale` from `useLaRecipe()` in React, and `$context->locale` in its fallback, then picks its words from `lang/en/newsletter.php` or `lang/ar/newsletter.php`. On the [Arabic Introduction](/ar/3.x) the same form reads right to left, in Arabic, and the route answers in Arabic too.
 
-## The route it calls
+</Accordion>
+
+<Accordion title="The route the form posts to">
 
 The React form and the fallback both post to an ordinary route in your app, with your own middleware. This is that route, read from the running app:
 
@@ -139,33 +168,31 @@ The React form and the fallback both post to an ordinary route in your app, with
 
 The controller validates the address and sends it to Nashra. It never fails with a 500: a missing API key or an unreachable service comes back as one friendly sentence, as JSON for `request()` and as a redirect for the plain form.
 
-<Accordion title="app/Http/Controllers/SubscribeController.php">
-
 <<< @/app/Http/Controllers/SubscribeController.php
 
 </Accordion>
 
+</AccordionGroup>
+
 ## Build it
 
-Custom components are the one part of LaRecipe that needs Node, and only at build time, on your machine or in CI. Add `@larecipe/vite` and `@larecipe/ui` as dev dependencies, then add the plugin to your Vite config. `@larecipe/vite` works with Vite 6, 7 and 8; this site builds with Vite 8.
-
-This is this site's own config:
+Custom components are the one part of LaRecipe that needs Node, and only at build time, on your machine or in CI. Add `@larecipe/vite` and `@larecipe/ui` as dev dependencies, then add the plugin to your Vite config. `@larecipe/vite` works with Vite 6, 7 and 8. This is this site's own config:
 
 <<< @/vite.config.js
 
-`npm run build` then writes the extension to `public/build/larecipe/` as an ES module with a manifest. `react`, `react-dom` and `@larecipe/ui` are left out of the bundle on purpose. Your server never runs Node: the built files are static.
+`npm run build` then writes the extension to `public/build/larecipe/`. Your server never runs Node: the built files are static. LaRecipe looks for `public/build/larecipe/manifest.json` on every docs page and, when the extension's entry is there, adds its stylesheet and module right after its own runtime. There is no script tag to add by hand.
 
-LaRecipe looks for `public/build/larecipe/manifest.json` on every docs page. When the extension's entry is there, it adds the extension's stylesheet and module to the page, right after its own runtime. There is no script tag to add by hand.
+<Accordion title="One React on the page">
 
-### One React on the page
-
-Every docs page prints an import map ahead of LaRecipe's scripts. It points the bare names `react`, `react/jsx-runtime`, `react-dom`, `react-dom/client` and `@larecipe/ui` at LaRecipe's own built files:
+The build is an ES module with a manifest. `react`, `react-dom` and `@larecipe/ui` are left out of the bundle on purpose. Every docs page prints an import map ahead of LaRecipe's scripts, which points the bare names `react`, `react/jsx-runtime`, `react-dom`, `react-dom/client` and `@larecipe/ui` at LaRecipe's own built files:
 
 ```html
 <script type="importmap">{"imports":{"react":"/larecipe-assets/{build}/assets/react-….js","@larecipe/ui":"/larecipe-assets/{build}/assets/larecipe-ui-….js", "…": "…"}}</script>
 ```
 
 Your extension keeps those imports bare, so the browser resolves them to the same modules LaRecipe uses. There is one React and one component registry, and hooks such as `useLaRecipe()` work inside your components. `defineExtension()` works whether your module loads before or after LaRecipe's runtime.
+
+</Accordion>
 
 ## Use it
 
@@ -187,4 +214,4 @@ Your extension keeps those imports bare, so the browser resolves them to the sam
 
 - [Insert points and slots](insert-points.md): place a component on every page.
 - [Theme](theme.md): the tokens and CSS variables your components can read.
-- [Components](../reference/components.md): the built-in components and the HTML they render.
+- [Components reference](../reference/components.md): the built-in components and the HTML they render.

@@ -17,15 +17,7 @@ sources:
 
 # Installation
 
-Two commands give you a docs site inside your Laravel app, and set up your coding agents so the docs stay current from the first push. There is no Node and no build step: the reading experience ships prebuilt inside the package.
-
-## Requirements
-
-- PHP 8.3 or newer.
-- Laravel 12.62 or newer, or Laravel 13.
-- `git` on developer machines and in CI. LaRecipe reads git to find the pages a change affects and to show who last changed a page. Production servers do not need it.
-
-## Install
+You need PHP 8.3 or newer, Laravel 12.62 or newer (or Laravel 13), and `git` on developer machines and in CI. Production servers do not need `git`.
 
 <Steps>
 
@@ -35,7 +27,7 @@ Two commands give you a docs site inside your Laravel app, and set up your codin
 composer require larecipe/larecipe
 ```
 
-While LaRecipe 3 is in pre-release, ask Composer for it by name: `composer require larecipe/larecipe:^3.0@alpha`.
+While LaRecipe 3 is in pre-release, ask for it by name: `composer require larecipe/larecipe:^3.0@alpha`.
 
 </Step>
 
@@ -45,19 +37,21 @@ While LaRecipe 3 is in pre-release, ask Composer for it by name: `composer requi
 php artisan larecipe:install
 ```
 
-It asks a few questions, each with a sensible default, then prints every file it wrote. The sections below explain each question.
+It asks a few questions. The defaults suit most apps, so you can press Enter through them.
 
 </Step>
 
 <Step title="Open your docs">
 
-Visit `/docs` in your browser. The first page is a short, real Introduction built from your app: its name, its Laravel version, the first-party packages in `composer.json` and the opening of your README. Never lorem ipsum.
+Visit `/docs`. The first page is a short Introduction written from your app: its name, its Laravel version, its first-party packages and the opening of your README.
 
 </Step>
 
 </Steps>
 
-That is a working site. To have your coding agent write real starter docs from your code next, read [Your first docs](your-first-docs.md).
+That is a working site. The installer also set up your coding agents, so the docs stay current from the first push. Commit what it wrote, except the file in `bootstrap/cache`.
+
+Next, let your coding agent write real starter pages from your code: [Your first docs](your-first-docs.md).
 
 ## What the installer asks
 
@@ -76,13 +70,13 @@ Every question has a flag, so you can answer up front or run the installer in a 
 | Add `@AGENTS.md` to an existing `CLAUDE.md` | `--claude-md` | Asked |
 | Generate starter docs now | `--onboard=product,api,package,internal` and `--onboard-agent=claude` | Asked when an agent is installed |
 
-Two more flags help: `--no-index` leaves the docs index out of `AGENTS.md`, and `--dry-run` shows every file the installer would change without writing anything.
-
-The docs folder must be inside your app. The installer refuses a `--path` that is the app's root folder itself, or a folder outside it.
-
-The installer detects agents in two ways: a CLI on your `PATH` (`claude`, `codex`, `cursor-agent`, `gemini`, `copilot`), or the agent's files in the project (`.claude`, `CLAUDE.md`, `.codex`, `.cursor`, `.gemini`, `GEMINI.md`, `.github/copilot-instructions.md`). It only writes config for agents you use.
+`--dry-run` shows every file the installer would change without writing anything, and `--no-index` leaves the docs index out of `AGENTS.md`. Run the installer again at any time: it merges into files you already have and never overwrites them.
 
 ## What it writes
+
+The docs folder with a manifest and an Introduction page, and the setup your agents read: a LaRecipe block in `AGENTS.md`, four skills, the local MCP server in each agent's config, and the pre-push hook for Claude Code and Codex. A git hook and a CI workflow are written only when you ask for them.
+
+<Accordion title="Every file the installer writes">
 
 | File | What it is |
 | --- | --- |
@@ -100,12 +94,15 @@ The installer detects agents in two ways: a CLI on your `PATH` (`claude`, `codex
 | `composer.json` | `@php artisan larecipe:agents --ansi` in `post-update-cmd`, only with your consent. |
 | `bootstrap/cache/larecipe/hooks.php` | The compiled push patterns the hook reads, so ordinary shell commands never boot Laravel. Not committed. |
 
-Commit everything except the `bootstrap/cache` file, so every teammate's agent gets the same setup.
+The installer merges into files you already have. Other MCP servers and hooks stay where they are, an existing `larecipe` entry is left alone, and a file it cannot parse is skipped with a note.
 
-> [!NOTE]
-> The installer merges into files you already have and never overwrites them. Other MCP servers and hooks stay where they are, an existing `larecipe` entry is left alone, and a file it cannot parse is skipped with a note. Run it again at any time.
+</Accordion>
 
-## Run it without questions
+## Details
+
+<AccordionGroup>
+
+<Accordion title="Run it without questions">
 
 In a script, in CI or in a dev container, pass `--no-interaction` with the answers you want:
 
@@ -120,11 +117,27 @@ php artisan larecipe:install --no-interaction \
 
 Without a terminal to ask, the installer uses the defaults in the table above: the repository driver, the agents it detects, the agent hooks, no git hook, no CI check, `required` review, and no change to `composer.json` or `CLAUDE.md` unless you pass the flag. Onboarding never runs without `--onboard`.
 
-## With Laravel Boost
+</Accordion>
 
-When `laravel/boost` is installed (in `vendor/` or `composer.json`), Boost manages agent guidelines and skills for the whole app. LaRecipe then writes no `AGENTS.md` block and no skill copies of its own; it ships them through Boost instead, so the instructions never appear twice. Run `php artisan boost:install` (or `boost:update`) and select `larecipe/larecipe`. The MCP config and the hooks are still written by `larecipe:install`.
+<Accordion title="How it finds your agents">
 
-## With the database driver
+The installer detects an agent in two ways: its CLI on your `PATH` (`claude`, `codex`, `cursor-agent`, `gemini`, `copilot`), or its files in the project (`.claude`, `CLAUDE.md`, `.codex`, `.cursor`, `.gemini`, `GEMINI.md`, `.github/copilot-instructions.md`). It only writes config for agents you use.
+
+</Accordion>
+
+<Accordion title="Where the docs folder may live">
+
+The docs folder must be inside your app. The installer refuses a `--path` that is the app's root folder itself, or a folder outside it.
+
+</Accordion>
+
+<Accordion title="With Laravel Boost">
+
+When `laravel/boost` is installed, Boost ships LaRecipe's instructions and skills, so LaRecipe writes no `AGENTS.md` block and no skill copies of its own. Run `php artisan boost:install` (or `boost:update`) and select `larecipe/larecipe`. `larecipe:install` still writes the MCP config and the hooks. See [agent instructions](../keeping-current/agent-instructions.md#with-laravel-boost).
+
+</Accordion>
+
+<Accordion title="With the database driver">
 
 `--driver=database` keeps the docs in your database, with an admin UI and docs migrations for changes made in pull requests. The installer writes no `docs/` folder in this case. It writes a starter [docs migration](../sources/docs-migrations.md) instead, `database/migrations/docs/{timestamp}_docs_introduction.php`, with the set's name and the same Introduction page. Running the installer again never writes a second one. Then:
 
@@ -133,21 +146,29 @@ When `laravel/boost` is installed (in `vendor/` or `composer.json`), Boost manag
 
 Read [the database source](../sources/database.md) before you choose it. Most teams start with the repository.
 
-## Codex and Ask AI
+</Accordion>
+
+<Accordion title="Codex and Ask AI">
 
 Two steps the installer prints when they apply:
 
 - **Codex**: trust the project in `~/.codex/config.toml` and approve the LaRecipe hooks with `/hooks`, so Codex loads them.
 - **Ask AI** needs `laravel/ai` and a provider key of your own: `composer require laravel/ai`. Everything else works without it. See [Ask AI](../agents/ask-ai.md).
 
-## Every option
+</Accordion>
+
+<Accordion title="Every option of larecipe:install">
 
 Read live from this app's command registry:
 
 <Artisan command="larecipe:install" />
 
+</Accordion>
+
+</AccordionGroup>
+
 ## Next
 
 - [Your first docs](your-first-docs.md): let your coding agent write starter pages from your app.
-- [Configuration](configuration.md): routes, access, doc sets and the rest of `config/larecipe.php`.
+- [Configuration basics](configuration.md): the few settings most apps change.
 - [Project structure](project-structure.md): what goes where in `docs/`.

@@ -231,7 +231,7 @@ redirect_from:
 
 Write each one as the old page path inside the version, as you would in `navigation.json`. A request for the old path redirects with a `301` to this page, in the same version and language, and a request for the old Markdown twin (`hooks.md`) redirects to the new twin. The full old URL path, such as `/docs/3.x/hooks`, matches as well.
 
-LaRecipe looks for `redirect_from` among the pages of the version and language that was requested. A page copied into a new version keeps its `redirect_from`, but a translation needs its own to redirect its old URL.
+LaRecipe looks for `redirect_from` among the pages of the version and language that was requested, and only among the pages the reader may see, so an old URL never reveals a private page. A page copied into a new version keeps its `redirect_from`, but a translation needs its own to redirect its old URL.
 
 ### redirects in larecipe.json
 
@@ -248,8 +248,7 @@ For URLs that no page owns any more, list them in the set's `larecipe.json`:
 
 `from` is the full path of the old URL: the set's prefix, then the version, then the page (with the language segment for a translation). `to` is any path or URL, and `status` defaults to `301`.
 
-> [!WARNING]
-> On a versioned set, always write `from` with its version. A URL without one is sent to the default version before redirects are read, so `"from": "/docs/setup"` never fires; `"from": "/docs/3.x/setup"` does.
+On a versioned set, a `from` without a version applies in every version. `{ "from": "/docs/setup", "to": "/docs/installation" }` sends `/docs/3.x/setup` to `/docs/3.x/installation` and `/docs/2.x/setup` to `/docs/2.x/installation`: a `to` inside the set that names no version stays in the reader's version. Write the version in `from` to redirect one version only.
 
 To redirect URLs outside the docs, or a whole old prefix, use your app's routes. [Upgrade from v2](../upgrade.md) shows how this site keeps its LaRecipe 2 URLs working.
 

@@ -41,10 +41,7 @@ List the versions in the set's [manifest](../reference/manifest.md):
 | `default` | `false` | The version readers land on. When no version says `true`, the first one is the default. |
 | `visibility` | `public` | `private` versions need the `viewLarecipe` gate on every surface, and any value other than `public` counts as private. See [gate blocks and private docs](gate-blocks.md). |
 
-A version can also be written as a plain string (`"versions": ["3.x", "2.x"]`) when it needs nothing but an id.
-
-> [!WARNING]
-> `larecipe:make:version` reads only the object form. On a manifest that lists versions as strings it reports that the set has no versions yet, so write them as objects before you run it.
+A version can also be written as a plain string (`"versions": ["3.x", "2.x"]`) when it needs nothing but an id. `larecipe:make:version` reads both forms, and writes the list back the way you wrote it.
 
 ## One folder per version
 
@@ -76,7 +73,7 @@ A versioned page lives at `/{prefix}/{version}/{path}`. On this site the set is 
 URLs without a version keep working. A request for `/{prefix}/{path}` redirects to that page in the default version, so links written before your second version existed never break. The one exception is the root of a set mounted at the domain root: `/` renders the default version's landing page directly, which is how this site opens on the Introduction.
 
 > [!NOTE]
-> On a versioned set, write the `from` of a [redirect](../reference/manifest.md) with its version segment, for example `/3.x/setup`. A path without one is sent to the default version before redirects are read, so it never reaches the redirect list.
+> A [redirect](../reference/manifest.md#redirects) whose `from` has no version applies in every version: `/setup` here matches `/3.x/setup` and `/2.x/setup`, and a `to` without a version keeps the reader in theirs. Write the version, as in `/3.x/setup`, to redirect one version only.
 
 Each page's canonical URL is its own URL in its own version: a 2.x page is canonical at its 2.x address.
 

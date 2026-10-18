@@ -114,7 +114,7 @@ Navbar, footer and repository links must be `http`, `https` or `mailto` URLs, or
 | `to` | string | required | Where to send the reader: a path or a full URL. |
 | `status` | `301`, `302`, `307` or `308` | `301` | The HTTP status. |
 
-A redirect runs only when no page lives at `from`. On a versioned set, a `from` without the version never runs, because an unversioned URL is sent to the default version first. `larecipe:validate` reports redirects that loop (`redirects.loop`) and redirects a page shadows (`redirects.shadowed`).
+A redirect runs only when no page lives at `from`. On a versioned set, a `from` without a version applies in every version: `/docs/setup` matches `/docs/3.x/setup` and `/docs/2.x/setup`, and a `to` inside the set that names no version keeps the reader in their version. A `from` with a version matches that version only. `larecipe:validate` reports redirects that loop (`redirects.loop`) and redirects a page shadows (`redirects.shadowed`).
 
 ### inserts
 

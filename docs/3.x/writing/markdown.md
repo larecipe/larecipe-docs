@@ -91,6 +91,7 @@ LaRecipe resolves each one to the reader's URL for the same version and language
 
 - A relative link resolves from the folder of the page that contains it.
 - A link that starts with `/` and ends in `.md` resolves from the root of the current version: `[install](/get-started/installation.md)` reaches the same page from anywhere in the version.
+- A root link that spells out a version, after the set's prefix and an optional language, reaches that page: `/3.x/index.md` is the 3.x landing page, and `/ar/3.x/index.md` the Arabic one. `larecipe:validate` checks these links the same way.
 - Links with a scheme (`https://`, `mailto:`) and `#anchors` are left alone. To link to a URL that ends in `.md` but is not one of your pages, write the full URL.
 - `javascript:` and other unsafe links are dropped.
 - `php artisan larecipe:validate` reports links to pages or anchors that do not exist, with the closest match as a fix.

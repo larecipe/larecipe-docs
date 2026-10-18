@@ -11,7 +11,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Agents/**
   - vendor/larecipe/larecipe/resources/views/prerender/rail.blade.php
   - vendor/larecipe/larecipe/config/larecipe.php
-translated_from: sha256:937a7edf559126ee4882e5457f0e4d2bcf53da46640ec38988bfbceeb1dd4013
+translated_from: sha256:48411e1f983f4744ae3301a0eeb65e403f970fd7b5f947128d0757388636a2f7
 ---
 
 # واجهات الوكلاء
@@ -42,7 +42,7 @@ curl https://larecipe.saleem.dev/3.x/index.md
 
 ```markdown
 ---
-title: 'Beautiful docs that keep up with your code'
+title: 'Docs that keep up with your code'
 description: 'LaRecipe is a docs site that lives inside your Laravel app, written and kept current by ...'
 url: 'https://larecipe.saleem.dev/3.x'
 version: 3.x
@@ -52,7 +52,7 @@ last_updated: '2026-10-17'
 
 > Docs index: https://larecipe.saleem.dev/3.x/llms.txt · MCP: https://larecipe.saleem.dev/mcp · Skill: https://larecipe.saleem.dev/skill.md
 
-# Beautiful docs that keep up with your code
+# Docs that keep up with your code
 
 You write pages in Markdown, in your own repository, next to the code they describe. ...
 ```

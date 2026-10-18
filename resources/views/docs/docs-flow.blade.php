@@ -3,7 +3,8 @@
     page's language ($locale: en or ar). Its markup matches
     resources/larecipe/DocsFlow.tsx, so React mounts without a shift and only
     adds the motion. The wire paths follow the geometry in
-    resources/larecipe/docs-flow.css.
+    resources/larecipe/docs-flow.css. At rest the pull request is merged with
+    both its code and its docs.
 --}}
 @php
     $t = fn (string $key) => __('docs-flow.'.$key, [], $locale);
@@ -20,9 +21,12 @@
     $icon = '<svg class="lr-flow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">';
     $glyph = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">';
     $pullRequest = $icon.'<circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M13 6h3a2 2 0 0 1 2 2v7"></path><path d="M6 9v12"></path></svg>';
+    $check = '<svg class="lr-flow-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>';
 @endphp
 <figure class="lr-flow" data-lr-flow="html">
     <div class="lr-flow-stage" aria-hidden="true">
+        <div class="lr-flow-pr"></div>
+
         <div class="lr-flow-label lr-flow-label-code">{{ $t('code') }}</div>
         <div class="lr-flow-sources">
             <div class="lr-flow-card lr-flow-source" style="--i:0">
@@ -31,26 +35,22 @@
                 <span class="lr-flow-source-stat" dir="ltr"><span class="lr-flow-add">+42</span> <span class="lr-flow-remove">−7</span></span>
                 <span class="lr-flow-source-title" dir="ltr">feat: refund invoices</span>
             </div>
-            <div class="lr-flow-card lr-flow-source" style="--i:1">
-                {!! $pullRequest !!}
-                <span class="lr-flow-source-id lr-flow-mono" dir="ltr">#412</span>
-                <span class="lr-flow-source-stat lr-flow-word">{{ $t('code_and_docs') }}</span>
-                <span class="lr-flow-source-title" dir="ltr">Add invoice refunds</span>
+            <div class="lr-flow-chain">
+                <svg class="lr-flow-wires" width="12" height="22" viewBox="0 0 12 22">{!! $wire('M6 0V22', 0).$port(6, 0, 'src', 0).$port(6, 22, 'src', 4) !!}</svg>
             </div>
-            <div class="lr-flow-card lr-flow-source" style="--i:2">
-                {!! $icon !!}<path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg>
-                <span class="lr-flow-source-id lr-flow-mono" dir="ltr">artisan</span>
-                <span class="lr-flow-source-stat lr-flow-word">{{ $t('new_command') }}</span>
-                <span class="lr-flow-source-title lr-flow-mono" dir="ltr">invoices:refund</span>
+            <div class="lr-flow-card lr-flow-source lr-flow-stale" style="--i:4">
+                {!! $icon !!}<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M12 12v3"></path><path d="M12 18h.01"></path></svg>
+                <span class="lr-flow-source-id lr-flow-mono" dir="ltr">refunds.md</span>
+                <span class="lr-flow-source-stat lr-flow-word">{{ $t('stale') }}</span>
+                <span class="lr-flow-source-title">{{ $t('stale_why') }}</span>
             </div>
         </div>
 
         <div class="lr-flow-link lr-flow-link-in">
             <svg class="lr-flow-wires lr-flow-wires-h" width="52" height="300" viewBox="0 0 52 300">{!!
-                $wire('M0 72C26 72 26 150 52 150', 0).$wire('M0 150H52', 1).$wire('M0 228C26 228 26 150 52 150', 2)
-                .$port(0, 72, 'src', 0).$port(0, 150, 'src', 1).$port(0, 228, 'src', 2).$port(52, 150, 'hub-in', 0, 3.75)
+                $wire('M0 189C26 189 26 150 52 150', 4).$port(0, 189, 'src', 4).$port(52, 150, 'hub-in', 0, 3.75)
             !!}</svg>
-            {!! $vertical('src', 'hub-in', 0) !!}
+            {!! $vertical('src', 'hub-in', 4) !!}
         </div>
 
         <div class="lr-flow-label lr-flow-label-agent">{{ $t('agent') }}</div>
@@ -80,6 +80,18 @@
                 {!! $pullRequest !!}
                 <span>{{ $t('updated_by') }} · <span dir="ltr">PR #412</span></span>
             </div>
+        </div>
+
+        <div class="lr-flow-pr-bar">
+            {!! $pullRequest !!}
+            <span class="lr-flow-pr-id lr-flow-mono" dir="ltr">#412</span>
+            <span class="lr-flow-pr-title" dir="ltr">Add invoice refunds</span>
+            <span class="lr-flow-pr-files">
+                <span class="lr-flow-pr-file lr-flow-word" data-state="on" style="--i:0">{!! $check !!}{{ $t('pr_code') }}</span>
+                <span class="lr-flow-pr-plus">+</span>
+                <span class="lr-flow-pr-file lr-flow-word" data-state="on" style="--i:1">{!! $check !!}{{ $t('pr_docs') }}</span>
+            </span>
+            <span class="lr-flow-pr-state lr-flow-word" data-state="merged"><span class="lr-flow-dot"></span>{{ $t('merged') }}</span>
         </div>
 
         <div class="lr-flow-link lr-flow-link-out">

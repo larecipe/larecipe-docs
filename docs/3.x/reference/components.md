@@ -247,7 +247,7 @@ The install box on the [Introduction](../index.md), registered with `LaRecipe::c
 
 ### DocsFlow
 
-The animated diagram near the top of the [Introduction](../index.md), registered with `LaRecipe::component('DocsFlow')`: your code on one side, a docs page your agent updates in the middle, and agents and people reading on the other. **Island:** `DocsFlow`, in `resources/larecipe/DocsFlow.tsx`. It animates only while it is on screen, and stays still for readers who prefer reduced motion.
+The animated diagram near the top of the [Introduction](../index.md), registered with `LaRecipe::component('DocsFlow')`: a commit that makes the docs page listing its code stale, your agent updating that page, one pull request that merges the code and the docs together, and agents and people reading the result. **Island:** `DocsFlow`, in `resources/larecipe/DocsFlow.tsx`. It animates only while it is on screen, and stays still for readers who prefer reduced motion.
 
 | Prop | Type | Required | Default | Allowed values | Description |
 | --- | --- | --- | --- | --- | --- |

@@ -1,17 +1,21 @@
 /*
- * DocsFlow: the LaRecipe loop as a diagram. Your code on one side, your agent
- * updating a docs page in the middle, agents and people reading on the other.
+ * DocsFlow: the LaRecipe loop as a diagram. A commit on one side makes the
+ * docs page that lists its code stale; your agent updates that page in the
+ * middle; a pull request region wraps both, and its bar shows code + docs
+ * merging together; agents and people read on the other side.
  *
  * The same rules style the server fallback (resources/views/docs/docs-flow.blade.php)
  * and the React island (DocsFlow.tsx). The fallback is the diagram at rest;
  * React only adds data-live, data-phase, data-target and data-step on the
  * figure, and these rules animate from them.
  *
- * Wide geometry (container 700px and up): a 300px body row. Source cards are
- * 56px tall and 22px apart, centred (ports at y 72, 150, 228). The page card
- * fills the row (ports at 150). Reader cards are 118px, one at each end of the
- * row (ports at 59 and 241). The wires between them are drawn in 52 by 300
- * SVGs whose paths use those numbers, so keep them in step.
+ * Wide geometry (container 700px and up): a 300px body row. The commit and the
+ * stale card are 56px tall, joined by a 22px chain and centred (the stale
+ * card's port at y 189). The page card fills the row (ports at 150). Reader
+ * cards are 118px, one at each end of the row (ports at 59 and 241). The wires
+ * between them are drawn in 52 by 300 SVGs whose paths use those numbers, so
+ * keep them in step. The pull request bar is a third row under the first
+ * three columns.
  */
 .lr-flow {
   --lr-flow-canvas: color-mix(in oklab, var(--lr-surface) 45%, var(--lr-paper));
@@ -118,7 +122,21 @@
   grid-row: 2;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+}
+
+/* The commit makes the page stale: a short wire joins the two cards, under
+   their icons (11px card padding plus half the 13px icon), like a git graph. */
+.lr-flow-chain {
+  position: relative;
+  z-index: 2;
+  height: 22px;
+  pointer-events: none;
+}
+
+.lr-flow-chain .lr-flow-wires {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 11.5px;
 }
 
 .lr-flow-link {
@@ -134,7 +152,7 @@
 }
 
 .lr-flow-link-out {
-  grid-row: 5;
+  grid-row: 6;
 }
 
 /* Narrow: the label of the next step sits beside its wire. */
@@ -155,29 +173,56 @@
   grid-row: 4;
 }
 
+/* The pull request: a region behind the code and the page, its bar below them. */
+.lr-flow-pr {
+  grid-column: 1 / -1;
+  grid-row: 1 / 6;
+  margin-block: -10px -10px;
+  margin-inline: -8px;
+  border: 1px dashed color-mix(in oklab, var(--lr-accent-current) 32%, var(--lr-hairline));
+  border-radius: calc(var(--lr-radius-lg) + 6px);
+  background: color-mix(in oklab, var(--lr-accent-current) 4%, transparent);
+  transition:
+    border-color 420ms var(--lr-ease),
+    background-color 420ms var(--lr-ease);
+}
+
+.lr-flow-pr-bar {
+  grid-column: 1 / -1;
+  grid-row: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-block-start: 12px;
+  margin-inline: -8px;
+  padding: 10px 10px 0;
+  border-block-start: 1px dashed color-mix(in oklab, var(--lr-accent-current) 24%, var(--lr-hairline));
+}
+
 .lr-flow-readers {
   display: contents;
 }
 
 .lr-flow-label-agents {
   grid-column: 1;
-  grid-row: 5;
+  grid-row: 6;
 }
 
 .lr-flow-label-people {
   grid-column: 2;
-  grid-row: 5;
+  grid-row: 6;
   padding-inline-start: 2px;
 }
 
 .lr-flow-agents {
   grid-column: 1;
-  grid-row: 6;
+  grid-row: 7;
 }
 
 .lr-flow-people {
   grid-column: 2;
-  grid-row: 6;
+  grid-row: 7;
 }
 
 /* ---- Cards ----------------------------------------------------------------- */
@@ -264,6 +309,116 @@
   font-weight: 500;
 }
 
+/* The page the commit made stale, in the theme's warning color. */
+.lr-flow-stale .lr-flow-icon,
+.lr-flow-stale .lr-flow-source-stat {
+  color: var(--lr-warning);
+}
+
+.lr-flow-stale .lr-flow-source-title {
+  font-weight: 400;
+  color: var(--lr-ink-muted);
+}
+
+/* The pull request bar: #412, its title, code + docs, and its state. */
+.lr-flow-pr-bar .lr-flow-icon {
+  color: var(--lr-accent-current);
+}
+
+.lr-flow-pr-id {
+  flex: none;
+  font-size: 10px;
+  line-height: 14px;
+  color: var(--lr-ink-muted);
+}
+
+.lr-flow-pr-title {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--lr-ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lr-flow-pr-files {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lr-flow-pr-file,
+.lr-flow-pr-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border: 1px solid var(--lr-hairline-strong);
+  border-radius: 999px;
+  background: var(--lr-flow-card);
+  font-family: var(--lr-font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 12px;
+  color: var(--lr-ink-muted);
+  white-space: nowrap;
+  transition:
+    color 260ms var(--lr-ease),
+    border-color 260ms var(--lr-ease),
+    background-color 260ms var(--lr-ease);
+}
+
+.lr-flow-check {
+  flex: none;
+  display: block;
+  width: 10px;
+  height: 10px;
+  color: var(--lr-success);
+  transition: opacity 260ms var(--lr-ease);
+}
+
+/* Docs not in the pull request yet: a dashed, empty slot. */
+.lr-flow-pr-file[data-state='off'] {
+  border-style: dashed;
+  background: transparent;
+  color: var(--lr-ink-faint);
+}
+
+.lr-flow-pr-file[data-state='off'] .lr-flow-check {
+  opacity: 0;
+}
+
+.lr-flow-pr-plus {
+  font-family: var(--lr-font-mono);
+  font-size: 10px;
+  line-height: 12px;
+  color: var(--lr-ink-faint);
+}
+
+.lr-flow-pr-state {
+  flex: none;
+}
+
+.lr-flow-pr-state .lr-flow-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--lr-ink-faint);
+}
+
+.lr-flow-pr-state[data-state='merged'] {
+  border-color: transparent;
+  background: var(--lr-accent-soft);
+  color: var(--lr-accent-current);
+}
+
+.lr-flow-pr-state[data-state='merged'] .lr-flow-dot {
+  background: var(--lr-accent-current);
+}
+
 /* Your agent updates the docs: a small docs page. */
 .lr-flow-page {
   display: flex;
@@ -346,6 +501,15 @@
   height: 6px;
   border-radius: 50%;
   background: var(--lr-accent-current);
+}
+
+.lr-flow-pill[data-state='stale'] {
+  background: color-mix(in oklab, var(--lr-warning) 15%, transparent);
+  color: var(--lr-warning);
+}
+
+.lr-flow-pill[data-state='stale'] .lr-flow-dot {
+  background: var(--lr-warning);
 }
 
 .lr-flow-tabs {
@@ -710,6 +874,11 @@
   inset-inline-end: 18px;
 }
 
+/* Narrow: the wire into the page continues the chain under the icons. */
+.lr-flow-link-in .lr-flow-wires-v {
+  inset-inline-start: 11.5px;
+}
+
 .lr-flow-track {
   fill: none;
   stroke: var(--lr-flow-wire);
@@ -765,7 +934,7 @@
 @container lr-flow (min-width: 700px) {
   .lr-flow-stage {
     grid-template-columns: minmax(0, 0.92fr) 52px minmax(0, 1.5fr) 52px minmax(0, 1.15fr);
-    grid-template-rows: auto 300px;
+    grid-template-rows: auto 300px auto;
     column-gap: 0;
     row-gap: 10px;
     padding: 20px 16px 22px;
@@ -794,7 +963,17 @@
     grid-column: 1;
     grid-row: 2;
     justify-content: center;
-    gap: 22px;
+  }
+
+  .lr-flow-pr {
+    grid-column: 1 / 4;
+    grid-row: 1 / 4;
+  }
+
+  .lr-flow-pr-bar {
+    grid-column: 1 / 4;
+    grid-row: 3;
+    margin-block-start: 4px;
   }
 
   .lr-flow-source {
@@ -910,21 +1089,32 @@
   animation-play-state: paused !important;
 }
 
-/* 1. Your code fires: the source cards light up, pulses travel in. */
+/* 1. Your code changes: the commit lights up, a pulse runs down to the page
+   it made stale (amber), then on into the docs page. */
 .lr-flow[data-phase='send'] .lr-flow-source {
   border-color: var(--lr-flow-edge-on);
   transition-delay: calc(var(--i, 0) * 140ms);
 }
 
+.lr-flow[data-phase='send'] .lr-flow-stale {
+  border-color: color-mix(in oklab, var(--lr-warning) 55%, var(--lr-hairline));
+}
+
+.lr-flow[data-phase='send'] .lr-flow-chain .lr-flow-track,
 .lr-flow[data-phase='send'] .lr-flow-link-in .lr-flow-track,
 .lr-flow[data-phase='publish'] .lr-flow-link-out .lr-flow-track {
   stroke: var(--lr-flow-wire-on);
 }
 
+.lr-flow[data-phase='send'] .lr-flow-chain .lr-flow-pulse,
 .lr-flow[data-phase='send'] .lr-flow-link-in .lr-flow-pulse,
 .lr-flow[data-phase='publish'] .lr-flow-link-out .lr-flow-pulse {
   animation: lr-flow-travel 1000ms var(--lr-flow-travel) both;
   animation-delay: calc(var(--i, 0) * 140ms);
+}
+
+.lr-flow[data-phase='send'] .lr-flow-chain .lr-flow-pulse {
+  animation-duration: 560ms;
 }
 
 .lr-flow[data-phase='send'] .lr-flow-port[data-port='src'],
@@ -1004,7 +1194,36 @@
   animation: lr-flow-halo 1100ms ease-out both;
 }
 
-/* 3. Readers pick it up: agents over MCP, people on the site. */
+/* The docs commit joins the pull request once the agent has written it. */
+.lr-flow[data-step='hold'] .lr-flow-pr-file:last-child {
+  animation: lr-flow-halo 1100ms ease-out both;
+}
+
+/* 3. One pull request ships both: the region lights, code and docs light
+   together, and the state turns Merged. */
+.lr-flow[data-phase='ship'] .lr-flow-pr {
+  border-style: solid;
+  border-color: color-mix(in oklab, var(--lr-accent-current) 55%, var(--lr-hairline));
+  background: color-mix(in oklab, var(--lr-accent-current) 8%, transparent);
+}
+
+.lr-flow[data-phase='ship'] .lr-flow-source:first-child,
+.lr-flow[data-phase='ship'] .lr-flow-page {
+  border-color: var(--lr-flow-edge-on);
+}
+
+.lr-flow[data-phase='ship'] .lr-flow-pr-file {
+  border-color: color-mix(in oklab, var(--lr-accent-current) 45%, var(--lr-hairline));
+  color: var(--lr-accent-current);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+.lr-flow[data-phase='ship'] .lr-flow-pr-state {
+  animation: lr-flow-halo 1100ms ease-out both;
+  animation-delay: 240ms;
+}
+
+/* 4. Readers pick it up: agents over MCP, people on the site. */
 .lr-flow[data-phase='read'] .lr-flow-reader {
   border-color: var(--lr-flow-edge-on);
   transition-delay: calc(var(--i, 0) * 140ms);

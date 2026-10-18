@@ -114,7 +114,7 @@ class AppServiceProvider extends ServiceProvider
         // readers without JavaScript, and a short numbered list for agents.
         // Its words live in lang/{en,ar}/docs-flow.php.
         LaRecipe::component('DocsFlow')
-            ->description('A diagram of the LaRecipe loop: code changes, the coding agent updates the docs, people and agents read them.')
+            ->description('A diagram of the LaRecipe loop: a code change makes a docs page stale, the coding agent updates it, the code and the docs merge together in one pull request, and people and agents read the result.')
             ->props(['caption' => ['type' => 'string', 'description' => 'An optional caption under the diagram']])
             ->fallback(fn (array $props, string $children, RenderedComponent $component) => view('docs.docs-flow', [
                 'caption' => $props['caption'] ?? null,

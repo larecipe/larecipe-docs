@@ -20,7 +20,7 @@ sources:
   - resources/views/docs/docs-flow.blade.php
   - resources/views/docs/featured-on.blade.php
   - resources/views/docs/features.blade.php
-translated_from: sha256:ec7bf0cf1c290102b8ca903c3811e6ac72b6622273c06907dee40d7a76c60b2f
+translated_from: sha256:93418f92556b1e40c6a085d16e822655753bc7810eedc2dfe72014cc9074d0a3
 ---
 
 # المكوّنات
@@ -248,7 +248,7 @@ translated_from: sha256:ec7bf0cf1c290102b8ca903c3811e6ac72b6622273c06907dee40d7a
 
 ### DocsFlow
 
-المخطط المتحرك قرب أعلى [المقدمة](../index.md)، مسجّل بالاستدعاء `LaRecipe::component('DocsFlow')`: كودك في جهة، وصفحة توثيق يحدّثها وكيلك في الوسط، والوكلاء والناس يقرؤونها في الجهة الأخرى. **Island:** `DocsFlow`، في `resources/larecipe/DocsFlow.tsx`. لا يتحرك إلا وهو ظاهر على الشاشة، ويبقى ثابتًا للقرّاء الذين يفضّلون تقليل الحركة.
+المخطط المتحرك قرب أعلى [المقدمة](../index.md)، مسجّل بالاستدعاء `LaRecipe::component('DocsFlow')`: commit يجعل صفحة التوثيق التي تذكر كوده قديمة، ووكيلك يحدّث تلك الصفحة، و pull request واحد يدمج الكود والتوثيق معًا، والوكلاء والناس يقرؤون النتيجة. **Island:** `DocsFlow`، في `resources/larecipe/DocsFlow.tsx`. لا يتحرك إلا وهو ظاهر على الشاشة، ويبقى ثابتًا للقرّاء الذين يفضّلون تقليل الحركة.
 
 | الخاصية | النوع | مطلوبة | القيمة الافتراضية | القيم المسموح بها | الوصف |
 | --- | --- | --- | --- | --- | --- |

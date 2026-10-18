@@ -18,7 +18,7 @@ sources:
   - vendor/larecipe/larecipe/resources/boost/guidelines/core.blade.php
   - vendor/larecipe/larecipe/config/larecipe.php
   - AGENTS.md
-translated_from: sha256:984ff7e239521632f80546c257388d1a54c61228ea5462209b306f132341ca97
+translated_from: sha256:d26d9a8c00be0456bb1685300de772f19c3fbc50df0166a8755d6d47e8eeac1e
 ---
 
 # تعليمات الوكلاء
@@ -68,7 +68,7 @@ Search and read the docs with the `larecipe` MCP server. Never write configurati
 
 46 pages. One line per page: path, title, description. Read a page with the `read_page` tool of the `larecipe` MCP server, or open its file in `docs/`. Refresh this index with `php artisan larecipe:agents-md`.
 
-- `index`: Docs that keep up with your code. LaRecipe is a docs site that lives inside your Laravel app. Your coding agent writes the pages and updates them with…
+- `index`: Docs that keep up with your code. LaRecipe is a docs site that lives inside your Laravel app, written and kept current by the coding agent…
 - `upgrade`: Upgrade from v2. Move a LaRecipe 2 site to LaRecipe 3 with one command and a report, then finish the manual items with your coding agent…
 - `agents/ask-ai`: Ask AI. Let readers ask a question and get a short answer written only from your docs, with every cited page checked, on your…
 - ...

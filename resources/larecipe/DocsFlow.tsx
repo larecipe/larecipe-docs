@@ -4,55 +4,65 @@ import { useLaRecipe } from '@larecipe/ui'
 /** The diagram's words in each language the site serves (lang/{en,ar}/docs-flow.php on the server). */
 const STRINGS = {
   en: {
-    code: 'Your code',
+    code: 'Your code changes',
     agent: 'Your agent updates the docs',
     agentsRead: 'Agents read',
     peopleRead: 'People read',
-    codeAndDocs: 'code + docs',
-    newCommand: 'new',
+    stale: 'stale',
+    staleWhy: 'Its source changed',
     title: 'Refunds',
     guide: 'Guide',
     api: 'API',
     text: 'Refund a paid invoice in full or in part, from the app or with one command.',
     updatedAgo: 'Updated 2m ago',
+    stalePill: 'Stale',
     updating: 'Updating',
     updatedNow: 'Updated just now',
     updatedBy: 'Updated by Claude Code',
+    prCode: 'code',
+    prDocs: 'docs',
+    open: 'Open',
+    merged: 'Merged',
     connected: 'Connected via MCP',
     ago: '2m ago',
     now: 'just now',
     ask: 'Ask AI about the docs…',
     askShort: 'Ask the docs…',
     summary:
-      'Your code changes. Your coding agent updates the docs pages the change affects, in the same pull request. People read the docs site, and agents read the same pages as Markdown, through llms.txt and over MCP.',
+      'Your code changes, and LaRecipe finds the docs pages that list that code as their source. Your coding agent updates them before it pushes, so the code and the docs land in the same pull request and merge together. Then people read the docs site, and agents read the same pages as Markdown, through llms.txt and over MCP.',
   },
   ar: {
-    code: 'كودك',
+    code: 'يتغيّر كودك',
     agent: 'وكيلك يحدّث التوثيق',
     agentsRead: 'يقرأ الوكلاء',
     peopleRead: 'يقرأ الناس',
-    codeAndDocs: 'كود وتوثيق',
-    newCommand: 'جديد',
+    stale: 'قديمة',
+    staleWhy: 'تغيّر مصدرها',
     title: 'الاسترداد',
     guide: 'الدليل',
     api: 'API',
     text: 'استرد مبلغ فاتورة مدفوعة كاملًا أو جزءًا منه، من التطبيق أو بأمر واحد.',
     updatedAgo: 'حُدّث قبل دقيقتين',
+    stalePill: 'قديمة',
     updating: 'يُحدَّث الآن',
     updatedNow: 'حُدّث للتو',
     updatedBy: 'حدّثه Claude Code',
+    prCode: 'كود',
+    prDocs: 'توثيق',
+    open: 'مفتوح',
+    merged: 'دُمج',
     connected: 'متصلون عبر MCP',
     ago: 'قبل دقيقتين',
     now: 'للتو',
     ask: 'اسأل الذكاء الاصطناعي…',
     askShort: 'اسأل التوثيق…',
     summary:
-      'يتغيّر كودك، فيحدّث وكيل البرمجة صفحات التوثيق التي يمسّها التغيير في الـ pull request نفسه. يقرأ الناس موقع التوثيق، ويقرأ الوكلاء الصفحات نفسها بصيغة Markdown، وعبر llms.txt وخادم MCP.',
+      'يتغيّر كودك، فيجد LaRecipe صفحات التوثيق التي تذكر ذلك الكود مصدرًا لها. ويحدّثها وكيل البرمجة قبل أن يرفع عمله، فيصل الكود والتوثيق في الـ pull request نفسه ويُدمجان معًا. ثم يقرأ الناس موقع التوثيق، ويقرأ الوكلاء الصفحات نفسها بصيغة Markdown، وعبر llms.txt وخادم MCP.',
   },
 }
 
 type Lang = keyof typeof STRINGS
-type Phase = 'rest' | 'send' | 'write' | 'publish' | 'read'
+type Phase = 'rest' | 'send' | 'write' | 'ship' | 'publish' | 'read'
 type Target = 'text' | 'code' | 'line'
 type Step = 'sweep' | 'type' | 'hold'
 
@@ -72,9 +82,14 @@ const COMMAND: Token[] = [
 /**
  * One loop, in milliseconds. Each phase only sets an attribute on the figure;
  * docs-flow.css times the pulses, the sweep and the lights from it.
+ *
+ * send: the commit fires and the page that lists that code goes stale.
+ * write: the agent rewrites the page; its commit joins the pull request.
+ * ship: the pull request merges, code and docs together.
+ * publish, read: the merged page reaches agents and people.
  */
-const CYCLE = 8000
-const AT = { send: 800, write: 2150, type: 2600, typed: 3900, publish: 4400, read: 5550, rest: 7000 }
+const CYCLE = 9000
+const AT = { send: 800, stale: 2150, write: 2400, type: 2850, typed: 4150, ship: 4550, publish: 5550, read: 6550, rest: 7850 }
 const TARGETS: Target[] = ['text', 'code', 'line']
 
 interface Frame {
@@ -82,35 +97,46 @@ interface Frame {
   target: Target
   step: Step | null
   typed: number | null
-  pill: 'ago' | 'updating' | 'now'
+  pill: 'ago' | 'stale' | 'updating' | 'now'
+  docs: boolean
+  pr: 'open' | 'merged'
   time: 'ago' | 'now'
 }
 
 /** The diagram at rest: exactly what the server fallback shows. */
-const STILL: Frame = { phase: null, target: 'text', step: null, typed: null, pill: 'ago', time: 'ago' }
+const STILL: Frame = { phase: null, target: 'text', step: null, typed: null, pill: 'ago', docs: true, pr: 'merged', time: 'ago' }
 
 function frameAt(t: number, cycle: number, lengths: Record<Target, number>): Frame {
   const target = TARGETS[cycle % TARGETS.length]
-  const updated = cycle > 0 || t >= AT.typed
-  const read = cycle > 0 || t >= AT.read
-  const frame: Frame = { phase: 'rest', target, step: null, typed: null, pill: updated ? 'now' : 'ago', time: read ? 'now' : 'ago' }
+  const time = cycle > 0 || t >= AT.read ? 'now' : 'ago'
+  const settled = cycle === 0 ? 'ago' : 'now'
+  const rest: Frame = { phase: 'rest', target, step: null, typed: null, pill: t < AT.send ? settled : 'now', docs: true, pr: 'merged', time }
 
-  if (t < AT.send || t >= AT.rest) return frame
-  if (t < AT.write) return { ...frame, phase: 'send' }
-  if (t < AT.publish) {
-    if (t < AT.type) return { ...frame, phase: 'write', step: 'sweep', pill: 'updating' }
-    if (t < AT.typed) {
-      const typed = lengths[target] ? Math.floor((lengths[target] * (t - AT.type)) / (AT.typed - AT.type)) : null
-      return { ...frame, phase: 'write', step: 'type', typed, pill: 'updating' }
-    }
-    return { ...frame, phase: 'write', step: 'hold', typed: lengths[target] || null }
+  if (t < AT.send || t >= AT.rest) return rest
+
+  // A new change: the pull request opens with the code alone.
+  const open: Frame = { ...rest, pr: 'open', docs: false }
+  if (t < AT.write) return { ...open, phase: 'send', pill: t < AT.stale ? settled : 'stale' }
+  if (t < AT.type) return { ...open, phase: 'write', step: 'sweep', pill: 'updating' }
+  if (t < AT.typed) {
+    const typed = lengths[target] ? Math.floor((lengths[target] * (t - AT.type)) / (AT.typed - AT.type)) : null
+    return { ...open, phase: 'write', step: 'type', typed, pill: 'updating' }
   }
-  if (t < AT.read) return { ...frame, phase: 'publish' }
-  return { ...frame, phase: 'read' }
+  if (t < AT.ship) return { ...open, phase: 'write', step: 'hold', typed: lengths[target] || null, docs: true }
+  if (t < AT.publish) return { ...rest, phase: 'ship' }
+  if (t < AT.read) return { ...rest, phase: 'publish' }
+  return { ...rest, phase: 'read' }
 }
 
 const sameFrame = (a: Frame, b: Frame) =>
-  a.phase === b.phase && a.target === b.target && a.step === b.step && a.typed === b.typed && a.pill === b.pill && a.time === b.time
+  a.phase === b.phase &&
+  a.target === b.target &&
+  a.step === b.step &&
+  a.typed === b.typed &&
+  a.pill === b.pill &&
+  a.docs === b.docs &&
+  a.pr === b.pr &&
+  a.time === b.time
 
 /**
  * Runs the loop while the figure is on screen, the tab is visible and the
@@ -223,14 +249,16 @@ function Typed({ tokens, typed }: { tokens: Token[]; typed: number | null }) {
 const i = (index: number) => ({ '--i': index }) as CSSProperties
 
 /**
- * The LaRecipe loop on the Introduction (<DocsFlow />): a commit, a pull
- * request and a command on one side; a docs page the coding agent rewrites in
- * the middle; agents (MCP, llms.txt) and people reading on the other.
+ * The LaRecipe loop on the Introduction (<DocsFlow />): a commit makes the
+ * docs page that lists its code stale; the coding agent rewrites that page;
+ * both sit in one pull request that merges them together; agents (MCP,
+ * llms.txt) and people read the result.
  *
  * The markup matches resources/views/docs/docs-flow.blade.php line for line,
  * so React mounts over the server fallback without a shift. React only adds
- * the loop: data attributes for docs-flow.css, the typed line and the pill.
- * The diagram is decorative for assistive tech; a sentence says the same.
+ * the loop: data attributes for docs-flow.css, the typed line, the pill and
+ * the pull request's state. The diagram is decorative for assistive tech; a
+ * sentence says the same.
  */
 export function DocsFlow({ caption }: { caption?: string }) {
   const { locale } = useLaRecipe()
@@ -241,7 +269,7 @@ export function DocsFlow({ caption }: { caption?: string }) {
   const { frame, live } = useLoop(ref, lengths)
 
   const typedFor = (target: Target) => (frame.phase === 'write' && frame.target === target ? frame.typed : null)
-  const pill = { ago: t.updatedAgo, updating: t.updating, now: t.updatedNow }[frame.pill]
+  const pill = { ago: t.updatedAgo, stale: t.stalePill, updating: t.updating, now: t.updatedNow }[frame.pill]
 
   return (
     <figure
@@ -254,6 +282,8 @@ export function DocsFlow({ caption }: { caption?: string }) {
       data-step={frame.step ?? undefined}
     >
       <div className="lr-flow-stage" aria-hidden="true">
+        <div className="lr-flow-pr" />
+
         <div className="lr-flow-label lr-flow-label-code">{t.code}</div>
         <div className="lr-flow-sources">
           <div className="lr-flow-card lr-flow-source" style={i(0)}>
@@ -264,23 +294,24 @@ export function DocsFlow({ caption }: { caption?: string }) {
             </span>
             <span className="lr-flow-source-title" dir="ltr">feat: refund invoices</span>
           </div>
-          <div className="lr-flow-card lr-flow-source" style={i(1)}>
-            <PullRequestIcon />
-            <span className="lr-flow-source-id lr-flow-mono" dir="ltr">#412</span>
-            <span className="lr-flow-source-stat lr-flow-word">{t.codeAndDocs}</span>
-            <span className="lr-flow-source-title" dir="ltr">Add invoice refunds</span>
+          <div className="lr-flow-chain">
+            <svg className="lr-flow-wires" width="12" height="22" viewBox="0 0 12 22">
+              <Wire d="M6 0V22" index={0} />
+              <Port x={6} y={0} port="src" index={0} />
+              <Port x={6} y={22} port="src" index={4} />
+            </svg>
           </div>
-          <div className="lr-flow-card lr-flow-source" style={i(2)}>
-            <TerminalIcon />
-            <span className="lr-flow-source-id lr-flow-mono" dir="ltr">artisan</span>
-            <span className="lr-flow-source-stat lr-flow-word">{t.newCommand}</span>
-            <span className="lr-flow-source-title lr-flow-mono" dir="ltr">invoices:refund</span>
+          <div className="lr-flow-card lr-flow-source lr-flow-stale" style={i(4)}>
+            <StaleIcon />
+            <span className="lr-flow-source-id lr-flow-mono" dir="ltr">refunds.md</span>
+            <span className="lr-flow-source-stat lr-flow-word">{t.stale}</span>
+            <span className="lr-flow-source-title">{t.staleWhy}</span>
           </div>
         </div>
 
         <div className="lr-flow-link lr-flow-link-in">
           <WiresIn />
-          <VerticalWire from="src" to="hub-in" index={0} />
+          <VerticalWire from="src" to="hub-in" index={4} />
         </div>
 
         <div className="lr-flow-label lr-flow-label-agent">{t.agent}</div>
@@ -323,6 +354,27 @@ export function DocsFlow({ caption }: { caption?: string }) {
               {t.updatedBy} · <span dir="ltr">PR #412</span>
             </span>
           </div>
+        </div>
+
+        <div className="lr-flow-pr-bar">
+          <PullRequestIcon />
+          <span className="lr-flow-pr-id lr-flow-mono" dir="ltr">#412</span>
+          <span className="lr-flow-pr-title" dir="ltr">Add invoice refunds</span>
+          <span className="lr-flow-pr-files">
+            <span className="lr-flow-pr-file lr-flow-word" data-state="on" style={i(0)}>
+              <CheckIcon />
+              {t.prCode}
+            </span>
+            <span className="lr-flow-pr-plus">+</span>
+            <span className="lr-flow-pr-file lr-flow-word" data-state={frame.docs ? 'on' : 'off'} style={i(1)}>
+              <CheckIcon />
+              {t.prDocs}
+            </span>
+          </span>
+          <span className="lr-flow-pr-state lr-flow-word" data-state={frame.pr}>
+            <span className="lr-flow-dot" />
+            {frame.pr === 'merged' ? t.merged : t.open}
+          </span>
         </div>
 
         <div className="lr-flow-link lr-flow-link-out">
@@ -397,8 +449,8 @@ function useLengths(text: string): Record<Target, number> {
   return useMemo(() => ({ text: text.length, code: COMMAND.reduce((sum, token) => sum + token.text.length, 0), line: 0 }), [text])
 }
 
-/* Wires: the wide layout's curves (52 by 300, see docs-flow.css) and the
-   narrow layout's short vertical runs (12 by 44). */
+/* Wires: the wide layout's curves (52 by 300, see docs-flow.css), the narrow
+   layout's short vertical runs (12 by 44) and the commit-to-page chain (12 by 22). */
 
 function Port({ x, y, port, index = 0, r = 3.25 }: { x: number; y: number; port: string; index?: number; r?: number }) {
   return (
@@ -421,12 +473,8 @@ function Wire({ d, index }: { d: string; index: number }) {
 function WiresIn() {
   return (
     <svg className="lr-flow-wires lr-flow-wires-h" width="52" height="300" viewBox="0 0 52 300">
-      <Wire d="M0 72C26 72 26 150 52 150" index={0} />
-      <Wire d="M0 150H52" index={1} />
-      <Wire d="M0 228C26 228 26 150 52 150" index={2} />
-      <Port x={0} y={72} port="src" index={0} />
-      <Port x={0} y={150} port="src" index={1} />
-      <Port x={0} y={228} port="src" index={2} />
+      <Wire d="M0 189C26 189 26 150 52 150" index={4} />
+      <Port x={0} y={189} port="src" index={4} />
       <Port x={52} y={150} port="hub-in" r={3.75} />
     </svg>
   )
@@ -474,6 +522,17 @@ function CommitIcon() {
   )
 }
 
+function StaleIcon() {
+  return (
+    <Glyph className="lr-flow-icon">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M12 12v3" />
+      <path d="M12 18h.01" />
+    </Glyph>
+  )
+}
+
 function PullRequestIcon() {
   return (
     <Glyph className="lr-flow-icon">
@@ -485,11 +544,10 @@ function PullRequestIcon() {
   )
 }
 
-function TerminalIcon() {
+function CheckIcon() {
   return (
-    <Glyph className="lr-flow-icon">
-      <path d="M12 19h8" />
-      <path d="m4 17 6-6-6-6" />
+    <Glyph className="lr-flow-check">
+      <path d="M20 6 9 17l-5-5" />
     </Glyph>
   )
 }

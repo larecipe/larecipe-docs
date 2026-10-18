@@ -1,0 +1,1141 @@
+/*
+ * DocsFlow: the LaRecipe loop as a diagram. Your code on one side, your agent
+ * updating a docs page in the middle, agents and people reading on the other.
+ *
+ * The same rules style the server fallback (resources/views/docs/docs-flow.blade.php)
+ * and the React island (DocsFlow.tsx). The fallback is the diagram at rest;
+ * React only adds data-live, data-phase, data-target and data-step on the
+ * figure, and these rules animate from them.
+ *
+ * Wide geometry (container 700px and up): a 300px body row. Source cards are
+ * 56px tall and 22px apart, centred (ports at y 72, 150, 228). The page card
+ * fills the row (ports at 150). Reader cards are 118px, one at each end of the
+ * row (ports at 59 and 241). The wires between them are drawn in 52 by 300
+ * SVGs whose paths use those numbers, so keep them in step.
+ */
+.lr-flow {
+  --lr-flow-canvas: color-mix(in oklab, var(--lr-surface) 45%, var(--lr-paper));
+  --lr-flow-card: var(--lr-table-bg);
+  --lr-flow-dot: color-mix(in oklab, var(--lr-ink-solid) 12%, transparent);
+  --lr-flow-wire: color-mix(in oklab, var(--lr-ink-solid) 24%, transparent);
+  --lr-flow-wire-on: color-mix(in oklab, var(--lr-accent-current) 55%, var(--lr-flow-wire));
+  --lr-flow-port: var(--lr-hairline-strong);
+  --lr-flow-mark: color-mix(in oklab, var(--lr-accent-current) 11%, transparent);
+  --lr-flow-bar: var(--lr-surface-2);
+  --lr-flow-inset: var(--lr-surface);
+  --lr-flow-edge-on: color-mix(in oklab, var(--lr-accent-current) 42%, var(--lr-hairline));
+  --lr-flow-shadow: 0 1px 2px rgb(17 16 22 / 0.04), 0 4px 14px -6px rgb(17 16 22 / 0.1);
+  --lr-flow-glow:
+    0 0 0 1px color-mix(in oklab, var(--lr-accent-current) 14%, transparent),
+    0 1px 2px rgb(17 16 22 / 0.05),
+    0 18px 44px -18px color-mix(in oklab, var(--lr-accent-current) 34%, transparent);
+  --lr-flow-glow-on:
+    0 0 0 1px color-mix(in oklab, var(--lr-accent-current) 30%, transparent),
+    0 1px 2px rgb(17 16 22 / 0.05),
+    0 18px 52px -14px color-mix(in oklab, var(--lr-accent-current) 46%, transparent);
+  --lr-flow-travel: cubic-bezier(0.45, 0, 0.3, 1);
+
+  container: lr-flow / inline-size;
+  margin-block: 32px 36px;
+}
+
+:root[data-theme='dark'] .lr-flow {
+  --lr-flow-inset: color-mix(in oklab, var(--lr-surface-2) 65%, var(--lr-surface));
+  --lr-flow-bar: color-mix(in oklab, var(--lr-hairline-strong) 70%, var(--lr-surface-2));
+  --lr-flow-dot: color-mix(in oklab, var(--lr-ink-solid) 10%, transparent);
+  --lr-flow-wire: color-mix(in oklab, var(--lr-ink-solid) 26%, transparent);
+  --lr-flow-mark: color-mix(in oklab, var(--lr-accent-current) 16%, transparent);
+  --lr-flow-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 6px 18px -8px rgb(0 0 0 / 0.55);
+  --lr-flow-glow:
+    0 0 0 1px color-mix(in oklab, var(--lr-accent-current) 20%, transparent),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 18px 48px -16px color-mix(in oklab, var(--lr-accent-current) 26%, transparent);
+  --lr-flow-glow-on:
+    0 0 0 1px color-mix(in oklab, var(--lr-accent-current) 36%, transparent),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 18px 56px -12px color-mix(in oklab, var(--lr-accent-current) 38%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .lr-flow {
+    --lr-flow-inset: color-mix(in oklab, var(--lr-surface-2) 65%, var(--lr-surface));
+    --lr-flow-bar: color-mix(in oklab, var(--lr-hairline-strong) 70%, var(--lr-surface-2));
+    --lr-flow-dot: color-mix(in oklab, var(--lr-ink-solid) 10%, transparent);
+    --lr-flow-wire: color-mix(in oklab, var(--lr-ink-solid) 26%, transparent);
+    --lr-flow-mark: color-mix(in oklab, var(--lr-accent-current) 16%, transparent);
+    --lr-flow-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 6px 18px -8px rgb(0 0 0 / 0.55);
+    --lr-flow-glow:
+      0 0 0 1px color-mix(in oklab, var(--lr-accent-current) 20%, transparent),
+      0 1px 2px rgb(0 0 0 / 0.4),
+      0 18px 48px -16px color-mix(in oklab, var(--lr-accent-current) 26%, transparent);
+    --lr-flow-glow-on:
+      0 0 0 1px color-mix(in oklab, var(--lr-accent-current) 36%, transparent),
+      0 1px 2px rgb(0 0 0 / 0.4),
+      0 18px 56px -12px color-mix(in oklab, var(--lr-accent-current) 38%, transparent);
+  }
+}
+
+/* ---- The stage: a dot grid, stacked on narrow screens ---------------------- */
+
+.lr-flow-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 10px;
+  padding: 18px 16px 20px;
+  border: 1px solid var(--lr-hairline);
+  border-radius: var(--lr-radius-lg);
+  background-color: var(--lr-flow-canvas);
+  background-image: radial-gradient(circle, var(--lr-flow-dot) 0.9px, transparent 1.3px);
+  background-size: 14px 14px;
+  background-position: 6px 6px;
+  font-family: var(--lr-font-sans);
+  color: var(--lr-ink);
+  line-height: 1.4;
+  overflow-wrap: normal;
+}
+
+.lr-flow-label {
+  min-width: 0;
+  font-family: var(--lr-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lr-ink-faint);
+  white-space: nowrap;
+}
+
+.lr-flow-label-code {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  margin-block-end: 10px;
+}
+
+.lr-flow-sources {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lr-flow-link {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  height: 44px;
+  pointer-events: none;
+}
+
+.lr-flow-link-in {
+  grid-row: 3;
+}
+
+.lr-flow-link-out {
+  grid-row: 5;
+}
+
+/* Narrow: the label of the next step sits beside its wire. */
+.lr-flow-label-agent,
+.lr-flow-label-agents,
+.lr-flow-label-people {
+  grid-row: 3;
+  align-self: center;
+  padding-inline-start: 40px;
+}
+
+.lr-flow-label-agent {
+  grid-column: 1 / -1;
+}
+
+.lr-flow-page {
+  grid-column: 1 / -1;
+  grid-row: 4;
+}
+
+.lr-flow-readers {
+  display: contents;
+}
+
+.lr-flow-label-agents {
+  grid-column: 1;
+  grid-row: 5;
+}
+
+.lr-flow-label-people {
+  grid-column: 2;
+  grid-row: 5;
+  padding-inline-start: 2px;
+}
+
+.lr-flow-agents {
+  grid-column: 1;
+  grid-row: 6;
+}
+
+.lr-flow-people {
+  grid-column: 2;
+  grid-row: 6;
+}
+
+/* ---- Cards ----------------------------------------------------------------- */
+
+.lr-flow-card {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid var(--lr-hairline);
+  border-radius: var(--lr-radius-lg);
+  background: var(--lr-flow-card);
+  box-shadow: var(--lr-flow-shadow);
+  transition: border-color 260ms var(--lr-ease);
+}
+
+.lr-flow-icon {
+  flex: none;
+  display: block;
+  width: 13px;
+  height: 13px;
+  color: var(--lr-ink-muted);
+}
+
+.lr-flow-mono {
+  font-family: var(--lr-font-mono);
+  font-variant-ligatures: none;
+  unicode-bidi: isolate;
+}
+
+/* Your code: one row each on narrow screens, two rows in the wide layout. */
+.lr-flow-source {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'icon title stat';
+  align-items: center;
+  column-gap: 7px;
+  row-gap: 5px;
+  padding: 9px 11px;
+}
+
+.lr-flow-source .lr-flow-icon {
+  grid-area: icon;
+}
+
+.lr-flow-source-id {
+  grid-area: id;
+  display: none;
+  font-size: 10px;
+  line-height: 14px;
+  color: var(--lr-ink-muted);
+}
+
+.lr-flow-source-stat {
+  grid-area: stat;
+  font-family: var(--lr-font-mono);
+  font-size: 10px;
+  line-height: 14px;
+  color: var(--lr-ink-faint);
+  white-space: nowrap;
+}
+
+.lr-flow-add {
+  color: var(--lr-success);
+}
+
+.lr-flow-remove {
+  color: var(--lr-danger);
+}
+
+.lr-flow-source-title {
+  grid-area: title;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--lr-ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lr-flow-source-title.lr-flow-mono {
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+/* Your agent updates the docs: a small docs page. */
+.lr-flow-page {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-color: color-mix(in oklab, var(--lr-accent-current) 18%, var(--lr-hairline));
+  box-shadow: var(--lr-flow-glow);
+  transition:
+    box-shadow 600ms var(--lr-ease),
+    border-color 600ms var(--lr-ease);
+}
+
+.lr-flow-page-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-block-end: 1px solid var(--lr-hairline);
+}
+
+.lr-flow-path {
+  overflow: hidden;
+  font-size: 10px;
+  line-height: 14px;
+  color: var(--lr-ink-faint);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lr-flow-path b {
+  font-weight: 400;
+  color: var(--lr-ink-muted);
+}
+
+.lr-flow-page-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 11px;
+  padding: 13px 14px 14px;
+}
+
+.lr-flow-page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lr-flow-page-title {
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.02em;
+  color: var(--lr-ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lr-flow-pill {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px 3px 6px;
+  border-radius: 999px;
+  background: var(--lr-accent-soft);
+  font-family: var(--lr-font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 12px;
+  color: var(--lr-accent-current);
+  white-space: nowrap;
+}
+
+.lr-flow-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lr-accent-current);
+}
+
+.lr-flow-tabs {
+  display: flex;
+  gap: 14px;
+  border-block-end: 1px solid var(--lr-hairline);
+  margin-block-start: -2px;
+}
+
+.lr-flow-tab {
+  padding-block-end: 6px;
+  margin-block-end: -1px;
+  border-block-end: 2px solid transparent;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 14px;
+  color: var(--lr-ink-faint);
+}
+
+.lr-flow-tab.is-active {
+  border-block-end-color: var(--lr-accent-current);
+  color: var(--lr-ink);
+}
+
+/* A line the agent can rewrite: a violet band sweeps over it first. */
+.lr-flow-line {
+  position: relative;
+  isolation: isolate;
+}
+
+.lr-flow-line::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -3px -6px;
+  border-inline-start: 2px solid var(--lr-accent-current);
+  border-radius: var(--lr-radius-xs);
+  background: var(--lr-flow-mark);
+  opacity: 0;
+  transform-origin: left center;
+  transition: opacity 520ms var(--lr-ease);
+  pointer-events: none;
+}
+
+.lr-flow-line:dir(rtl)::before {
+  transform-origin: right center;
+}
+
+.lr-flow-text {
+  font-size: 11.5px;
+  line-height: 17px;
+  color: var(--lr-ink-muted);
+}
+
+.lr-flow-code {
+  overflow: hidden;
+  padding: 6px 7px;
+  border-radius: var(--lr-radius-md);
+  background: var(--lr-code);
+  box-shadow: var(--lr-shadow-xs);
+  font-family: var(--lr-font-mono);
+  font-size: 11px;
+  font-variant-ligatures: none;
+  line-height: 16px;
+  color: var(--lr-code-foreground);
+  white-space: pre;
+  direction: ltr;
+  text-align: left;
+}
+
+.lr-flow-code .lr-flow-line {
+  display: block;
+  padding-inline: 2px;
+}
+
+.lr-flow-code .lr-flow-line::before {
+  inset: -2px -7px;
+  border-radius: 0;
+  border-inline-start-color: var(--lr-code-marker);
+  background: var(--lr-code-highlight);
+}
+
+.lr-flow-muted {
+  color: var(--lr-code-muted);
+}
+
+.lr-flow-fn {
+  color: var(--lr-code-function);
+}
+
+.lr-flow-num {
+  color: var(--lr-code-constant);
+}
+
+.lr-flow-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-block-start: 2px;
+}
+
+.lr-flow-bar {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--lr-flow-bar);
+  transform-origin: left center;
+}
+
+.lr-flow-bar:dir(rtl) {
+  transform-origin: right center;
+}
+
+.lr-flow-bars .lr-flow-bar:nth-child(1) {
+  width: 38%;
+  height: 7px;
+  margin-block-end: 2px;
+  background: color-mix(in oklab, var(--lr-flow-bar) 55%, var(--lr-hairline-strong));
+}
+
+.lr-flow-bars .lr-flow-bar:nth-child(2) {
+  width: 94%;
+}
+
+.lr-flow-bars .lr-flow-bar:nth-child(3) {
+  width: 78%;
+}
+
+.lr-flow-bars .lr-flow-bar:nth-child(4) {
+  width: 56%;
+}
+
+.lr-flow-page-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-block-start: auto;
+  padding: 10px 14px 11px;
+  background-image: radial-gradient(circle, var(--lr-hairline-strong) 0.75px, transparent 1px);
+  background-size: 7px 2px;
+  background-repeat: repeat-x;
+  background-position: 0 0;
+  font-family: var(--lr-font-mono);
+  font-size: 9.5px;
+  line-height: 12px;
+  color: var(--lr-ink-muted);
+  white-space: nowrap;
+}
+
+.lr-flow-page-foot .lr-flow-icon {
+  width: 11px;
+  height: 11px;
+  color: var(--lr-ink-faint);
+}
+
+/* Agents read, people read. */
+.lr-flow-reader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 11px 12px 12px;
+}
+
+.lr-flow-reader-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lr-flow-chips {
+  display: flex;
+  padding-inline-start: 2px;
+}
+
+.lr-flow-chip {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-inline-start: -5px;
+  border: 1px solid var(--lr-hairline-strong);
+  border-radius: 50%;
+  background: var(--lr-flow-inset);
+  box-shadow: 0 0 0 2px var(--lr-flow-card);
+  color: var(--lr-ink-muted);
+  transition:
+    color 220ms var(--lr-ease),
+    background-color 220ms var(--lr-ease),
+    border-color 220ms var(--lr-ease);
+}
+
+.lr-flow-chip:first-child {
+  margin-inline-start: 0;
+}
+
+.lr-flow-chip svg {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.lr-flow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: var(--lr-radius-sm);
+  background: var(--lr-accent-soft);
+  font-family: var(--lr-font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 12px;
+  letter-spacing: 0.06em;
+  color: var(--lr-accent-current);
+}
+
+.lr-flow-badge .lr-flow-dot {
+  width: 5px;
+  height: 5px;
+}
+
+.lr-flow-note {
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--lr-ink-muted);
+  white-space: nowrap;
+}
+
+.lr-flow-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 7px 8px 8px;
+  border-radius: var(--lr-radius-md);
+  background: var(--lr-flow-inset);
+}
+
+.lr-flow-preview-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  overflow: hidden;
+  font-family: var(--lr-font-mono);
+  font-size: 9.5px;
+  line-height: 12px;
+  color: var(--lr-ink-muted);
+  white-space: nowrap;
+}
+
+.lr-flow-preview-head .lr-flow-faint {
+  color: var(--lr-ink-faint);
+}
+
+.lr-flow-preview .lr-flow-bar {
+  width: 78%;
+}
+
+.lr-flow-people-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lr-flow-people-title {
+  overflow: hidden;
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lr-flow-time {
+  flex: none;
+  font-family: var(--lr-font-mono);
+  font-size: 9.5px;
+  line-height: 12px;
+  color: var(--lr-ink-faint);
+}
+
+.lr-flow-people .lr-flow-bars {
+  gap: 6px;
+  padding: 0;
+}
+
+.lr-flow-people .lr-flow-bar:nth-child(1) {
+  width: 92%;
+  height: 5px;
+  margin: 0;
+  background: var(--lr-flow-bar);
+}
+
+.lr-flow-people .lr-flow-bar:nth-child(2) {
+  width: 64%;
+}
+
+.lr-flow-ask {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-block-start: auto;
+  padding-block: 4px;
+  padding-inline: 8px 4px;
+  border: 1px solid var(--lr-hairline);
+  border-radius: var(--lr-radius-md);
+  background: var(--lr-flow-inset);
+}
+
+.lr-flow-ask-text {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  font-size: 10.5px;
+  line-height: 14px;
+  color: var(--lr-ink-faint);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lr-flow-ask-long {
+  display: none;
+}
+
+.lr-flow-send {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--lr-radius-sm);
+  background: var(--lr-ink-solid);
+  color: var(--lr-paper);
+}
+
+.lr-flow-send svg {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+/* ---- Wires ------------------------------------------------------------------ */
+
+.lr-flow-wires {
+  display: block;
+  overflow: visible;
+}
+
+.lr-flow-wires-h {
+  display: none;
+}
+
+.lr-flow-wires-v {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 18px;
+}
+
+.lr-flow-wires-v.is-end {
+  inset-inline-start: auto;
+  inset-inline-end: 18px;
+}
+
+.lr-flow-track {
+  fill: none;
+  stroke: var(--lr-flow-wire);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 4;
+  stroke-linecap: round;
+  transition: stroke 320ms var(--lr-ease);
+}
+
+.lr-flow-pulse {
+  fill: none;
+  stroke: var(--lr-accent-current);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 16 140;
+  stroke-dashoffset: 16;
+  opacity: 0;
+  filter: drop-shadow(0 0 3px color-mix(in oklab, var(--lr-accent-current) 70%, transparent));
+}
+
+.lr-flow-port {
+  fill: var(--lr-flow-card);
+  stroke: var(--lr-flow-port);
+  stroke-width: 1.25;
+  transition:
+    fill 220ms var(--lr-ease),
+    stroke 220ms var(--lr-ease);
+}
+
+.lr-flow-ring {
+  fill: none;
+  stroke: var(--lr-accent-current);
+  stroke-width: 1;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lr-flow-caption {
+  margin-block-start: 10px;
+  font-family: var(--lr-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--lr-ink-muted);
+}
+
+/* ---- Wide: three columns ---------------------------------------------------- */
+
+@container lr-flow (min-width: 700px) {
+  .lr-flow-stage {
+    grid-template-columns: minmax(0, 0.92fr) 52px minmax(0, 1.5fr) 52px minmax(0, 1.15fr);
+    grid-template-rows: auto 300px;
+    column-gap: 0;
+    row-gap: 10px;
+    padding: 20px 16px 22px;
+  }
+
+  .lr-flow-label {
+    grid-row: 1;
+    align-self: end;
+    margin: 0;
+    padding: 0;
+  }
+
+  .lr-flow-label-code {
+    grid-column: 1;
+  }
+
+  .lr-flow-label-agent {
+    grid-column: 3;
+  }
+
+  .lr-flow-label-agents {
+    grid-column: 5;
+  }
+
+  .lr-flow-sources {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: center;
+    gap: 22px;
+  }
+
+  .lr-flow-source {
+    height: 56px;
+    grid-template-areas:
+      'icon id stat'
+      'title title title';
+    column-gap: 6px;
+  }
+
+  .lr-flow-source-id {
+    display: block;
+  }
+
+  .lr-flow-link {
+    grid-row: 2;
+    height: auto;
+  }
+
+  .lr-flow-link-in {
+    grid-column: 2;
+  }
+
+  .lr-flow-link-out {
+    grid-column: 4;
+  }
+
+  .lr-flow-wires-h {
+    display: block;
+  }
+
+  .lr-flow-wires-v {
+    display: none;
+  }
+
+  .lr-flow-wires-h:dir(rtl) {
+    transform: scaleX(-1);
+  }
+
+  .lr-flow-page {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .lr-flow-readers {
+    display: flex;
+    flex-direction: column;
+    grid-column: 5;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .lr-flow-agents,
+  .lr-flow-people {
+    height: 118px;
+  }
+
+  .lr-flow-label-people {
+    align-self: flex-start;
+    margin-block: auto 10px;
+  }
+
+  .lr-flow-code {
+    font-size: min(10px, 1.39cqi);
+  }
+
+  .lr-flow-ask-long {
+    display: inline;
+  }
+
+  .lr-flow-ask-short {
+    display: none;
+  }
+}
+
+/* ---- Arabic: labels in sans, as in the rest of LaRecipe's Arabic UI -------- */
+
+.lr-flow:lang(ar) .lr-flow-label,
+.lr-flow:lang(ar) .lr-flow-caption {
+  font-family: var(--lr-font-sans);
+  font-size: 12px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.lr-flow:lang(ar) .lr-flow-word,
+.lr-flow:lang(ar) .lr-flow-pill,
+.lr-flow:lang(ar) .lr-flow-time,
+.lr-flow:lang(ar) .lr-flow-page-foot {
+  font-family: var(--lr-font-sans);
+  font-size: 10.5px;
+}
+
+.lr-flow:lang(ar) .lr-flow-text {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.lr-flow:lang(ar) .lr-flow-page-title {
+  letter-spacing: normal;
+  font-weight: 700;
+}
+
+/* ---- Motion: only once React marks the figure live -------------------------- */
+
+.lr-flow[data-live] .lr-flow-track {
+  animation: lr-flow-dash 1.1s linear infinite;
+}
+
+.lr-flow:not([data-live]) .lr-flow-stage *,
+.lr-flow:not([data-live]) .lr-flow-stage *::before,
+.lr-flow:not([data-live]) .lr-flow-stage *::after {
+  animation-play-state: paused !important;
+}
+
+/* 1. Your code fires: the source cards light up, pulses travel in. */
+.lr-flow[data-phase='send'] .lr-flow-source {
+  border-color: var(--lr-flow-edge-on);
+  transition-delay: calc(var(--i, 0) * 140ms);
+}
+
+.lr-flow[data-phase='send'] .lr-flow-link-in .lr-flow-track,
+.lr-flow[data-phase='publish'] .lr-flow-link-out .lr-flow-track {
+  stroke: var(--lr-flow-wire-on);
+}
+
+.lr-flow[data-phase='send'] .lr-flow-link-in .lr-flow-pulse,
+.lr-flow[data-phase='publish'] .lr-flow-link-out .lr-flow-pulse {
+  animation: lr-flow-travel 1000ms var(--lr-flow-travel) both;
+  animation-delay: calc(var(--i, 0) * 140ms);
+}
+
+.lr-flow[data-phase='send'] .lr-flow-port[data-port='src'],
+.lr-flow[data-phase='write'] .lr-flow-port[data-port='hub-in'],
+.lr-flow[data-phase='publish'] .lr-flow-port[data-port='hub-out'],
+.lr-flow[data-phase='read'] .lr-flow-port[data-port='reader'] {
+  fill: var(--lr-accent-current);
+  stroke: var(--lr-accent-current);
+  transition-delay: calc(var(--i, 0) * 140ms);
+}
+
+.lr-flow[data-phase='send'] .lr-flow-ring[data-port='src'],
+.lr-flow[data-phase='write'] .lr-flow-ring[data-port='hub-in'],
+.lr-flow[data-phase='publish'] .lr-flow-ring[data-port='hub-out'],
+.lr-flow[data-phase='read'] .lr-flow-ring[data-port='reader'] {
+  animation: lr-flow-ripple 900ms ease-out both;
+  animation-delay: calc(var(--i, 0) * 140ms);
+}
+
+/* 2. Your agent rewrites a line of the page; the Updated pill follows. */
+.lr-flow[data-phase='write'] .lr-flow-page {
+  border-color: color-mix(in oklab, var(--lr-accent-current) 34%, var(--lr-hairline));
+  box-shadow: var(--lr-flow-glow-on);
+}
+
+.lr-flow[data-phase='write'][data-target='text'] [data-line='text']::before,
+.lr-flow[data-phase='write'][data-target='code'] [data-line='code']::before {
+  opacity: 1;
+  transition-duration: 160ms;
+}
+
+.lr-flow[data-step='sweep'][data-target='text'] [data-line='text']::before,
+.lr-flow[data-step='sweep'][data-target='code'] [data-line='code']::before {
+  animation: lr-flow-sweep 420ms var(--lr-ease) both;
+}
+
+.lr-flow[data-phase='write'][data-target='line'] [data-line='line'] {
+  animation: lr-flow-grow 2200ms var(--lr-ease) both;
+}
+
+.lr-flow-caret {
+  position: relative;
+}
+
+.lr-flow-caret::after {
+  content: '';
+  position: absolute;
+  inset-block: -1px;
+  inset-inline-start: 0;
+  width: 1.75px;
+  border-radius: 1px;
+  background: var(--lr-accent-current);
+}
+
+/* Solid while the agent types, blinking once it pauses. */
+.lr-flow[data-step='hold'] .lr-flow-caret::after {
+  animation: lr-flow-blink 1s steps(1, end) infinite;
+}
+
+.lr-flow-code .lr-flow-caret::after {
+  background: var(--lr-code-marker);
+}
+
+.lr-flow-ghost {
+  visibility: hidden;
+}
+
+.lr-flow-pill[data-state='updating'] .lr-flow-dot {
+  animation: lr-flow-breathe 900ms ease-in-out infinite;
+}
+
+.lr-flow-pill[data-state='now'] {
+  animation: lr-flow-pill 900ms var(--lr-ease) both;
+}
+
+.lr-flow-pill[data-state='now'] .lr-flow-dot {
+  animation: lr-flow-halo 1100ms ease-out both;
+}
+
+/* 3. Readers pick it up: agents over MCP, people on the site. */
+.lr-flow[data-phase='read'] .lr-flow-reader {
+  border-color: var(--lr-flow-edge-on);
+  transition-delay: calc(var(--i, 0) * 140ms);
+}
+
+.lr-flow[data-phase='read'] .lr-flow-chip {
+  border-color: color-mix(in oklab, var(--lr-accent-current) 45%, var(--lr-hairline));
+  background: var(--lr-accent-soft);
+  color: var(--lr-accent-current);
+  transition-delay: calc(200ms + var(--i, 0) * 130ms);
+}
+
+.lr-flow[data-phase='read'] .lr-flow-preview .lr-flow-bar,
+.lr-flow[data-phase='read'] .lr-flow-people .lr-flow-bar {
+  animation: lr-flow-refresh 900ms var(--lr-ease) both;
+  animation-delay: 260ms;
+}
+
+.lr-flow[data-phase='read'] .lr-flow-people-head .lr-flow-dot {
+  animation: lr-flow-halo 1100ms ease-out both;
+  animation-delay: 260ms;
+}
+
+@keyframes lr-flow-dash {
+  to {
+    stroke-dashoffset: -7;
+  }
+}
+
+@keyframes lr-flow-travel {
+  0% {
+    stroke-dashoffset: 16;
+    opacity: 0;
+  }
+
+  14%,
+  86% {
+    opacity: 1;
+  }
+
+  100% {
+    stroke-dashoffset: -100;
+    opacity: 0;
+  }
+}
+
+@keyframes lr-flow-ripple {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(3.4);
+  }
+}
+
+@keyframes lr-flow-sweep {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes lr-flow-grow {
+  0% {
+    transform: scaleX(0);
+    background: color-mix(in oklab, var(--lr-accent-current) 60%, var(--lr-flow-bar));
+  }
+
+  45% {
+    transform: scaleX(1);
+    background: color-mix(in oklab, var(--lr-accent-current) 60%, var(--lr-flow-bar));
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes lr-flow-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes lr-flow-breathe {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes lr-flow-pill {
+  0% {
+    background: color-mix(in oklab, var(--lr-accent-current) 24%, var(--lr-accent-soft));
+  }
+
+  100% {
+    background: var(--lr-accent-soft);
+  }
+}
+
+@keyframes lr-flow-halo {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--lr-accent-current) 55%, transparent);
+  }
+
+  100% {
+    box-shadow: 0 0 0 7px color-mix(in oklab, var(--lr-accent-current) 0%, transparent);
+  }
+}
+
+@keyframes lr-flow-refresh {
+  0% {
+    opacity: 0.25;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lr-flow *,
+  .lr-flow *::before,
+  .lr-flow *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

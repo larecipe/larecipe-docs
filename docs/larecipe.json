@@ -29,15 +29,6 @@
       "dir": "rtl"
     }
   ],
-  "navbar": {
-    "links": [
-      {
-        "label": "GitHub",
-        "href": "https://github.com/saleem-hadad/larecipe",
-        "icon": "github"
-      }
-    ]
-  },
   "inserts": {
     "article.after": [
       "Subscribe"

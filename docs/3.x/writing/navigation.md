@@ -163,7 +163,7 @@ A group may be named with `label` instead of `group`.
 
 `icon` takes a [Lucide](https://lucide.dev/icons/) icon name on pages, groups, links and tabs. LaRecipe passes it to the reader UI, but the default sidebar does not draw navigation icons yet.
 
-A page's `badge` frontmatter shows next to its entry, and pages that changed in the last seven days carry a small dot.
+A page's `badge` frontmatter shows next to its entry. Pages that changed in the last day carry a small dot until the reader opens them; set the window with `ui.fresh_days` in [the configuration](../reference/configuration.md#ui).
 
 The navigation is the same file for everyone, but each reader sees only what they may read. Private pages are left out for readers who cannot open them, and a group with nothing left to show disappears. Entries for pages that do not exist are left out too, and `larecipe:validate` reports them.
 

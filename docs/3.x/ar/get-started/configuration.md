@@ -11,7 +11,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Agents/Laravel/AgentRoutes.php
   - vendor/larecipe/larecipe/src/LaRecipeServiceProvider.php
   - config/larecipe.php
-translated_from: sha256:5e828779ded5e3f372af28bb2057c5d53d4e9487df15bd17ab896808048b1047
+translated_from: sha256:4b3a5f6c4ec25b2dbf7ee58e36df3503b4fc9e4cd3629a9009d20cfddc2a2bc1
 ---
 
 # أساسيات الإعداد
@@ -89,6 +89,7 @@ php artisan vendor:publish --tag=larecipe-config
 | `ai` | Ask AI و `larecipe:sync`، بمفتاح المزوّد الخاص بك | [اسأل الذكاء الاصطناعي (Ask AI)](../agents/ask-ai.md) |
 | `cache` | مخزن الذاكرة المؤقتة للصفحات المُصيَّرة | [النشر](../operate/deployment.md) |
 | `hooks` و `instructions` | فحص pre-push وكتلة `AGENTS.md` | [خطّاف pre-push](../keeping-current/pre-push-hook.md) |
+| `ui` | المدة التي تحمل فيها الصفحة المتغيّرة نقطتها في الشريط الجانبي | [التنقل](../writing/navigation.md) |
 
 ويسرد [مرجع الإعدادات](../reference/configuration.md) كل مفتاح، وقيمته الافتراضية، ومتغير البيئة الخاص به.
 

@@ -7,8 +7,10 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Sync/**
   - vendor/larecipe/larecipe/src/Domains/Agents/**
   - resources/larecipe/**
+  - lang/ar/featured-on.php
+  - lang/ar/features.php
 inserts: { article.after: false }
-translated_from: sha256:1cd849659a4ca19167c65d88ec35f2048a8f28bea6e4aa467385c5e6657446e1
+translated_from: sha256:1e1eab6645aa50b622f4c9da49d1d06912ec228d841dae0bfb963ceaa54d1878
 ---
 
 # توثيقٌ يواكب الكود
@@ -19,11 +21,17 @@ translated_from: sha256:1cd849659a4ca19167c65d88ec35f2048a8f28bea6e4aa467385c5e6
 
 <DocsFlow />
 
+<FeaturedOn />
+
 ## التثبيت بأمرين
 
 <InstallTabs />
 
 لا حاجة إلى Node ولا إلى خطوة بناء. ويُعِدّ المثبّت أيضًا وكلاء البرمجة الذين تستخدمهم أصلًا، مثل Claude Code و Codex و Cursor، فلا شيء عليك أن تتذكره في عملك اليومي.
+
+## ما تحصل عليه
+
+<Features />
 
 ## الخطوة التالية
 

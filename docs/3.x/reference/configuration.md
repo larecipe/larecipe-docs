@@ -161,6 +161,7 @@ See [live references](../writing/live-references.md).
 
 | Key | Type | Default | Per set | Meaning |
 | --- | --- | --- | --- | --- |
+| `ui.fresh_days` | number | `1` | no | Pages changed within this many days show a dot in the sidebar until the reader opens them. `0` turns the dots off. |
 | `ui.dev_server` | string or null | `null` (`LARECIPE_UI_DEV`) | no | Load the reader UI from a Vite dev server at this URL, for working on the UI itself. |
 
 ## Override a key per set

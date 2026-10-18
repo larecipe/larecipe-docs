@@ -17,7 +17,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Content/DTOs/Manifest.php
   - vendor/larecipe/larecipe/ui/src/regions/Sidebar.tsx
   - docs/3.x/navigation.json
-translated_from: sha256:20d79e407e61685010bd7e351ec6569a88f37c9bb82c3c4216a33413a410bad0
+translated_from: sha256:5dc53784a8b171892f01cd03374880cb74c3ba943be733d31e00edded008be02
 ---
 
 # التنقل
@@ -164,7 +164,7 @@ translated_from: sha256:20d79e407e61685010bd7e351ec6569a88f37c9bb82c3c4216a33413
 
 يأخذ `icon` اسم أيقونة من [Lucide](https://lucide.dev/icons/) في الصفحات والمجموعات والروابط والتبويبات. ويمرّره LaRecipe إلى واجهة القراءة، لكن الشريط الجانبي الافتراضي لا يرسم أيقونات التنقل بعد.
 
-يظهر `badge` من ترويسة الصفحة بجوار مدخلها، وتحمل الصفحات التي تغيّرت في الأيام السبعة الأخيرة نقطة صغيرة.
+يظهر `badge` من ترويسة الصفحة بجوار مدخلها. وتحمل الصفحات التي تغيّرت في اليوم الأخير نقطة صغيرة إلى أن يفتحها القارئ؛ وتضبط هذه المدة بالمفتاح `ui.fresh_days` في [الإعدادات](../reference/configuration.md#ui).
 
 التنقل ملف واحد للجميع، لكن كل قارئ لا يرى إلا ما يحق له قراءته. فالصفحات الخاصة تُستبعد عن القرّاء الذين لا يستطيعون فتحها، والمجموعة التي لا يبقى فيها ما يُعرض تختفي. وتُستبعد أيضًا مداخل الصفحات غير الموجودة، ويبلّغ عنها `larecipe:validate`.
 

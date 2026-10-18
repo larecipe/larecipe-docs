@@ -1,0 +1,149 @@
+/*
+ * FeaturedOn: the Introduction's social proof, under the DocsFlow diagram. A
+ * label line (where LaRecipe was featured, how often it was downloaded), then
+ * one row of logos. Server only (resources/views/docs/featured-on.blade.php).
+ *
+ * Each logo is a one-color PNG (public/images/featured/) drawn as a mask over
+ * the text color, so the row reads in the theme's faint ink in light and dark,
+ * and a linked logo darkens to full ink on hover. The mask sits on ::before,
+ * so a keyboard focus ring on the link is not masked away. Heights are tuned
+ * per logo so the five look the same size despite their different shapes;
+ * the ratios match the image files.
+ */
+.lr-featured {
+  margin-block: 0;
+}
+
+.lr-featured-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin: 0 0 16px;
+  font-family: var(--lr-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lr-ink-faint);
+}
+
+.lr-featured-downloads {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lr-featured-icon {
+  flex: none;
+  display: block;
+}
+
+.lr-featured-count {
+  font-weight: 600;
+  color: var(--lr-ink-muted);
+}
+
+.lr-featured-logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lr-featured-logos > li {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.lr-featured-logo {
+  position: relative;
+  display: block;
+  height: calc(var(--lr-featured-height) * var(--lr-featured-scale, 1));
+  aspect-ratio: var(--lr-featured-ratio);
+  border-radius: var(--lr-radius-xs);
+  color: var(--lr-ink-faint);
+  transition: color var(--lr-duration-hover) var(--lr-ease);
+}
+
+.lr-featured-logo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: currentColor;
+  -webkit-mask: var(--lr-featured-src) center / contain no-repeat;
+  mask: var(--lr-featured-src) center / contain no-repeat;
+}
+
+a.lr-featured-logo:hover,
+a.lr-featured-logo:focus-visible {
+  color: var(--lr-ink);
+}
+
+a.lr-featured-logo:focus-visible {
+  outline: 2px solid var(--lr-accent-ring);
+  outline-offset: 4px;
+}
+
+.lr-featured-logo[data-logo='laravelnews'] {
+  --lr-featured-height: 25px;
+  --lr-featured-ratio: 280 / 71;
+}
+
+.lr-featured-logo[data-logo='devdojo'] {
+  --lr-featured-height: 23px;
+  --lr-featured-ratio: 281 / 75;
+}
+
+.lr-featured-logo[data-logo='medium'] {
+  --lr-featured-height: 17px;
+  --lr-featured-ratio: 545 / 106;
+}
+
+.lr-featured-logo[data-logo='packalyst'] {
+  --lr-featured-height: 29px;
+  --lr-featured-ratio: 265 / 100;
+}
+
+.lr-featured-logo[data-logo='producthunt'] {
+  --lr-featured-height: 25px;
+  --lr-featured-ratio: 513 / 120;
+}
+
+/* Arabic: the label in sans, as in the rest of LaRecipe's Arabic UI. */
+.lr-featured:lang(ar) .lr-featured-head {
+  font-family: var(--lr-font-sans);
+  font-size: 12.5px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* Phones: everything centers. The downloads line comes first, so "Featured
+   on" sits right above the logos, which wrap onto two rows, a little smaller. */
+@media (max-width: 520px) {
+  .lr-featured-head {
+    flex-direction: column;
+    gap: 6px;
+    margin-block-end: 18px;
+  }
+
+  .lr-featured-downloads {
+    order: -1;
+  }
+
+  .lr-featured-logos {
+    justify-content: center;
+    gap: 18px 26px;
+  }
+
+  .lr-featured-logo {
+    --lr-featured-scale: 0.85;
+  }
+}

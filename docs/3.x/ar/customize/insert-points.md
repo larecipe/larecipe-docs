@@ -17,7 +17,7 @@ sources:
   - vendor/larecipe/larecipe/packages/ui/src/types.ts
   - docs/larecipe.json
   - docs/3.x/index.md
-translated_from: sha256:bc76358d677f6c4a268deedccbfe2c1ed407b2abff144ea0a24a71d5eecc9a4f
+translated_from: sha256:3fedce3638f20bc9b53497131f1eccbf23e3aa850925ac24ae9b894c7305c629
 ---
 
 # نقاط الإدراج والفتحات
@@ -170,4 +170,3 @@ export default defineExtension({
 
 - [مكوّنات React المخصّصة](custom-components.md): اكتب المكوّن الذي تضعه.
 - [المظهر](theme.md): غيّر الألوان والخطوط والزوايا من دون أي كود.
-- [الإخراج (eject)](eject.md): ما هو مخطط لامتلاك كود الواجهة، وما تستخدمه اليوم.

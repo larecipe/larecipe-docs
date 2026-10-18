@@ -259,8 +259,8 @@ After you change `hooks.push_commands` or `hooks.enabled`, run `php artisan lare
 At the start of every session, the SessionStart hook gives the agent a few hundred tokens of context: where the docs live, a compact map of the pages, how many pages have drifted, and the before-you-push rule. For this site it reads like this (the map is shortened here):
 
 ```text
-LaRecipe docs: set `docs` in `docs/` (repository, version 3.x, 46 pages, review mode required).
-Map: index, upgrade, agents/{ask-ai, mcp, surfaces}, customize/{custom-components, eject, insert-points, theme}, get-started/{configuration, installation, project-structure, your-first-docs}, ...
+LaRecipe docs: set `docs` in `docs/` (repository, version 3.x, 45 pages, review mode required).
+Map: index, upgrade, agents/{ask-ai, mcp, surfaces}, customize/{custom-components, insert-points, theme}, get-started/{configuration, installation, project-structure, your-first-docs}, ...
 Stale: 7 pages document code that changed after they were last updated (php artisan larecipe:affected lists them).
 Before you push or open a pull request: run php artisan larecipe:affected --uncommitted --base=main and update the pages it lists with the larecipe-update-docs skill. Search and read the docs with the larecipe MCP server.
 ```

@@ -13,7 +13,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Ask/**
   - vendor/larecipe/larecipe/src/Domains/Sync/DTOs/SyncSettings.php
   - vendor/larecipe/larecipe/src/Domains/References/ReferencesServiceProvider.php
-translated_from: sha256:5546f2d8e85aaf23e418ef585089981e27b1c2ce3a8e4a8dd29ba87298e183e4
+translated_from: sha256:154b0748a54da8953050f466554a8846b5225f019da98c04fe45f3045d1ec5fa
 ---
 
 # الإعدادات
@@ -158,10 +158,11 @@ translated_from: sha256:5546f2d8e85aaf23e418ef585089981e27b1c2ce3a8e4a8dd29ba872
 
 راجع [المراجع الحية](../writing/live-references.md).
 
-## الواجهة
+## الواجهة {#ui}
 
 | المفتاح | النوع | القيمة الافتراضية | لكل مجموعة | المعنى |
 | --- | --- | --- | --- | --- |
+| `ui.fresh_days` | number | `1` | لا | الصفحات التي تغيّرت خلال هذا العدد من الأيام تحمل نقطة في الشريط الجانبي إلى أن يفتحها القارئ. القيمة `0` تُلغي النقاط. |
 | `ui.dev_server` | string or null | `null` (`LARECIPE_UI_DEV`) | لا | تحميل واجهة القراءة من خادم تطوير Vite على هذا الرابط، للعمل على الواجهة نفسها. |
 
 ## تجاوز مفتاح لكل مجموعة {#override-a-key-per-set}

@@ -17,7 +17,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Actions/InstallAgentHooksAction.php
   - vendor/larecipe/larecipe/config/larecipe.php
   - .claude/settings.json
-translated_from: sha256:14adcf89c9eedef51c5a705afccea7f22413fd2ac4fac3af5900b82f7d012381
+translated_from: sha256:af08b497d9457437ce35ee08e97e2728f648632e9cd15c613ac25077a91b058f
 ---
 
 # خطّاف pre-push
@@ -260,8 +260,8 @@ return array (
 في بداية كل جلسة، يعطي خطّاف SessionStart الوكيلَ بضع مئات من الـ tokens من السياق: أين يوجد التوثيق، وخريطة مختصرة للصفحات، وعدد الصفحات المنحرفة، وقاعدة «قبل الـ push». وفي هذا الموقع يبدو هكذا (الخريطة مختصرة هنا):
 
 ```text
-LaRecipe docs: set `docs` in `docs/` (repository, version 3.x, 46 pages, review mode required).
-Map: index, upgrade, agents/{ask-ai, mcp, surfaces}, customize/{custom-components, eject, insert-points, theme}, get-started/{configuration, installation, project-structure, your-first-docs}, ...
+LaRecipe docs: set `docs` in `docs/` (repository, version 3.x, 45 pages, review mode required).
+Map: index, upgrade, agents/{ask-ai, mcp, surfaces}, customize/{custom-components, insert-points, theme}, get-started/{configuration, installation, project-structure, your-first-docs}, ...
 Stale: 7 pages document code that changed after they were last updated (php artisan larecipe:affected lists them).
 Before you push or open a pull request: run php artisan larecipe:affected --uncommitted --base=main and update the pages it lists with the larecipe-update-docs skill. Search and read the docs with the larecipe MCP server.
 ```

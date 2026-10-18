@@ -34,7 +34,7 @@
     },
     {
       "group": "التخصيص",
-      "pages": ["customize/theme", "customize/custom-components", "customize/insert-points", "customize/eject"]
+      "pages": ["customize/theme", "customize/custom-components", "customize/insert-points"]
     },
     {
       "group": "التشغيل",

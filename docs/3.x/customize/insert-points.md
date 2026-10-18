@@ -169,4 +169,3 @@ To style a point, target its wrapper: `.lr-insert[data-lr-insert="article.after"
 
 - [Custom React components](custom-components.md): write the component you place.
 - [Theme](theme.md): change colors, fonts and corners without any code.
-- [Eject](eject.md): what is planned for owning the UI source, and what to use today.

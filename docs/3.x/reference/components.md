@@ -18,6 +18,8 @@ sources:
   - resources/views/docs/subscribe.blade.php
   - resources/views/docs/install-tabs.blade.php
   - resources/views/docs/docs-flow.blade.php
+  - resources/views/docs/featured-on.blade.php
+  - resources/views/docs/features.blade.php
 ---
 
 # Components
@@ -253,5 +255,19 @@ The animated diagram at the top of the [Introduction](../index.md), registered w
 
 - **HTML:** the same diagram at rest, from `resources/views/docs/docs-flow.blade.php`, in the page's language.
 - **Markdown:** the caption, then a short numbered list of the loop.
+
+### FeaturedOn
+
+The row of logos under the diagram on the [Introduction](../index.md), registered with `LaRecipe::component('FeaturedOn')`: LaRecipe's downloads and the sites that featured it. It takes no props and has no island: it renders on the server only.
+
+- **HTML:** `<div class="lr-featured">` from `resources/views/docs/featured-on.blade.php`, in the page's language. Each logo is a one-color image from `public/images/featured/`, linked to its article, with the site's name for screen readers.
+- **Markdown:** one line with the downloads and the sites, as links.
+
+### Features
+
+The grid of LaRecipe's main features above Next on the [Introduction](../index.md), registered with `LaRecipe::component('Features')`. Each feature has an icon from the content set, a title and one line, and links to the page that explains it. It takes no props and has no island.
+
+- **HTML:** `<div class="lr-features">` with a `<ul class="lr-features-grid">` of links, from `resources/views/docs/features.blade.php`, in the page's language. Three columns at full width, two in a narrower column, one on phones.
+- **Markdown:** a list of links, `- [Title](url): line`, one per feature.
 
 See [custom components](../customize/custom-components.md) to add your own.

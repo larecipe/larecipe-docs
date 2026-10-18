@@ -88,6 +88,7 @@ Each other group in the file has its own page:
 | `ai` | Ask AI and `larecipe:sync`, on your own provider key | [Ask AI](../agents/ask-ai.md) |
 | `cache` | The cache store for rendered pages | [Deployment](../operate/deployment.md) |
 | `hooks`, `instructions` | The pre-push check and the `AGENTS.md` block | [The pre-push hook](../keeping-current/pre-push-hook.md) |
+| `ui` | How long a changed page keeps its dot in the sidebar | [Navigation](../writing/navigation.md) |
 
 The [configuration reference](../reference/configuration.md) lists every key, its default and its environment variable.
 

@@ -1,0 +1,157 @@
+/*
+ * Features: the Introduction's showcase of LaRecipe's main features
+ * (resources/views/docs/features.blade.php, server only). An open grid, with
+ * hairlines between the items and no card borders, so it reads apart from the
+ * bordered Next cards below it. Three columns at the article width, two on a
+ * narrower column, one on phones, chosen by the grid's own width.
+ *
+ * The hairlines are the grid's background showing through a 1px gap, so they
+ * fall only between items, whatever the column count. Each item is a link: on
+ * hover its tile warms to the surface tone and a small arrow follows the title.
+ */
+.lr-features {
+  container: lr-features / inline-size;
+  margin-block: 20px 8px;
+}
+
+.lr-features-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--lr-features-cols, 1), minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  border-block: 1px solid var(--lr-hairline);
+  background: var(--lr-hairline);
+  list-style: none;
+}
+
+@container lr-features (min-width: 400px) {
+  .lr-features-grid {
+    --lr-features-cols: 2;
+  }
+}
+
+@container lr-features (min-width: 640px) {
+  .lr-features-grid {
+    --lr-features-cols: 3;
+  }
+}
+
+.lr-features-grid > li {
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.lr-features-item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 20px 22px;
+  background: var(--lr-paper);
+  color: var(--lr-ink);
+  text-decoration: none;
+  transition: background-color var(--lr-duration-hover) var(--lr-ease);
+}
+
+.lr-features-item:hover {
+  background: color-mix(in oklab, var(--lr-surface) 65%, var(--lr-paper));
+}
+
+.lr-features-item:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--lr-accent-ring);
+  outline-offset: -2px;
+  border-radius: var(--lr-radius-xs);
+}
+
+.lr-features-icon {
+  display: flex;
+  margin-block-end: 6px;
+  color: var(--lr-accent-current);
+}
+
+.lr-features-icon svg {
+  display: block;
+}
+
+.lr-features-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--lr-ink);
+}
+
+/* The arrow: hidden at rest, it slides in after the title on hover. */
+.lr-features-title::after {
+  content: '';
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background: var(--lr-ink-faint);
+  -webkit-mask: var(--lr-icon-arrow-right) center / 14px no-repeat;
+  mask: var(--lr-icon-arrow-right) center / 14px no-repeat;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--lr-duration-hover) var(--lr-ease),
+    transform var(--lr-duration-state) var(--lr-ease);
+}
+
+.lr-features-item:hover .lr-features-title::after,
+.lr-features-item:focus-visible .lr-features-title::after {
+  opacity: 1;
+  transform: none;
+}
+
+.lr-features-line {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--lr-ink-muted);
+}
+
+/* Right to left: the arrow points and slides the other way; Arabic keeps its
+   own weight and never takes negative tracking. */
+.lr-features-item:dir(rtl) .lr-features-title::after {
+  transform: scaleX(-1) translateX(-4px);
+}
+
+.lr-features-item:dir(rtl):hover .lr-features-title::after,
+.lr-features-item:dir(rtl):focus-visible .lr-features-title::after {
+  transform: scaleX(-1);
+}
+
+.lr-features:lang(ar) .lr-features-title {
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
+/* One column (phones): the icon moves beside the title, so six features stay
+   short to scroll past. */
+@container lr-features (max-width: 399px) {
+  .lr-features-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 14px;
+    row-gap: 4px;
+    padding: 16px 12px 17px;
+  }
+
+  .lr-features-icon {
+    grid-row: 1 / span 2;
+    margin: 1px 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lr-features-title::after {
+    transition: none;
+  }
+}

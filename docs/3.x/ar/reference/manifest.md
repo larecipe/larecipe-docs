@@ -17,7 +17,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Validation/Controllers/SchemaController.php
   - vendor/larecipe/larecipe/src/Domains/Validation/ValidationServiceProvider.php
   - docs/larecipe.json
-translated_from: sha256:715b9ec97edff52bcf1bbb33f62e9e2b20587241a84eec65a60d1669afdbfc7a
+translated_from: sha256:ab398ffac775ce0eb41ee07df83e1c55f7041ab8a508e80f536bdad94d1c8021
 ---
 
 # larecipe.json
@@ -106,6 +106,8 @@ translated_from: sha256:715b9ec97edff52bcf1bbb33f62e9e2b20587241a84eec65a60d1669
 | --- | --- | --- |
 | `links` | list of `{ label, href, icon }` | روابط في الشريط العلوي. يُقبل `icon`، لكن الشريط العلوي الحالي يعرض التسمية فقط. |
 | `cta` | `{ label, href }` | زر واحد محدّد الإطار في الشريط العلوي. |
+
+يعرض الشريط العلوي `repository.url` أيقونةً أصلًا، لذا يُستبعد أي رابط في شريط التنقل العلوي يشير إلى الرابط نفسه.
 
 يجب أن تكون روابط شريط التنقل العلوي والتذييل والمستودع روابط `http` أو `https` أو `mailto`، أو مسارات في موقعك. وأي رابط آخر يُستبعد من كل صفحة، ويبلّغ عنه `larecipe:validate` بالرمز `links.unsafe`.
 

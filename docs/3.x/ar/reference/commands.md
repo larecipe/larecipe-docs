@@ -13,7 +13,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Access/Commands/**
   - vendor/larecipe/larecipe/src/Domains/References/Commands/**
   - vendor/larecipe/larecipe/src/LaRecipeServiceProvider.php
-translated_from: sha256:f19e309d5fa3b10ac130cf9586fbe86f5eea9acfaddb6b906cc923ac8aad4ea2
+translated_from: sha256:44712bc36e65283e91b711c3ff9e62f9dc72e0b3671ea5cbe0f5fd7d766ba06c
 ---
 
 # أوامر Artisan
@@ -200,14 +200,7 @@ translated_from: sha256:f19e309d5fa3b10ac130cf9586fbe86f5eea9acfaddb6b906cc923ac
 
 <Artisan command="larecipe:share" />
 
-## لاحقًا
-
-ليست في هذا الإصدار. لا تكتب سكربتات تعتمد عليها بعد.
-
-| الأمر | الحالة | ما الذي سيفعله |
-| --- | --- | --- |
-| `larecipe:ui:eject` | قريبًا | ينسخ مصدر واجهة القراءة، أو مكوّنًا واحدًا منها، إلى تطبيقك. |
-| `larecipe:ui:diff` | قريبًا | يعرض تغييرات الواجهة في المصدر الأصلي منذ الإخراج (eject). |
+## ملفات الواجهة
 
 لا يوجد أمر `larecipe:publish`. ليقدّم خادم الويب ملفات الواجهة المبنية مسبقًا، استخدم أمر Laravel نفسه (راجع [النشر](../operate/deployment.md)):
 

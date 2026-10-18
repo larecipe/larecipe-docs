@@ -7,6 +7,8 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Sync/**
   - vendor/larecipe/larecipe/src/Domains/Agents/**
   - resources/larecipe/**
+  - lang/en/featured-on.php
+  - lang/en/features.php
 inserts: { article.after: false }
 ---
 
@@ -18,11 +20,17 @@ Every page lists the code it describes. When that code changes, the coding agent
 
 <DocsFlow />
 
+<FeaturedOn />
+
 ## Install in two commands
 
 <InstallTabs />
 
 There is no Node and no build step. The installer also sets up the coding agents you already use, such as Claude Code, Codex and Cursor, so there is nothing to remember day to day.
+
+## What you get
+
+<Features />
 
 ## Next
 

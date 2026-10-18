@@ -18,7 +18,9 @@ sources:
   - resources/views/docs/subscribe.blade.php
   - resources/views/docs/install-tabs.blade.php
   - resources/views/docs/docs-flow.blade.php
-translated_from: sha256:d922ed36326958562938e31332a7d270da693e53a5d47cbc7be9c06a5e61c889
+  - resources/views/docs/featured-on.blade.php
+  - resources/views/docs/features.blade.php
+translated_from: sha256:ba6747d8b3ea1baf54c1fed2c2f63f3d4f9f1cc44e35962cce1cd7883892be3b
 ---
 
 # المكوّنات
@@ -254,5 +256,19 @@ translated_from: sha256:d922ed36326958562938e31332a7d270da693e53a5d47cbc7be9c06a
 
 - **HTML:** المخطط نفسه ساكنًا، من `resources/views/docs/docs-flow.blade.php`، بلغة الصفحة.
 - **Markdown:** التعليق، ثم قائمة مرقّمة قصيرة بخطوات الدورة.
+
+### FeaturedOn
+
+صف الشعارات تحت المخطط في [المقدمة](../index.md)، مسجّل بالاستدعاء `LaRecipe::component('FeaturedOn')`: عدد تنزيلات LaRecipe والمواقع التي ذكرته. لا يأخذ أي خاصية، وليس له Island: يُصيَّر على الخادم وحده.
+
+- **HTML:** `<div class="lr-featured">` من `resources/views/docs/featured-on.blade.php`، بلغة الصفحة. كل شعار صورة بلون واحد من `public/images/featured/`، ويربط بمقاله، مع اسم الموقع لقارئات الشاشة.
+- **Markdown:** سطر واحد بعدد التنزيلات والمواقع، مع روابطها.
+
+### Features
+
+شبكة أهم ميزات LaRecipe فوق «الخطوة التالية» في [المقدمة](../index.md)، مسجّلة بالاستدعاء `LaRecipe::component('Features')`. لكل ميزة أيقونة من مجموعة أيقونات المحتوى، وعنوان، وسطر واحد، وتربط بالصفحة التي تشرحها. لا تأخذ أي خاصية، وليس لها Island.
+
+- **HTML:** `<div class="lr-features">` فيه `<ul class="lr-features-grid">` من الروابط، من `resources/views/docs/features.blade.php`، بلغة الصفحة. ثلاثة أعمدة بالعرض الكامل، وعمودان في عمود أضيق، وعمود واحد على الهواتف.
+- **Markdown:** قائمة روابط، `- [Title](url): line`، سطر لكل ميزة.
 
 راجع [المكوّنات المخصّصة](../customize/custom-components.md) لتضيف مكوّناتك.

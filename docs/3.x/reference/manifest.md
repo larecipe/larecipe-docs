@@ -106,6 +106,8 @@ See [languages](../writing/languages.md).
 | `links` | list of `{ label, href, icon }` | Links in the header. `icon` is accepted; the current header shows the label only. |
 | `cta` | `{ label, href }` | One outlined button in the header. |
 
+The header already shows `repository.url` as an icon, so a navbar link to the same URL is left out.
+
 Navbar, footer and repository links must be `http`, `https` or `mailto` URLs, or paths on your site. Any other link is left out of every page, and `larecipe:validate` reports it as `links.unsafe`.
 
 ### redirects

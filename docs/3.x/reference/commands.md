@@ -199,14 +199,7 @@ Prints a temporary signed link that lets anyone read one page, private or not. S
 
 <Artisan command="larecipe:share" />
 
-## Coming later
-
-Not in this release. Do not script against them yet.
-
-| Command | Status | What it will do |
-| --- | --- | --- |
-| `larecipe:ui:eject` | Coming soon | Copy the reader UI's source, or one component of it, into your app. |
-| `larecipe:ui:diff` | Coming soon | Show upstream UI changes since an eject. |
+## The UI files
 
 There is no `larecipe:publish`. To let your web server serve the prebuilt UI files, use Laravel's own command (see [deployment](../operate/deployment.md)):
 

@@ -3,6 +3,7 @@ title: Static export
 description: Write your public docs to a folder of plain files any static host can serve, with search that works offline, and know exactly what a static site leaves out.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Export/**
+  - vendor/larecipe/larecipe/src/Domains/Delivery/Support/DocsStylesheets.php
   - vendor/larecipe/larecipe/ui/src/app/router.ts
 ---
 
@@ -36,7 +37,7 @@ This site's export, run while these pages were being written (the output folder 
     - Server search (/_search?q=): the static site searches in the browser.
     - Share links: the server checks them.
 
-   INFO  Wrote 434 files to /private/tmp/…/export.
+   INFO  Wrote 443 files to /private/tmp/…/export.
 ```
 
 The 126 pages are every page of 3.x and 2.x twice: once in English and once under the Arabic URLs, where a page without a translation falls back to English, as it does on the live site.
@@ -46,11 +47,16 @@ The 126 pages are every page of 3.x and 2.x twice: once in English and once unde
 <FileTree>
 
 - index.html
+- 404.html
 - llms.txt
 - skill.md
 - sitemap.xml
 - larecipe-assets/
   - d6a0a96acf5f/
+- brand/
+- favicon.svg
+- build/
+  - larecipe/
 - 3.x/
   - index.html
   - index.md
@@ -70,10 +76,11 @@ The 126 pages are every page of 3.x and 2.x twice: once in English and once unde
 - **Pages** as `path/index.html`, so a static host serves `/3.x/operate/caching/` without a rewrite rule, and each page's Markdown twin next to it as `path.md`.
 - **Agent files**: `llms.txt`, `skill.md` and `sitemap.xml` for the set, and `llms.txt` and `llms-full.txt` for each version. A set without versions gets one `llms-full.txt`.
 - **The search index** that guests download, one per version and language.
-- **The UI**: LaRecipe's built files under `larecipe-assets/` (or `vendor/larecipe/` when you published them), plus images and other files your pages point at that the app serves through its routes.
-- **The set's entry**: its landing page, or a small page that redirects to the default version. A set without versions also gets its not-found page as `404.html`.
+- **The UI**: LaRecipe's built files under `larecipe-assets/` (or `vendor/larecipe/` when you published them), plus images and other files your pages point at that the app serves through its routes, and the stylesheets listed under `assets.css` in `larecipe.json`.
+- **Files from your `public/` folder** that the exported pages reference, such as your logo and favicon, copied as they are: never PHP files, dot files or anything outside `public/`. The build of your [custom components](../customize/custom-components.md) in `public/build/larecipe/` is copied whole, because it loads chunks no page names.
+- **The set's entry**: its landing page, or a small page that redirects to the default version, and its not-found page as `404.html`, for versioned and unversioned sets alike.
 
-Pages are adjusted for a static host: links to other pages end in a slash, CSRF tokens are emptied, and the page is marked static, so the UI loads each page in full instead of asking the server for JSON.
+Pages are adjusted for a static host: links to other pages end in a slash, CSRF tokens are emptied, and the page is marked static, so the UI loads each page in full instead of asking the server for JSON. Exported pages leave out what would call your server: the feedback widget, Ask AI, the Connect MCP action and the palette's search reporting.
 
 ## Exported as a guest
 
@@ -88,14 +95,7 @@ The requests carry the user agent `LaRecipe-Export/3 (static export)` and fire L
 
 ## What it leaves out
 
-The list the command prints is the list of features that need a running app: Ask AI, MCP, page feedback, the server search endpoint and share links. A few more things are yours to bring along:
-
-- **Files in your app's `public/` folder.** The export copies what the app serves through its routes, not what your web server serves straight from `public/`: your logo, your favicon, and the build of your custom components in `public/build/larecipe/`. Pages still link to them, so copy them into the export. For this site:
-
-  ```bash
-  cp -R public/brand public/favicon.svg build/docs/
-  mkdir -p build/docs/build && cp -R public/build/larecipe build/docs/build/
-  ```
+The list the command prints is the list of features that need a running app: Ask AI, MCP, page feedback, the server search endpoint and share links. Searches still work in the browser, but they no longer fire `SearchPerformed`, since there is no server to report them to. One more thing is yours to handle:
 
 - **Forms and requests in custom components.** A component's fallback and its React code may post to routes in your app, such as this site's newsletter form. A static host has none of them.
 

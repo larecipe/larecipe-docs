@@ -196,6 +196,7 @@ A TeX formula. A `$$ ... $$` block renders the same. **Island:** `Math`, with a 
 
 - **HTML:** `<div class="lr-reference" data-kind="{route|artisan|model|event}">` with `.lr-reference-head` (the kind and the target), an optional `.lr-reference-description`, a `table.lr-reference-facts`, a `pre.lr-reference-usage` for commands, and one `table.lr-reference-table` per table (arguments, options, columns, relations, payload, listeners). Every value is escaped.
 - **Markdown:** a bold line such as `` **Command** `orders:prune`: description ``, the facts as a table, a command's usage in a `bash` fence, then each table under its title.
+- **What they show:** `<Route>` shows the method, the URI, middleware names and the form request's fields with their rule names, never rule arguments, middleware parameters or the domain, and only for routes `references.routes.allow` lets it describe. `<Artisan>` never describes a hidden command, and shows a default only when the command's `$signature` declares it.
 - **When the target is gone:** the HTML is `<div class="lr-reference" data-kind="..." data-missing="true">` with a notice such as "The route `orders.store` is not defined in this app.", and the Markdown is the same notice as a `> [!WARNING]` alert. `larecipe:validate` reports `references.missing`.
 
 ## Gate blocks

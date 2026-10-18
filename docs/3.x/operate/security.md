@@ -39,7 +39,7 @@ This page lists what LaRecipe does, so you can review it and know where your own
 ## Content cannot read secrets
 
 - **No `<Config>`, no `<Env>`.** No component reads configuration or environment values, on purpose. A page that mentions a setting names it in inline code.
-- **Live references show only public shape.** `<Route>`, `<Artisan>`, `<Model>` and `<Event>` describe a route's method, URI and middleware, a command's signature, an event's payload and listeners, and models only in the namespaces `references.models.allow` lists. A `<Route>` never runs the route. See [Live references](../writing/live-references.md).
+- **Live references show only public shape.** `<Route>`, `<Artisan>`, `<Model>` and `<Event>` describe a route's method, URI and middleware names, a command's signature, an event's payload and listeners, and models only in the namespaces `references.models.allow` lists. A `<Route>` shows the names of a form request's rules but never their arguments, middleware without parameters, never the domain, and only routes `references.routes.allow` allows (by default, your app's own, not those of packages in `vendor/`). An `<Artisan>` never describes a hidden command, and shows a default only when the command's `$signature` declares it. A `<Route>` never runs the route. See [Live references](../writing/live-references.md).
 - **Snippet includes stay inside their root.** `<<< @/path` resolves only inside `snippets.root`: your app's base path for repository sets, and nothing at all for database sets unless you set a root. Even inside the root, LaRecipe refuses:
   - any path with a segment that starts with a dot, such as `.env`, `.git/` or `.ssh/`
   - `storage/` and `bootstrap/cache/`

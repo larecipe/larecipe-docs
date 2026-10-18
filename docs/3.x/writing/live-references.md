@@ -16,8 +16,8 @@ There are four, one per kind of fact your app already knows about itself:
 
 | Component | Reads | Shows |
 | --- | --- | --- |
-| `<Route name="..." />` | the route collection | method, URI, domain, middleware, and the rules of the form request the action type-hints |
-| `<Artisan command="..." />` | the console kernel | description, usage, arguments and options |
+| `<Route name="..." />` | the route collection | method, URI, middleware names, and the fields and rule names of the form request the action type-hints |
+| `<Artisan command="..." />` | the console kernel | description, usage, arguments and options, with the defaults its signature declares |
 | `<Model name="..." />` | Eloquent and the database schema | table, columns with type, nullable, cast and fillable, and relations |
 | `<Event name="..." />` | the event class and the event dispatcher | public payload properties with their types, listeners (sync or queued), and whether it broadcasts |
 
@@ -66,8 +66,8 @@ Write a sentence around each reference. The component shows the facts; your word
 
 The resolvers read the public shape of your app and nothing else:
 
-- **Route** reads what the route definition declares. The route is never run and its controller is never built, so middleware a controller adds in its constructor is not shown. The form request is created without the container, so it never validates anything.
-- **Artisan** reads the command's signature. The command is never run.
+- **Route** reads what the route definition declares, and shows names only: each middleware without its parameters (`throttle`, not `throttle:5,1`), and each form request field with the names of its rules, never their arguments (`in`, not the list of values). Rule arguments and middleware parameters are often built from config, so a page never shows them. The route's domain is never shown either. The route is never run and its controller is never built, so middleware a controller adds in its constructor is not shown. The form request is created without the container, so it never validates anything.
+- **Artisan** reads the command's signature. The command is never run, and hidden commands are never described. A default is shown only when it is written in the command's `$signature`: a command that builds its options at runtime, or a closure command, could fill a default from config, so its defaults are left out.
 - **Model** uses Eloquent's model inspector, which needs a database connection for the column list. Column defaults are left out: they are values, and a reference shows shape.
 - **Event** lists property names and types, never values.
 
@@ -75,10 +75,13 @@ There is no `<Config>` and no `<Env>`, by rule. Configuration and environment va
 
 ## Choose what may be described
 
-Two settings in `config/larecipe.php` decide which classes a page may point at:
+Three settings in `config/larecipe.php` decide which routes and classes a page may point at:
 
 ```php
 'references' => [
+    'routes' => [
+        'allow' => null,                    // route names or URIs (with *); null: your app's own routes
+    ],
     'models' => [
         'allow' => ['App\\Models\\*'],      // namespaces (with *) or exact classes
     ],
@@ -88,11 +91,13 @@ Two settings in `config/larecipe.php` decide which classes a page may point at:
 ],
 ```
 
+`<Route>` describes the routes `references.routes.allow` lists, by name or by URI, with `*` as a wildcard (`'orders.*'`, `'api/*'`). With `null`, the default, it describes every route your app defines: routes that packages in `vendor/` register, such as an admin panel or a debug bar, are left out, except LaRecipe's own. A list includes package routes it names. `larecipe:references:snapshot` and `larecipe:validate` follow the same list.
+
 `<Model>` describes only classes in `references.models.allow`, so a page can never aim the resolver at an arbitrary class. `<Event>` describes classes in `references.events.namespaces`, and any other class your app registers listeners for. This site adds LaRecipe's own event namespaces to the list, which is how the `PageViewed` reference above resolves.
 
 ## When a reference breaks
 
-Rename a route, a command or a model and every page that references the old name stops rendering it:
+Rename a route, a command or a model and every page that references the old name stops rendering it. A route the allow list leaves out, and a hidden command, read the same way:
 
 - The page shows a plain notice in its place, such as "The route `orders.store` is not defined in this app.", and the Markdown twin shows the same sentence as a warning.
 - `php artisan larecipe:validate` reports a `references.missing` error on that page, with the line of the reference.

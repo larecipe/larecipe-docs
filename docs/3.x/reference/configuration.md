@@ -156,6 +156,7 @@ See [agent surfaces](../agents/surfaces.md).
 
 | Key | Type | Default | Per set | Meaning |
 | --- | --- | --- | --- | --- |
+| `references.routes.allow` | list of strings or null | `null` | no | Route names or URIs (with `*`) `<Route>` may describe. `null` means every route your app defines, leaving out the routes packages in `vendor/` register (LaRecipe's own stay). |
 | `references.models.allow` | list of strings | `['App\\Models\\*']` | no | Namespaces (with `*`) or exact classes `<Model>` may describe. Nothing else. |
 | `references.events.namespaces` | list of strings | `['App\\Events']` | no | Where `<Event>` looks up short names. |
 

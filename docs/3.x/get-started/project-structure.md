@@ -1,6 +1,6 @@
 ---
 title: Project structure
-description: What lives in your docs folder, how each file path becomes a URL and a Markdown twin, and the frontmatter every page starts with.
+description: What lives in your docs folder, how to add a page, how each file path becomes a URL, and the three frontmatter keys every page starts with.
 sources:
   - vendor/larecipe/larecipe/src/Domains/Sources/Drivers/RepositorySource.php
   - vendor/larecipe/larecipe/src/Domains/Content/DTOs/PageRef.php
@@ -15,11 +15,38 @@ sources:
 
 # Project structure
 
-A doc set is a folder of Markdown files, `docs/` at the root of your app unless you [configure another](configuration.md). It holds one manifest for the whole set, a folder per version, and inside each version the pages, their navigation and any translations. The path of each file is the URL of its page.
+Your docs are a folder of Markdown files, `docs/` at the root of your app. The path of each file is the URL of its page: `docs/billing/refunds.md` is served at `/docs/billing/refunds`.
 
-This page uses this site's own `docs/` folder as the example. Everything here applies to a [repository set](../sources/repository.md); a database set stores the same pages and files as rows, in the same shape.
+To add a page, create the file, or let LaRecipe write it with the frontmatter filled in:
 
-## This site's docs folder
+```bash
+php artisan larecipe:make:page billing/refunds --description="Refund a payment in full or in part." --source="app/Billing/**"
+```
+
+Every page starts with three frontmatter keys:
+
+```markdown
+---
+title: Refunds
+description: Refund a payment in full or in part.
+sources:
+  - app/Billing/**
+---
+
+# Refunds
+
+Answer first: what this page is about, and when you need it.
+```
+
+- `title` names the page in the header, the sidebar, search and `llms.txt`. Without it, LaRecipe uses the first `# Heading`.
+- `description` is one sentence. It appears under the title and in search results, `llms.txt` and the MCP `list_pages` tool.
+- `sources` lists the code the page documents, as paths or globs from your project root. It is how LaRecipe knows the page is stale when that code changes. See [how it works](../keeping-current/how-it-works.md).
+
+The [frontmatter reference](../reference/frontmatter.md) lists every other key, such as `order`, `hidden` and `visibility`.
+
+## What lives in the folder
+
+This site's own `docs/` folder, shortened:
 
 <FileTree>
 
@@ -31,14 +58,8 @@ This page uses this site's own `docs/` folder as the example. Everything here ap
     - get-started/
       - installation.md
       - your-first-docs.md
-      - configuration.md
-      - project-structure.md
     - writing/
       - markdown.md
-      - components.md
-      - navigation.md
-    - agents/
-      - surfaces.md
     - ar/
       - index.md
       - get-started/
@@ -46,27 +67,41 @@ This page uses this site's own `docs/` folder as the example. Everything here ap
   - 2.x/
     - navigation.json
     - index.md
-    - installation.md
-    - configurations.md
 
 </FileTree>
 
-The tree is shortened: every folder in `3.x/` holds more pages. `3.x/` is the current docs, `2.x/` is the LaRecipe 2 docs converted by the [v2 upgrade](../upgrade.md), and `3.x/ar/` holds the Arabic translations.
+| Name | What it is |
+| --- | --- |
+| `larecipe.json` | The set's [manifest](../reference/manifest.md): its name, logo, theme, versions and languages. Optional. |
+| `3.x/`, `2.x/` | One folder per [version](../writing/versions.md). A set without versions keeps its pages directly in `docs/`. |
+| `navigation.json` | The version's sidebar. Optional: without it, the sidebar comes from your folders. See [navigation](../writing/navigation.md). |
+| `index.md` | A folder's own page: the landing page at the version root, a section's overview in a subfolder. |
+| `ar/` | A [language](../writing/languages.md): one folder per locale code, with the same paths as the original. |
+| `_assets/` | Images and other files the pages link to, in a version folder or at the root of the set. |
 
-## What each name means
+## From file to URL
 
-| Name | Where | What it is |
+A page's URL is its path inside the version, without `.md`, under the set's prefix, the language and the version:
+
+```text
+/{prefix}/{locale}/{version}/{path}
+```
+
+This site is mounted at the domain root and English is its default language, so most URLs hold only the version and the path:
+
+| File | Page URL | Markdown twin |
 | --- | --- | --- |
-| `larecipe.json` | The root of the set | The [manifest](../reference/manifest.md): the set's name, logo, theme, versions, languages and more. Optional; without it the set is named after its key and has no versions. |
-| `3.x/`, `2.x/` | The root of the set | One folder per version, named after the `id` in the manifest's `versions`. A set without versions keeps its pages directly in `docs/`. See [versions](../writing/versions.md). |
-| `navigation.json` | Each version folder | The version's sidebar. Optional; without it, navigation comes from folders and frontmatter. See [navigation](../writing/navigation.md). |
-| `index.md` | Any folder | The folder's own page: the version's landing page at its root, a section's overview in a subfolder. |
-| `ar/` | Each version folder | A [language](../writing/languages.md): one folder per locale code, with the same paths as the original. The default language stays at the version root. |
-| `ar/navigation.json` | A language folder | Optional. The language's own sidebar; without it, the version's is used. |
-| `_assets/` | A version folder, or the root of the set | Images and other files the pages link to. |
-| `skills/` | The root of the set | Hand-written skills for agents, one folder per skill with a `SKILL.md`. |
+| `docs/3.x/index.md` | `/3.x` (and `/`, the site's front page) | `/3.x/index.md` |
+| `docs/3.x/get-started/installation.md` | `/3.x/get-started/installation` | `/3.x/get-started/installation.md` |
+| `docs/3.x/ar/get-started/installation.md` | `/ar/3.x/get-started/installation` | `/ar/3.x/get-started/installation.md` |
 
-### What is not a page
+With the default prefix, the same pages live under `/docs`: `/docs/3.x/get-started/installation`. Links between pages use file paths, not URLs: write `[installation](../get-started/installation.md)` and LaRecipe turns it into the right URL for the reader's version and language.
+
+## Details
+
+<AccordionGroup>
+
+<Accordion title="Files that are not pages">
 
 Every `.md` file under a version folder is a page, except:
 
@@ -78,74 +113,33 @@ Every `.md` file under a version folder is a page, except:
 
 Name files in lowercase with hyphens. The file name is the URL, letter for letter.
 
-## From file to URL
+</Accordion>
 
-A page's path is its file path inside the version, without `.md`. Its URL is that path under the set's prefix, the language and the version:
-
-```text
-/{prefix}/{locale}/{version}/{path}
-```
-
-This site's set is mounted at the domain root (its prefix is `''`), and English is the default language, so most URLs hold only the version and the path:
-
-| File | Page URL | Markdown twin |
-| --- | --- | --- |
-| `docs/3.x/index.md` | `/3.x` (and `/`, the site's front page) | `/3.x/index.md` |
-| `docs/3.x/get-started/installation.md` | `/3.x/get-started/installation` | `/3.x/get-started/installation.md` |
-| `docs/3.x/ar/get-started/installation.md` | `/ar/3.x/get-started/installation` | `/ar/3.x/get-started/installation.md` |
-| `docs/2.x/installation.md` | `/2.x/installation` | `/2.x/installation.md` |
-
-With the default prefix, the same pages live under `/docs`: `/docs/3.x/get-started/installation`.
-
-A few rules fill in the rest:
+<Accordion title="More URL rules">
 
 - **Index pages** take their folder's URL. `get-started/index.md` is the page `get-started`, at `/3.x/get-started`. A file named `get-started.md` next to the folder makes the same page, so use one or the other.
 - **Versions.** A URL without a version redirects to the same page in the default version: `/get-started/installation` goes to `/3.x/get-started/installation`. On a set mounted at the domain root, `/` itself renders the default version's landing page.
-- **Languages.** The default language has no segment. A page not yet translated still opens in every language, showing the original. See [languages](../writing/languages.md).
-- **Markdown twins.** Add `.md` to any page URL for the Markdown version agents read, or request the page URL with `Accept: text/markdown`. The twin of a version's landing page is `/3.x/index.md`. See [agent surfaces](../agents/surfaces.md).
+- **Languages.** The default language has no segment. A page not yet translated still opens in every language, showing the original.
+- **Markdown twins.** Add `.md` to any page URL for the Markdown version agents read, or request the page URL with `Accept: text/markdown`. See [agent surfaces](../agents/surfaces.md).
 - **Assets.** An image the page links to, such as `![Diagram](./_assets/diagram.png)` in `3.x/`, is served from `/_assets/3.x/diagram.png` under the set's prefix. [Markdown](../writing/markdown.md) explains where LaRecipe looks for the file.
 - **Skills.** `docs/skills/billing-integration/SKILL.md` is served at `/skills/billing-integration/SKILL.md`, with its `references/`, `scripts/` and `assets/` files next to it. Only repository sets serve them.
 
-Links between pages use the file paths, not the URLs: write `[installation](../get-started/installation.md)` and LaRecipe turns it into the right URL for the reader's version and language.
+</Accordion>
 
-## Frontmatter
+<Accordion title="More about larecipe:make:page and the folder">
 
-Every page starts with YAML frontmatter that configures that page and nothing else. Three keys belong on every page:
+`larecipe:make:page` writes the page in the default version (`--docs-version` and `--locale` pick another). When the version has a `navigation.json`, add the page there too; [navigation](../writing/navigation.md) shows how.
 
-```markdown
----
-title: Webhooks
-description: Receive signed events from the app and verify them.
-sources:
-  - app/Webhooks/**
-  - routes/webhooks.php
----
+Without `larecipe.json`, a set is named after its key and has no versions. A language folder may hold its own `navigation.json`; without it, the version's is used. A `skills/` folder at the root of the set holds hand-written skills for agents, one folder per skill with a `SKILL.md`.
 
-# Webhooks
+Everything here applies to a [repository set](../sources/repository.md). A database set stores the same pages and files as rows, in the same shape. Set-wide settings never go in frontmatter: the theme, versions and languages belong in `larecipe.json`, and the sidebar in `navigation.json`.
 
-Answer first: what this page is about, and when you need it.
-```
+</Accordion>
 
-- `title` names the page in the header, the sidebar, search and `llms.txt`. Without it, LaRecipe uses the first `# Heading`.
-- `description` is one sentence. It appears under the title and in search results, `llms.txt`, meta tags and the MCP `list_pages` tool.
-- `sources` lists the code the page documents, as paths or globs from your project root. It is how `php artisan larecipe:affected` knows which pages a change made stale. See [how it works](../keeping-current/how-it-works.md).
-
-Other keys you will meet early: `order` sorts the page when there is no `navigation.json`, `hidden: true` keeps a page out of the derived navigation, search and the sitemap while it stays reachable by URL, and `visibility: private` puts it behind your [`viewLarecipe` gate](../writing/gate-blocks.md). The [frontmatter reference](../reference/frontmatter.md) lists every key.
-
-Set-wide settings never go in frontmatter. The theme, versions and languages belong in `larecipe.json`, and the sidebar in `navigation.json`.
-
-## Add a page
-
-Create the file by hand, or let LaRecipe write it with the frontmatter filled in:
-
-```bash
-php artisan larecipe:make:page billing/refunds --description="Refund a payment in full or in part." --source="app/Billing/**"
-```
-
-It writes `docs/3.x/billing/refunds.md` in the default version (`--docs-version` and `--locale` pick another). When the version has a `navigation.json`, add the page there too; [navigation](../writing/navigation.md) shows how.
+</AccordionGroup>
 
 ## Next
 
-- [Navigation](../writing/navigation.md): the sidebar, from folders or from `navigation.json`.
 - [Markdown](../writing/markdown.md): what a page can hold.
+- [Navigation](../writing/navigation.md): the sidebar, from folders or from `navigation.json`.
 - [Versions](../writing/versions.md) and [languages](../writing/languages.md): the folders inside a set.

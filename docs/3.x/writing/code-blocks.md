@@ -9,13 +9,14 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/SnippetIncludeStartParser.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/SnippetIncludeParser.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Services/SnippetResolver.php
+  - vendor/larecipe/larecipe/src/Support/SecretFiles.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/MarkdownServiceProvider.php
   - vendor/larecipe/larecipe/config/larecipe.php
 ---
 
 # Code blocks
 
-Write a fenced code block with a language and LaRecipe highlights it on the server, so the colors are in the HTML before any JavaScript runs. A few words after the language add a title, highlighted lines, line numbers or a diff. And when the code you are showing lives in your app, a snippet include pulls it from the file itself, so the sample changes when the code does.
+Write a fenced code block with a language, and LaRecipe highlights it on the server, so the colors are in the HTML before any JavaScript runs. A few words after the language add a title or highlight lines:
 
 ````markdown
 ```php title="app/Http/Controllers/SubscribeController.php" {3}
@@ -25,13 +26,7 @@ public function __invoke(Request $request): JsonResponse|RedirectResponse
 ```
 ````
 
-## Languages
-
-The language is the first word of the fence. LaRecipe highlights it with Phiki, which reads the same TextMate grammars as VS Code, so `php`, `blade`, `bash`, `json`, `yaml`, `tsx`, `sql`, `diff` and the other languages you use every day are covered. `env` highlights as a dotenv file, and `terminal` and `cli` as shell.
-
-`text`, `txt`, `plain`, `plaintext`, `none` and `output` mean no highlighting. A language Phiki does not know falls back to plain text, so a typo in a fence never breaks a page. Always write a language: it labels the block and tells agents what they are reading.
-
-Code sits on a slate slab in both light and dark mode, in LaRecipe's own `larecipe-pass` theme. Highlighting is the slowest part of rendering, so each block's output is cached on its own: editing a paragraph re-renders the page, while every unchanged code block comes from the cache.
+Always write a language: it labels the block and tells agents what they are reading. When the code you show lives in your app, include it from the file instead of pasting it, with a [snippet include](#snippet-includes), so the sample changes when the code does.
 
 ## Titles
 
@@ -55,7 +50,7 @@ Code sits on a slate slab in both light and dark mode, in LaRecipe's own `lareci
 
 ## Highlighted lines
 
-Line numbers in braces highlight those lines: single lines and ranges, separated by commas. Use it to point at the one line the paragraph above is about.
+Line numbers in braces highlight those lines: single lines and ranges, separated by commas. Use it to point at the line the paragraph above is about.
 
 ```json {4-5}
 {
@@ -83,7 +78,7 @@ Line numbers in braces highlight those lines: single lines and ranges, separated
 
 ## Line numbers
 
-`showLineNumbers` adds a gutter with line numbers, for long samples that the text refers to by line.
+`showLineNumbers` adds a gutter with line numbers, for long samples the text refers to by line.
 
 ```yaml showLineNumbers
 ---
@@ -95,7 +90,7 @@ sources: ["app/Webhooks/**", "routes/webhooks.php"]
 
 ## Diffs
 
-To show a change, add `diff` after the language and start each line with a marker, as in a patch: `+` for an added line, `-` for a removed one and a space for the rest. LaRecipe removes the markers, highlights the code as its own language and marks each line as added or removed in the gutter.
+To show a change, add `diff` after the language and start each line with a marker, as in a patch: `+` for an added line, `-` for a removed one and a space for the rest. LaRecipe removes the markers, highlights the code as its own language and marks each line in the gutter.
 
 ```php diff
  'sets' => [
@@ -116,32 +111,12 @@ To show a change, add `diff` after the language and start each line with a marke
  ],
 ```
 ````
-
-A ` ```diff ` block keeps its `+` and `-` markers, because they are part of the syntax, and marks the lines the same way. Use it for real patches; use `diff` on a language for a readable change.
 
 The parts of a fence combine in any order after the language: ` ```php title="routes/web.php" {2} showLineNumbers `.
 
 ## Code groups
 
-Put several code blocks inside a `CodeGroup` to show alternatives as tabs over one panel. Each block's title, or its language, becomes the tab label. See [components](components.md) for a live one.
-
-````markdown
-<CodeGroup>
-
-```bash title="Dry run"
-php artisan larecipe:upgrade
-```
-
-```bash title="Apply"
-php artisan larecipe:upgrade --apply
-```
-
-</CodeGroup>
-````
-
-## Copy and agents
-
-The reader UI adds a copy button to every block, and copying gives you the code without line numbers or diff markers. In a page's agent Markdown, every block stays a fenced code block with its language and title, so an agent reads the same code a person copies.
+Put several code blocks inside a `CodeGroup` to show alternatives as tabs over one panel. Each block's title, or its language, becomes the tab label. See [components](components.md#codegroup) for a live one.
 
 ## Snippet includes
 
@@ -155,9 +130,10 @@ LaRecipe reads the file when it renders the page and turns it into a code block,
 
 <<< @/resources/larecipe/extension.tsx {8}
 
-Anything after the path is the same as in a fence: highlights, `showLineNumbers`, `diff`, or a `title="..."` to replace the path in the header. Highlighted line numbers count from the top of the included code, not the file.
+Anything after the path works as in a fence: highlights, `showLineNumbers`, `diff`, or a `title="..."` to replace the path in the header. Highlighted line numbers count from the top of the included code, not the file. When the file changes, the page renders again on the next request.
 
-A rendered page remembers the files it included. When one of them changes, the page renders again on the next request, so an included sample is never older than the code.
+> [!TIP]
+> List the file you include in the page's `sources:` too. Then `php artisan larecipe:affected` names the page when that file changes, and your agent reads the prose around the sample again, not only the sample.
 
 ### Include one region
 
@@ -180,11 +156,13 @@ public function refund(int $amount): Refund
 <<< @/app/Billing/Invoice.php#refund
 ```
 
-The included code is the lines between `#region refund` and its `#endregion`, with the common indentation removed. Regions can nest, and the marker works in any comment style: `//`, `#`, `/* */`, `<!-- -->`, `{{-- --}}`, `--` and `;`. When you include a whole file, LaRecipe leaves the region markers out, because they are for the docs and not for the reader.
+The included code is the lines between `#region refund` and its `#endregion`, with the common indentation removed. Regions can nest, and the marker works in any comment style: `//`, `#`, `/* */`, `<!-- -->`, `{{-- --}}`, `--` and `;`. When you include a whole file, LaRecipe leaves the region markers out.
 
 ### When a snippet is missing
 
-A file that was moved or a region that was renamed does not fail quietly. The page shows a warning callout titled "Snippet not found" in place of the code, and `php artisan larecipe:validate` reports it as an error with the line, so a stale sample stops your CI instead of reaching a reader.
+A moved file or a renamed region does not fail quietly. The page shows a "Snippet not found" warning in place of the code, and `php artisan larecipe:validate` reports an error with the line, so a stale sample stops your CI instead of reaching a reader.
+
+<Accordion title="The snippet rules larecipe:validate reports">
 
 | Rule | When |
 | --- | --- |
@@ -194,11 +172,17 @@ A file that was moved or a region that was renamed does not fail quietly. The pa
 
 A page whose render has an error like these is not cached, so the fix shows up on the next request.
 
+</Accordion>
+
 ### What can be included
 
-`@/` is the snippet root. For a repository doc set it is your project's base path. Set `snippets.root` in `config/larecipe.php` to narrow it to one folder, or `sets.{key}.snippets.root` for one doc set. A database doc set includes nothing unless its set configures a root, because its content may come from people outside the codebase.
+`@/` is the snippet root: your project's base path for a repository doc set. A few files are never included, even inside the root, so docs can never become a side door to your configuration: dotfiles such as `.env`, `config/`, `storage/`, `vendor/`, keys, credentials, databases and logs.
 
-Some files are never included, even inside the root, so docs can never become a side door to your configuration. It is the same list [`larecipe:sync`](../keeping-current/sync.md) keeps its agent away from:
+<Accordion title="The snippet root and the full list of refused files">
+
+Set `snippets.root` in `config/larecipe.php` to narrow the root to one folder, or `sets.{key}.snippets.root` for one doc set. A database doc set includes nothing unless its set configures a root, because its content may come from people outside the codebase.
+
+These files are refused even inside the root. It is the same list [`larecipe:sync`](../keeping-current/sync.md) keeps its agent away from:
 
 - dotfiles and anything in a dotted folder (`.env`, `.git/`, `.ssh/`),
 - `config/`, `bootstrap/cache/`, `storage/`, `vendor/` and `node_modules/`,
@@ -208,5 +192,38 @@ Some files are never included, even inside the root, so docs can never become a 
 
 A path with `..` that leaves the root is refused, and so is a symlink whose real file lives outside it.
 
-> [!TIP]
-> List the file you include in the page's `sources:` too. Then `php artisan larecipe:affected` names the page when that file changes, and your agent reads the prose around the sample again, not only the sample.
+</Accordion>
+
+## Details
+
+<AccordionGroup>
+
+<Accordion title="Which languages are highlighted">
+
+The language is the first word of the fence. LaRecipe highlights it with Phiki, which reads the same TextMate grammars as VS Code, so `php`, `blade`, `bash`, `json`, `yaml`, `tsx`, `sql`, `diff` and the other languages you use every day are covered. `env` highlights as a dotenv file, and `terminal` and `cli` as shell.
+
+`text`, `txt`, `plain`, `plaintext`, `none` and `output` mean no highlighting. A language Phiki does not know falls back to plain text, so a typo in a fence never breaks a page.
+
+Code sits on a slate slab in both light and dark mode, in LaRecipe's own `larecipe-pass` theme. Highlighting is the slowest part of rendering, so each block's output is cached on its own: editing a paragraph re-renders the page, while every unchanged code block comes from the cache.
+
+</Accordion>
+
+<Accordion title="Patches with a diff fence">
+
+A ` ```diff ` block keeps its `+` and `-` markers, because they are part of the syntax, and marks the lines the same way. Use it for real patches; use `diff` after a language for a readable change.
+
+</Accordion>
+
+<Accordion title="Copying, and what agents read">
+
+The reader UI adds a copy button to every block, and copying gives you the code without line numbers or diff markers. In a page's agent Markdown, every block stays a fenced code block with its language and title, so an agent reads the same code a person copies.
+
+</Accordion>
+
+</AccordionGroup>
+
+## Next
+
+- [Navigation](navigation.md): the sidebar, from folders or from `navigation.json`.
+- [Components](components.md): steps, tabs, cards and the rest.
+- [Live references](live-references.md): routes, commands, models and events read from your app, for facts that should never be pasted.

@@ -1,6 +1,6 @@
 ---
 title: Docs that keep up with your code
-description: LaRecipe is a docs site that lives inside your Laravel app. Your coding agent writes the pages and updates them with every change, so people and agents always read the current answer.
+description: 'LaRecipe is a docs site that lives inside your Laravel app, written and kept current by the coding agent you already use. It has one goal: your docs never fall behind your code, so people and agents always read the current answer.'
 sources:
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Commands/InstallCommand.php
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Services/IntroductionPage.php
@@ -15,6 +15,8 @@ inserts: { article.after: false }
 # Docs that keep up with your code
 
 You write pages in Markdown, in your own repository, next to the code they describe. People read them as a fast site, and agents read the same pages as Markdown, through `llms.txt` and an MCP server.
+
+![The LaRecipe docs site in a browser: the sidebar, this Introduction page, and the panel of actions for agents, such as Copy as Markdown and Connect MCP.](./_assets/introduction.webp)
 
 Every page lists the code it describes. When that code changes, the coding agent that changed it updates the page before it pushes, and a hook holds the push once if it forgets. The docs land in the same pull request as the code, and you review them together.
 

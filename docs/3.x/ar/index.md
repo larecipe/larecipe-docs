@@ -1,6 +1,6 @@
 ---
 title: توثيقٌ يواكب الكود
-description: LaRecipe موقع توثيق يعيش داخل تطبيق Laravel الخاص بك. يكتب وكيل البرمجة الصفحات ويحدّثها مع كل تغيير، فيقرأ الناس والوكلاء دائمًا الإجابة الحالية.
+description: 'LaRecipe موقع توثيق يعيش داخل تطبيق Laravel الخاص بك، يكتبه ويحدّثه وكيل البرمجة الذي تستخدمه أصلًا. وله هدف واحد: ألّا يتأخر توثيقك عن كودك أبدًا، فيقرأ الناس والوكلاء دائمًا الإجابة الحالية.'
 sources:
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Commands/InstallCommand.php
   - vendor/larecipe/larecipe/src/Domains/Onboarding/Services/IntroductionPage.php
@@ -10,12 +10,14 @@ sources:
   - lang/ar/featured-on.php
   - lang/ar/features.php
 inserts: { article.after: false }
-translated_from: sha256:1e1eab6645aa50b622f4c9da49d1d06912ec228d841dae0bfb963ceaa54d1878
+translated_from: sha256:18116a99a4b17706e62625f30e701eda1764eeded998b6f6f835f2b11354bab0
 ---
 
 # توثيقٌ يواكب الكود
 
 تكتب الصفحات بصيغة Markdown في مستودعك، بجوار الكود الذي تشرحه. يقرؤها الناس موقعًا سريعًا، ويقرأ الوكلاء الصفحات نفسها بصيغة Markdown، وعبر `llms.txt` وخادم MCP.
+
+![موقع توثيق LaRecipe في المتصفح: الشريط الجانبي، وصفحة المقدمة هذه، ولوحة الإجراءات للوكلاء مثل نسخ كـ Markdown وربط MCP.](../_assets/introduction.webp)
 
 تذكر كل صفحة الكود الذي تشرحه. وحين يتغيّر ذلك الكود، يحدّث وكيل البرمجة الذي أجرى التغيير الصفحةَ قبل أن يرفع عمله، وإن نسي يوقف خطّافٌ عملية الـ push مرة واحدة. فيصل التوثيق في الـ pull request نفسه مع الكود، وتراجع الاثنين معًا.
 

@@ -20,7 +20,7 @@ sources:
   - resources/views/docs/docs-flow.blade.php
   - resources/views/docs/featured-on.blade.php
   - resources/views/docs/features.blade.php
-translated_from: sha256:ba6747d8b3ea1baf54c1fed2c2f63f3d4f9f1cc44e35962cce1cd7883892be3b
+translated_from: sha256:5db04508e6cc42725df5bec703c1b34396c0b894f29c39525862c77db4336be4
 ---
 
 # المكوّنات
@@ -248,7 +248,7 @@ translated_from: sha256:ba6747d8b3ea1baf54c1fed2c2f63f3d4f9f1cc44e35962cce1cd788
 
 ### DocsFlow
 
-المخطط المتحرك في أعلى [المقدمة](../index.md)، مسجّل بالاستدعاء `LaRecipe::component('DocsFlow')`: كودك في جهة، وصفحة توثيق يحدّثها وكيلك في الوسط، والوكلاء والناس يقرؤونها في الجهة الأخرى. **Island:** `DocsFlow`، في `resources/larecipe/DocsFlow.tsx`. لا يتحرك إلا وهو ظاهر على الشاشة، ويبقى ثابتًا للقرّاء الذين يفضّلون تقليل الحركة.
+المخطط المتحرك قرب أعلى [المقدمة](../index.md)، مسجّل بالاستدعاء `LaRecipe::component('DocsFlow')`: كودك في جهة، وصفحة توثيق يحدّثها وكيلك في الوسط، والوكلاء والناس يقرؤونها في الجهة الأخرى. **Island:** `DocsFlow`، في `resources/larecipe/DocsFlow.tsx`. لا يتحرك إلا وهو ظاهر على الشاشة، ويبقى ثابتًا للقرّاء الذين يفضّلون تقليل الحركة.
 
 | الخاصية | النوع | مطلوبة | القيمة الافتراضية | القيم المسموح بها | الوصف |
 | --- | --- | --- | --- | --- | --- |

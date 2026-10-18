@@ -59,24 +59,26 @@ LaRecipe writes only the tokens you set, as CSS variables in a `<style>` tag in 
 
 Font tokens name a family; they do not download it. Load the font files yourself, for example from [your own stylesheet](#add-your-own-stylesheet).
 
-A reader's own choice of light or dark, stored in their browser under `larecipe:theme`, wins over `mode`. The color mode is set before the first paint, so pages never flash the wrong theme.
+A reader's own choice of light or dark wins over `mode`. They make it with the theme button at the end of the header, which switches between light and dark in one click, and it is stored in their browser under `larecipe:theme`. The color mode is set before the first paint, so pages never flash the wrong theme.
+
+The switch next to the logo hides the navigation on wide screens and shows it again, the way LaRecipe 2's did. That choice is stored under `larecipe:sidebar` and applied before the first paint too. On phones the navigation opens as a sheet from the menu button instead.
 
 ## Logo and favicon
 
-The logo sits in the header, next to the site name from `larecipe.json`. Give one file for both modes, or one per mode. This site uses its ticket mark, ink on paper and paper on night:
+The logo sits in the header, next to the site name from `larecipe.json`. Give one file for both modes, or one per mode:
 
 ```json title="docs/larecipe.json"
 {
-  "name": "LaRecipe",
-  "logo": { "light": "/brand/mark.svg", "dark": "/brand/mark-dark.svg" },
+  "name": "Acme",
+  "logo": { "light": "/brand/acme.svg", "dark": "/brand/acme-dark.svg" },
   "favicon": "/favicon.svg"
 }
 ```
 
 - Paths are URLs, so put the files in your app's `public/` folder.
-- The name is printed next to the logo, so a mark works better than a full wordmark.
-- Without a `logo`, LaRecipe shows its own mark.
-- `favicon` becomes the page's `<link rel="icon">`. An SVG favicon can switch colors with a `prefers-color-scheme` media query inside the file, the way this site's does.
+- The name is always printed next to the logo, so a mark works better than a full wordmark.
+- Without a `logo`, LaRecipe shows its own logo, the violet recipe ticket. This site sets no logo, so that is the one you see here.
+- `favicon` becomes the page's `<link rel="icon">`. An SVG favicon can switch colors with a `prefers-color-scheme` media query inside the file.
 
 ## Add your own stylesheet
 

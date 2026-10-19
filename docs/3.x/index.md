@@ -16,7 +16,7 @@ inserts: { article.after: false }
 
 You write pages in Markdown, in your own repository, next to the code they describe. People read them as a fast site, and agents read the same pages as Markdown, through `llms.txt` and an MCP server.
 
-![The LaRecipe docs site in a browser: the sidebar, this Introduction page, and the panel of actions for agents, such as Copy as Markdown and Connect MCP.](./_assets/introduction.webp)
+![The LaRecipe docs site in a browser: the sidebar, this Introduction page, and the panel of actions for agents, such as Copy as Markdown and Connect MCP. A badge on the window reads 3M+ downloads.](./_assets/introduction.webp)
 
 Every page lists the code it describes. When that code changes, the coding agent that changed it updates the page before it pushes, and a hook holds the push once if it forgets. The docs land in the same pull request as the code, and you review them together.
 

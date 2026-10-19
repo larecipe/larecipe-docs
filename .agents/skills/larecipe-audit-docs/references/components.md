@@ -77,6 +77,16 @@ Content in Markdown.
 </Button>
 ```
 
+## Byline
+
+The site author's byline in the footer, next to the LaRecipe credit. (defined by this app)
+
+```markdown
+<Byline>
+Content in Markdown.
+</Byline>
+```
+
 ## Callout
 
 A highlighted note, tip or warning. (built in)
@@ -174,6 +184,20 @@ Content in Markdown.
 </Columns>
 ```
 
+## DocsFlow
+
+A diagram of the LaRecipe loop: a code change makes a docs page stale, the coding agent updates it, the code and the docs merge together in one pull request, and people and agents read the result. (defined by this app)
+
+| Prop | Type | Required | Default | Allowed values | Description |
+| --- | --- | --- | --- | --- | --- |
+| `caption` | string | no |  |  | An optional caption under the diagram |
+
+```markdown
+<DocsFlow>
+Content in Markdown.
+</DocsFlow>
+```
+
 ## Event
 
 An event: its payload and its registered listeners, read from the app. (built in)
@@ -186,6 +210,26 @@ An event: its payload and its registered listeners, read from the app. (built in
 <Event name="...">
 Content in Markdown.
 </Event>
+```
+
+## FeaturedOn
+
+LaRecipe's downloads and the sites that featured it, as a row of logos. (defined by this app)
+
+```markdown
+<FeaturedOn>
+Content in Markdown.
+</FeaturedOn>
+```
+
+## Features
+
+A grid of LaRecipe's main features, each linking to the page that explains it. (defined by this app)
+
+```markdown
+<Features>
+Content in Markdown.
+</Features>
 ```
 
 ## FileTree
@@ -210,6 +254,16 @@ Captioned, zoomable media. (built in)
 <Frame>
 Content in Markdown.
 </Frame>
+```
+
+## InstallTabs
+
+Install LaRecipe with an AI coding agent prompt or by hand. (defined by this app)
+
+```markdown
+<InstallTabs>
+Content in Markdown.
+</InstallTabs>
 ```
 
 ## Math
@@ -295,6 +349,7 @@ A sign-up form for the LaRecipe newsletter. (defined by this app)
 | Prop | Type | Required | Default | Allowed values | Description |
 | --- | --- | --- | --- | --- | --- |
 | `list` | string | no | `larecipe` |  | The newsletter list to join |
+| `showcase` | boolean | no | `false` |  | Add a faded line under the form that links to how it is built |
 
 ```markdown
 <Subscribe>

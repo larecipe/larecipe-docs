@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3c0bcea0131a1e8906e8ccc3ec015f96",
+    "content-hash": "f6bbe78989b16d273d2ef9f1495cde15",
     "packages": [
         {
             "name": "brick/math",
@@ -1558,7 +1558,7 @@
             "dist": {
                 "type": "path",
                 "url": "../larecipe",
-                "reference": "150e31710ffcbef375f8d24843984a4447ee5266"
+                "reference": "fddc7720b4f7781ad1bdcf2991e7ebae18db7c0b"
             },
             "require": {
                 "illuminate/console": "^12.62|^13.0",
@@ -2321,6 +2321,63 @@
                 }
             ],
             "time": "2026-09-29T19:21:12+00:00"
+        },
+        {
+            "name": "nashra/sdk",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nashra-tech/nashra-sdk-laravel.git",
+                "reference": "4258cd29b42eeb4dccd70eeed91e496844245a48"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nashra-tech/nashra-sdk-laravel/zipball/4258cd29b42eeb4dccd70eeed91e496844245a48",
+                "reference": "4258cd29b42eeb4dccd70eeed91e496844245a48",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/http": "^12.0|^13.0",
+                "illuminate/support": "^12.0|^13.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Nashra": "Nashra\\Sdk\\Facades\\Nashra"
+                    },
+                    "providers": [
+                        "Nashra\\Sdk\\NashraServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nashra\\Sdk\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Official PHP SDK for the Nashra API",
+            "keywords": [
+                "api",
+                "email",
+                "nashra",
+                "newsletter",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/nashra-tech/nashra-sdk-laravel/issues",
+                "source": "https://github.com/nashra-tech/nashra-sdk-laravel/tree/v1.1.0"
+            },
+            "time": "2026-10-19T03:37:33+00:00"
         },
         {
             "name": "nesbot/carbon",

@@ -24,7 +24,7 @@
     $check = '<svg class="lr-flow-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>';
 @endphp
 <figure class="lr-flow" data-lr-flow="html">
-    <div class="lr-flow-stage" aria-hidden="true">
+    <div class="lr-flow-stage" aria-hidden="true" data-markdown-ignore>
         <div class="lr-flow-pr"></div>
 
         <div class="lr-flow-label lr-flow-label-code">{{ $t('code') }}</div>

@@ -120,8 +120,14 @@ class AppServiceProvider extends ServiceProvider
                 'caption' => $props['caption'] ?? null,
                 'locale' => $component->locale === 'ar' ? 'ar' : 'en',
             ]))
-            ->markdown(fn (array $props, string $children, RenderedComponent $component) => ltrim(($props['caption'] ?? '')."\n\n"
-                .__('docs-flow.markdown', [], $component->locale === 'ar' ? 'ar' : 'en')))
+            // The summary sentence is the diagram's text for screen readers, so
+            // agents get the same words (the illustration itself is marked
+            // data-markdown-ignore), then the loop step by step.
+            ->markdown(function (array $props, string $children, RenderedComponent $component) {
+                $locale = $component->locale === 'ar' ? 'ar' : 'en';
+
+                return ltrim(($props['caption'] ?? '')."\n\n".__('docs-flow.summary', [], $locale)."\n\n".__('docs-flow.markdown', [], $locale));
+            })
             ->island();
 
         // The Introduction's social proof: LaRecipe's downloads and the sites

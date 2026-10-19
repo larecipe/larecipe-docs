@@ -24,7 +24,7 @@
                     <span class="lr-install-prompt-label">{{ __('install.prompt_label', [], $locale) }}</span>
                     <button type="button" class="lr-button lr-button-primary lr-install-copy lr-js-only">@include('larecipe::partials.icon', ['name' => 'Copy', 'iconSize' => 14, 'iconClass' => ''])<span>{{ __('install.copy_prompt', [], $locale) }}</span></button>
                 </div>
-                <p class="lr-install-prompt-text">@foreach ($paragraphs as $paragraph)<span class="lr-install-prompt-para">{!! $paragraph !!}</span>@endforeach</p>
+                <div class="lr-install-prompt-text">@foreach ($paragraphs as $paragraph)<div class="lr-install-prompt-para">{!! $paragraph !!}</div>@endforeach</div>
             </div>
         </div>
         <div role="tabpanel" id="lr-install-manual" class="lr-install-panel" data-panel="manual" aria-labelledby="lr-install-manual-tab">
@@ -37,7 +37,7 @@
             </figure>
             <ol class="lr-install-steps">
                 @foreach ($steps as $step)
-                    <li><span class="lr-install-step-number" aria-hidden="true">{{ $loop->iteration }}</span><span>{!! $step !!}</span></li>
+                    <li><span>{!! $step !!}</span></li>
                 @endforeach
             </ol>
         </div>

@@ -259,12 +259,19 @@ html.lr-js .lr-install-panel-label {
   padding: 0;
 }
 
-.lr-prose .lr-install-steps > li::before,
-.lr-install-steps > li::before {
-  content: none;
+.lr-prose .lr-install-steps,
+.lr-install-steps {
+  counter-reset: lr-install-step;
 }
 
-.lr-install-step-number {
+/* The step number is drawn by CSS, not written as text, so agents and parity
+   checks read "Paste it in your terminal", never "1Paste it in your terminal". */
+.lr-prose .lr-install-steps > li::before,
+.lr-install-steps > li::before {
+  counter-increment: lr-install-step;
+  content: counter(lr-install-step);
+  position: static;
+  flex: none;
   display: inline-grid;
   place-items: center;
   width: 20px;

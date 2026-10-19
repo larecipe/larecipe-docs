@@ -98,9 +98,9 @@ function promptText(text: string): ReactNode[] {
 /** The prompt's paragraphs (split at blank lines), so they space like prose instead of empty lines. */
 function promptParagraphs(prompt: string): ReactNode[] {
   return prompt.split('\n\n').map((paragraph, index) => (
-    <span key={index} className="lr-install-prompt-para">
+    <div key={index} className="lr-install-prompt-para">
       {promptText(paragraph)}
-    </span>
+    </div>
   ))
 }
 
@@ -218,7 +218,7 @@ export function InstallTabs() {
                   <span>{promptCopied ? t.copied : t.copyPrompt}</span>
                 </button>
               </div>
-              <p className="lr-install-prompt-text">{promptParagraphs(t.prompt)}</p>
+              <div className="lr-install-prompt-text">{promptParagraphs(t.prompt)}</div>
             </div>
           </>,
         )}
@@ -250,11 +250,8 @@ export function InstallTabs() {
               </pre>
             </figure>
             <ol className="lr-install-steps">
-              {t.steps.map((step, index) => (
+              {t.steps.map((step) => (
                 <li key={step}>
-                  <span className="lr-install-step-number" aria-hidden="true">
-                    {index + 1}
-                  </span>
                   <span>{promptText(step)}</span>
                 </li>
               ))}

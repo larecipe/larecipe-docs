@@ -281,7 +281,7 @@ export function DocsFlow({ caption }: { caption?: string }) {
       data-target={frame.phase ? frame.target : undefined}
       data-step={frame.step ?? undefined}
     >
-      <div className="lr-flow-stage" aria-hidden="true">
+      <div className="lr-flow-stage" aria-hidden="true" data-markdown-ignore="">
         <div className="lr-flow-pr" />
 
         <div className="lr-flow-label lr-flow-label-code">{t.code}</div>

@@ -15,7 +15,7 @@ sources:
   - lang/*/newsletter.php
   - routes/web.php
   - vite.config.js
-translated_from: sha256:919442ababc212328a5cfd533821a883d16023676de8fb2c19d299b0ce1c2005
+translated_from: sha256:5424170454c9aa9f3507c0c4361754343716998b1d8a812745c7491bd6f5fb11
 ---
 
 # مكوّنات React المخصّصة
@@ -150,7 +150,7 @@ meta:
 لا ينبغي للوكلاء أن يملؤوا النماذج، لذا فصيغة Markdown الخاصة بـ Subscribe سطر واحد فيه رابط، ومعه السطر الباهت حين تُضبط الخاصية `showcase`. اقرأ [المقدمة بصيغة Markdown](https://larecipe.saleem.dev/3.x/index.md) وستجده قرب النهاية:
 
 ```markdown
-Subscribe to the LaRecipe newsletter, release notes by email to the address you give (unsubscribe any time): https://larecipe.saleem.dev/newsletter
+LaRecipe release notes by email. Unsubscribe any time. Subscribe with your email address: https://larecipe.saleem.dev/newsletter
 
 This form is a custom React component this site adds to LaRecipe. See how it is built: https://larecipe.saleem.dev/3.x/customize/custom-components
 ```

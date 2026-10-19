@@ -57,6 +57,10 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
+        "post-install-cmd": [
+            "git fetch --unshallow --quiet 2>/dev/null || true",
+            "@php artisan larecipe:provenance --ansi"
+        ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "@php artisan larecipe:agents --ansi"

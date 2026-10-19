@@ -3,6 +3,7 @@
   "name": "LaRecipe",
   "description": "Living documentation for Laravel apps. Your coding agents write the docs and keep them current; every reader, human or agent, gets the current answer.",
   "favicon": "/favicon.svg",
+  "provenance": false,
   "repository": {
     "url": "https://github.com/saleem-hadad/larecipe",
     "docsUrl": "https://github.com/larecipe/larecipe-docs",

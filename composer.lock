@@ -1554,16 +1554,16 @@
         },
         {
             "name": "larecipe/larecipe",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/saleem-hadad/larecipe.git",
-                "reference": "7d21c75894a4331a03f6f184aa836099a6ac4ec6"
+                "reference": "9d7e21cb0f7082fa06321c44a9e89fcf64fb11a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/saleem-hadad/larecipe/zipball/7d21c75894a4331a03f6f184aa836099a6ac4ec6",
-                "reference": "7d21c75894a4331a03f6f184aa836099a6ac4ec6",
+                "url": "https://api.github.com/repos/saleem-hadad/larecipe/zipball/9d7e21cb0f7082fa06321c44a9e89fcf64fb11a4",
+                "reference": "9d7e21cb0f7082fa06321c44a9e89fcf64fb11a4",
                 "shasum": ""
             },
             "require": {
@@ -1647,7 +1647,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-19T10:16:24+00:00"
+            "time": "2026-10-19T12:51:45+00:00"
         },
         {
             "name": "league/commonmark",

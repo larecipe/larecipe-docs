@@ -39,7 +39,7 @@ translated_from: sha256:08c1c3ddeadb2ae4aafd359c08908431c19ce09b51761c9805079a0b
 
 وسوم السكربت ترى القرّاء الذين تشغّل متصفحاتهم JavaScript. أما الوكلاء فلا يشغّلون سكربت التحليلات أبدًا، لذا يطلق LaRecipe أيضًا حدث Laravel لكل صفحة ونسخة Markdown و `llms.txt` ومهارة واستدعاء MCP يقدّمه. استمع إلى هذه الأحداث لترى كل حركة الزيارات لديك.
 
-لا يشغّل هذا الموقع أي تكامل تحليلات: لا يحوي `config/larecipe.php` ولا `larecipe.json` الخاصان به المفتاح `integrations`.
+يشغّل هذا الموقع GA4: يضبط ملف `config/larecipe.php` الخاص به المفتاح `ga4` تحت `integrations.analytics` في مجموعة `docs`.
 
 ## تكاملات التحليلات
 

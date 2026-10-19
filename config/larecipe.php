@@ -69,6 +69,9 @@ return [
             'access' => [
                 'mode' => 'public',
             ],
+            'integrations' => ['analytics' => [
+                'ga4' => ['measurementId' => 'G-DK7DYJ8SSR'],
+            ]],
         ],
     ],
 

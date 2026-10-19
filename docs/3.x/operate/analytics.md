@@ -38,7 +38,7 @@ LaRecipe has no dashboards and stores no traffic. It feeds the tools you already
 
 Script tags see readers whose browsers run JavaScript. Agents never run your analytics script, so LaRecipe also fires a Laravel event for every page, Markdown twin, `llms.txt`, skill and MCP call it serves. Listen to those events to see all of your traffic.
 
-This site runs no analytics integration: neither its `config/larecipe.php` nor its `larecipe.json` has an `integrations` key.
+This site runs GA4: its `config/larecipe.php` sets `ga4` under the `docs` set's `integrations.analytics`.
 
 ## Analytics integrations
 

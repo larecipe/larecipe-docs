@@ -105,7 +105,7 @@ class AppServiceProvider extends ServiceProvider
                 $locale = in_array($component->locale, SubscribeController::LOCALES, true) ? $component->locale : 'en';
 
                 return __('install.agent_lead', [], $locale)."\n\n```text\n".implode("\n", __('install.prompt', [], $locale))."\n```\n\n"
-                    .__('install.manual_markdown', [], $locale)."\n\n```bash\ncomposer require larecipe/larecipe:^3.0\nphp artisan larecipe:install\n```";
+                    .__('install.manual_markdown', [], $locale)."\n\n```bash\ncomposer require larecipe/larecipe\nphp artisan larecipe:install\n```";
             })
             ->island();
 

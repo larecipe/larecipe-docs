@@ -24,10 +24,8 @@ You need PHP 8.3 or newer, Laravel 12.62 or newer (or Laravel 13), and `git` on 
 <Step title="Require the package">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 ```
-
-The `:^3.0` asks for LaRecipe 3 by name, so Composer never settles on an older version.
 
 </Step>
 

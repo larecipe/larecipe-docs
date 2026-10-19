@@ -25,7 +25,7 @@ Start from a clean working tree, so the upgrade is one diff you can read and und
 <Step title="Require LaRecipe 3">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 ```
 
 The upgrade reads your v2 files, not the v2 package. If your app calls `BinaryTorch\LaRecipe` classes while it boots, such as `LaRecipe::script()` in a service provider, keep `binarytorch/larecipe` installed until the upgrade has run. If Composer cannot install both, remove the v2 package first and comment those calls out.

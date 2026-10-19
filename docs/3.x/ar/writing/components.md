@@ -11,7 +11,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Markdown/Parser/DirectiveStartParser.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Services/DocumentTransformer.php
   - vendor/larecipe/larecipe/src/Domains/Markdown/Services/AgentMarkdownRenderer.php
-translated_from: sha256:a6ade8d95d314127b334a7efbb2b2d7b314c08dce195417c1cbd2d31ddac4bf2
+translated_from: sha256:2fcdbaf46d320b656d564e8e2440c4241502cc65b2321802f2f83b22d7b0a791
 ---
 
 # المكوّنات
@@ -84,7 +84,7 @@ Run `php artisan optimize` so the first reader after a deploy never waits for a 
 <Step title="أضف الحزمة">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 ```
 
 </Step>
@@ -109,7 +109,7 @@ php artisan larecipe:install
 <Step title="Require the package">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 ```
 
 </Step>
@@ -356,7 +356,7 @@ Yes, that is the default and the recommended source. The database source is ther
 <Frame caption="الأمران اللذان يثبّتان LaRecipe.">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 php artisan larecipe:install
 ```
 
@@ -366,7 +366,7 @@ php artisan larecipe:install
 <Frame caption="The two commands that install LaRecipe.">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 php artisan larecipe:install
 ```
 

@@ -12,7 +12,7 @@
         "php": "^8.3",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
-        "larecipe/larecipe": "*@dev",
+        "larecipe/larecipe": "^3.0",
         "nashra/sdk": "^1.1"
     },
     "require-dev": {
@@ -88,15 +88,5 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "name": "larecipe",
-            "type": "path",
-            "url": "../larecipe",
-            "options": {
-                "symlink": true
-            }
-        }
-    ]
+    "prefer-stable": true
 }

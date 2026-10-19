@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6bbe78989b16d273d2ef9f1495cde15",
+    "content-hash": "218f181a4369be3ed16971c6f1a68766",
     "packages": [
         {
             "name": "brick/math",
@@ -1554,11 +1554,17 @@
         },
         {
             "name": "larecipe/larecipe",
-            "version": "3.x-dev",
+            "version": "v3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/saleem-hadad/larecipe.git",
+                "reference": "7d21c75894a4331a03f6f184aa836099a6ac4ec6"
+            },
             "dist": {
-                "type": "path",
-                "url": "../larecipe",
-                "reference": "fddc7720b4f7781ad1bdcf2991e7ebae18db7c0b"
+                "type": "zip",
+                "url": "https://api.github.com/repos/saleem-hadad/larecipe/zipball/7d21c75894a4331a03f6f184aa836099a6ac4ec6",
+                "reference": "7d21c75894a4331a03f6f184aa836099a6ac4ec6",
+                "shasum": ""
             },
             "require": {
                 "illuminate/console": "^12.62|^13.0",
@@ -1596,12 +1602,12 @@
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "LaRecipe\\LaRecipeServiceProvider"
-                    ],
                     "aliases": {
                         "LaRecipe": "LaRecipe\\Facades\\LaRecipe"
-                    }
+                    },
+                    "providers": [
+                        "LaRecipe\\LaRecipeServiceProvider"
+                    ]
                 }
             },
             "autoload": {
@@ -1609,24 +1615,7 @@
                     "LaRecipe\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "LaRecipe\\Tests\\": "tests/",
-                    "Workbench\\App\\": "workbench/app/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "pest"
-                ],
-                "lint": [
-                    "pint"
-                ],
-                "serve": [
-                    "Composer\\Config::disableProcessTimeout",
-                    "@php vendor/bin/testbench serve --ansi"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1652,10 +1641,13 @@
                 "issues": "https://github.com/saleem-hadad/larecipe/issues",
                 "source": "https://github.com/saleem-hadad/larecipe"
             },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "funding": [
+                {
+                    "url": "https://github.com/saleem-hadad",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-19T10:16:24+00:00"
         },
         {
             "name": "league/commonmark",
@@ -9020,9 +9012,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "larecipe/larecipe": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

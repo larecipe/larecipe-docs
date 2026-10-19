@@ -7,8 +7,8 @@
         "dev": "vite"
     },
     "devDependencies": {
-        "@larecipe/ui": "file:../larecipe/packages/ui",
-        "@larecipe/vite": "file:../larecipe/packages/vite",
+        "@larecipe/ui": "^3.0.0",
+        "@larecipe/vite": "^3.0.0",
         "@tailwindcss/vite": "^4.0.0",
         "concurrently": "^10.0.3",
         "laravel-vite-plugin": "^3.1",

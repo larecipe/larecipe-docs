@@ -83,7 +83,7 @@ A numbered procedure. Each `Step` needs a `title`; its content is Markdown, code
 <Step title="Require the package">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 ```
 
 </Step>
@@ -108,7 +108,7 @@ Visit `/docs`. Your Introduction page is already there.
 <Step title="Require the package">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 ```
 
 </Step>
@@ -355,7 +355,7 @@ A caption for media, usually a screenshot or a diagram. Frames make their image 
 <Frame caption="The two commands that install LaRecipe.">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 php artisan larecipe:install
 ```
 
@@ -365,7 +365,7 @@ php artisan larecipe:install
 <Frame caption="The two commands that install LaRecipe.">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 php artisan larecipe:install
 ```
 

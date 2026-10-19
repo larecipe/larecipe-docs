@@ -13,7 +13,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/LinkClaudeMdAction.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/DetectBoostAction.php
   - vendor/larecipe/larecipe/src/Domains/Sync/Actions/WriteInstructionsBlockAction.php
-translated_from: sha256:de48316222776c28cd19f48d0b4e432e57f57fba70b4a6d1cc86b22c7e6c4dfb
+translated_from: sha256:fcf318aa70d6223a8e319c200ea2feb0c70bd0c7801d6177a766d23e15413c84
 ---
 
 # التثبيت
@@ -25,10 +25,8 @@ translated_from: sha256:de48316222776c28cd19f48d0b4e432e57f57fba70b4a6d1cc86b22c
 <Step title="أضف الحزمة">
 
 ```bash
-composer require larecipe/larecipe:^3.0
+composer require larecipe/larecipe
 ```
-
-يطلب الجزء `:^3.0` الإصدار LaRecipe 3 بالاسم، فلا يختار Composer إصدارًا أقدم.
 
 </Step>
 

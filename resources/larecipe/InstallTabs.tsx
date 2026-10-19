@@ -2,7 +2,7 @@ import { useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type Reac
 import { Icon, useLaRecipe } from '@larecipe/ui'
 
 /** The commands, the same in every language. */
-const COMMANDS = ['composer require larecipe/larecipe:^3.0', 'php artisan larecipe:install']
+const COMMANDS = ['composer require larecipe/larecipe', 'php artisan larecipe:install']
 
 /** The component's words in each language the site serves (lang/{en,ar}/install.php on the server). */
 const STRINGS = {
@@ -18,7 +18,7 @@ const STRINGS = {
     prompt: [
       'Install LaRecipe in this Laravel app:',
       '',
-      '1. Run `composer require larecipe/larecipe:^3.0`.',
+      '1. Run `composer require larecipe/larecipe`.',
       '2. Run `php artisan larecipe:install --no-interaction` to keep the defaults.',
       '3. Run `php artisan larecipe:doctor` and fix anything it reports.',
       '4. Read the app and write starter docs with the larecipe-write-docs skill.',
@@ -40,7 +40,7 @@ const STRINGS = {
     prompt: [
       'ثبّت LaRecipe في تطبيق Laravel هذا:',
       '',
-      '1. شغّل `composer require larecipe/larecipe:^3.0`.',
+      '1. شغّل `composer require larecipe/larecipe`.',
       '2. شغّل `php artisan larecipe:install --no-interaction` لتبقى القيم الافتراضية.',
       '3. شغّل `php artisan larecipe:doctor` وأصلح كل ما يذكره.',
       '4. اقرأ التطبيق واكتب توثيقًا أوليًا بمهارة larecipe-write-docs.',
@@ -240,7 +240,7 @@ export function InstallTabs() {
               <pre className="lr-pre" tabIndex={0}>
                 <code>
                   <span className="lr-line" data-line="1">
-                    <span className="tok-function">composer</span> <span className="tok-string">require</span> <span className="tok-string">larecipe/larecipe:^3.0</span>
+                    <span className="tok-function">composer</span> <span className="tok-string">require</span> <span className="tok-string">larecipe/larecipe</span>
                   </span>
                   {'\n'}
                   <span className="lr-line" data-line="2">

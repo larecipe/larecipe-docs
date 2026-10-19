@@ -32,7 +32,7 @@
             <p class="lr-install-lead">{{ __('install.manual_lead', [], $locale) }}</p>
             <figure class="lr-code" data-language="bash">
                 <figcaption class="lr-code-header"><span class="lr-code-title">bash</span></figcaption>
-                <pre class="lr-pre" tabindex="0"><code><span class="lr-line" data-line="1"><span class="tok-function">composer</span> <span class="tok-string">require</span> <span class="tok-string">larecipe/larecipe</span></span>
+                <pre class="lr-pre" tabindex="0"><code><span class="lr-line" data-line="1"><span class="tok-function">composer</span> <span class="tok-string">require</span> <span class="tok-string">larecipe/larecipe:^3.0</span></span>
 <span class="lr-line" data-line="2"><span class="tok-function">php</span> <span class="tok-string">artisan</span> <span class="tok-string">larecipe:install</span></span></code></pre>
             </figure>
             <ol class="lr-install-steps">

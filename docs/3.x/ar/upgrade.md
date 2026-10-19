@@ -12,7 +12,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Sync/Commands/AgentsCommand.php
   - vendor/larecipe/larecipe/resources/boost/skills/larecipe-upgrade-v2/**
   - routes/web.php
-translated_from: sha256:e9129b4401b683b59c294c8c3c785a7352e8a489832c96efe90f17fe96908fa0
+translated_from: sha256:6fe6eee3cbf3bb1e8e75004cc7e510391437e06bfe2d2e762391d7c584ed3fd2
 ---
 
 # الترقية من الإصدار 2
@@ -26,7 +26,7 @@ translated_from: sha256:e9129b4401b683b59c294c8c3c785a7352e8a489832c96efe90f17fe
 <Step title="أضف LaRecipe 3">
 
 ```bash
-composer require larecipe/larecipe
+composer require larecipe/larecipe:^3.0
 ```
 
 تقرأ الترقية ملفات الإصدار 2 لديك، لا حزمة الإصدار 2. فإن كان تطبيقك يستدعي أصناف `BinaryTorch\LaRecipe` أثناء إقلاعه، مثل `LaRecipe::script()` في مزوّد خدمة، فأبقِ `binarytorch/larecipe` مثبّتة حتى تُشغَّل الترقية. وإن لم يستطع Composer تثبيت الحزمتين معًا، فاحذف حزمة الإصدار 2 أولًا وعلّق تلك الاستدعاءات.

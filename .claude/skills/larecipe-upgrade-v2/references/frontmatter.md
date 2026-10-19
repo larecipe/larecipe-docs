@@ -11,20 +11,20 @@ Every page should have `title`, `description` and `sources`. `sources` lists the
 | `title` | string | Required unless the first # heading gives it. |
 | `description` | string | One sentence. Used in llms.txt, meta tags, search snippets and list_pages. |
 | `order` | number | Position in zero-config navigation. |
-| `icon` | string |  |
+| `icon` | string | A Lucide icon name for navigation. |
 | `sources` | string or list of string | Globs of the code this page documents, for drift detection. |
-| `tags` | list of string |  |
-| `badge` | string or object |  |
-| `since` | string or number |  |
-| `deprecated` | boolean or string |  |
+| `tags` | list of string | Search tags. |
+| `badge` | string or object | A label next to the title in navigation: "New", or { label, tone }. |
+| `since` | string or number | The version that introduced the feature. |
+| `deprecated` | boolean or string | Marks the page as deprecated. |
 | `hidden` | boolean | Routable but not listed in the navigation. |
-| `noindex` | boolean |  |
-| `visibility` | any | private pages need the viewLarecipe gate. One of: `public`, `private`. |
-| `redirect_from` | string or list of string |  |
-| `layout` | any | One of: `default`, `wide`, `full`. |
-| `inserts` | any or object |  |
-| `type` | any | One of: `page`, `openapi`. |
-| `spec` | string |  |
+| `noindex` | boolean | Asks search engines not to index the page. |
+| `visibility` | string | private pages need the viewLarecipe gate, on every surface. One of: `public`, `private`. |
+| `redirect_from` | string or list of string | Old URLs that redirect here. |
+| `layout` | string | The page layout. One of: `default`, `wide`, `full`. |
+| `inserts` | any or object | Opt out of site-wide insert points: { article.after: false }, or false for all. |
+| `type` | string | Reserved: openapi pages arrive in a later 3.x release. One of: `page`, `openapi`. |
+| `spec` | string | Reserved for openapi pages. |
 | `meta` | object | Values for your own components, which read them as page.meta. The only frontmatter readers receive beyond the keys above. |
 
 ```yaml

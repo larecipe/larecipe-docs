@@ -15,7 +15,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Content/DTOs/Manifest.php
   - vendor/larecipe/larecipe/config/larecipe.php
   - config/larecipe.php
-translated_from: sha256:a628469770b14291de1a11c3bbf8ccff638dd65ea9f7c1069a5bb6a4ac6eaea6
+translated_from: sha256:81e88e3d1956b9aa96e72863b5cc6d1a0ddc89373bf6d6544476ae7701e25c99
 ---
 
 # مصدر المستودع
@@ -69,7 +69,7 @@ php artisan larecipe:provenance
 - **متى**: تاريخ الـ commit.
 - **من**: مؤلف الـ commit.
 - **أي وكيل**: سطر `Co-Authored-By` في ذيل الرسالة يسمّي وكيل برمجة (Claude، Codex، Copilot، Cursor، Gemini أو Jules، Devin، Aider، Windsurf) يجعل التغيير مكتوبًا بيد ذلك الوكيل، بالاسم الوارد في السطر، ويُسجَّل مؤلف الـ commit بوصفه الشخص الذي اعتمده. وحساب البوت الخاص بالوكيل نفسه حين يكون مؤلف الـ commit يُحتسب أيضًا.
-- **أي pull request**: `(#482)` في نهاية عنوان الـ commit، كما يكتبه دمج squash، أو `Merge pull request #482`. ومع وجود `repository.url` في `larecipe.json`، يصبح المرجع عنوان الـ pull request. ومن دون pull request، تكون بصمة الـ commit هي المرجع.
+- **أي pull request**: `(#482)` في نهاية عنوان الـ commit، كما يكتبه دمج squash، أو `Merge pull request #482`. ومع وجود `repository.url` في `larecipe.json` (أو `repository.docsUrl`، حين يعيش التوثيق في مستودع خاص به)، يصبح المرجع عنوان الـ pull request. ومن دون pull request، تكون بصمة الـ commit هي المرجع.
 
 مثلًا، commit مدموج بطريقة squash مثل هذا:
 

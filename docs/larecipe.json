@@ -5,6 +5,7 @@
   "favicon": "/favicon.svg",
   "repository": {
     "url": "https://github.com/saleem-hadad/larecipe",
+    "docsUrl": "https://github.com/larecipe/larecipe-docs",
     "docsPath": "docs"
   },
   "versions": [

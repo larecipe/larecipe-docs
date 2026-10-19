@@ -57,9 +57,12 @@ Every key of `larecipe.json`, a doc set's manifest at the root of its content. I
 
 | Key | Type | Default | Meaning |
 | --- | --- | --- | --- |
-| `url` | string (`http` or `https`) | none | The repository URL. Edit links are `{url}/edit/{branch}/{docsPath}/{file}`. |
-| `branch` | string | `main` | The branch edit links point at. |
-| `docsPath` | string | `docs` | The docs folder inside the repository. |
+| `url` | string (`http` or `https`) | none | The project's repository. The header's icon links to it. |
+| `docsUrl` | string (`http` or `https`) | `url` | The repository the docs files live in, when it is not `url`. Edit links are `{docsUrl}/edit/{branch}/{docsPath}/{file}`, and commit links in the Last change ticket use it too. |
+| `branch` | string | `main` | The docs repository's branch that edit links point at. |
+| `docsPath` | string | `docs` | The docs folder inside the docs repository. |
+
+Most apps keep code and docs in one repository and set only `url`. This site keeps its docs in their own repository, so it sets `docsUrl` while the header still links to the package.
 
 ### theme
 

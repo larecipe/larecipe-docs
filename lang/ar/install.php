@@ -11,7 +11,7 @@ return [
     'prompt' => [
         'ثبّت LaRecipe في تطبيق Laravel هذا:',
         '',
-        '1. شغّل `composer require larecipe/larecipe`.',
+        '1. شغّل `composer require larecipe/larecipe:^3.0`.',
         '2. شغّل `php artisan larecipe:install --no-interaction` لتبقى القيم الافتراضية.',
         '3. شغّل `php artisan larecipe:doctor` وأصلح كل ما يذكره.',
         '4. اقرأ التطبيق واكتب توثيقًا أوليًا بمهارة larecipe-write-docs.',

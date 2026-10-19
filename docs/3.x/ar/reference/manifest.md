@@ -17,7 +17,7 @@ sources:
   - vendor/larecipe/larecipe/src/Domains/Validation/Controllers/SchemaController.php
   - vendor/larecipe/larecipe/src/Domains/Validation/ValidationServiceProvider.php
   - docs/larecipe.json
-translated_from: sha256:ab398ffac775ce0eb41ee07df83e1c55f7041ab8a508e80f536bdad94d1c8021
+translated_from: sha256:36bd3bce76f77fd204c7b869404d17bd3ce4a265e57609586eadaf3bf62fd629
 ---
 
 # larecipe.json
@@ -58,9 +58,12 @@ translated_from: sha256:ab398ffac775ce0eb41ee07df83e1c55f7041ab8a508e80f536bdad9
 
 | المفتاح | النوع | القيمة الافتراضية | المعنى |
 | --- | --- | --- | --- |
-| `url` | string (`http` or `https`) | لا يوجد | رابط المستودع. روابط التعديل بالشكل `{url}/edit/{branch}/{docsPath}/{file}`. |
-| `branch` | string | `main` | الفرع الذي تشير إليه روابط التعديل. |
-| `docsPath` | string | `docs` | مجلد التوثيق داخل المستودع. |
+| `url` | string (`http` or `https`) | لا يوجد | مستودع المشروع. تربط به أيقونة الشريط العلوي. |
+| `docsUrl` | string (`http` or `https`) | `url` | المستودع الذي تعيش فيه ملفات التوثيق، حين لا يكون `url`. روابط التعديل بالشكل `{docsUrl}/edit/{branch}/{docsPath}/{file}`، وتستخدمه روابط الـ commit في بطاقة آخر تغيير أيضًا. |
+| `branch` | string | `main` | فرع مستودع التوثيق الذي تشير إليه روابط التعديل. |
+| `docsPath` | string | `docs` | مجلد التوثيق داخل مستودع التوثيق. |
+
+تحتفظ معظم التطبيقات بالكود والتوثيق في مستودع واحد، فتضبط `url` وحده. أما هذا الموقع فيحفظ توثيقه في مستودع خاص به، لذا يضبط `docsUrl` بينما يبقى الشريط العلوي مرتبطًا بالحزمة.
 
 ### theme
 

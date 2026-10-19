@@ -68,7 +68,7 @@ To hide the last-change line on every page, set `"provenance": false` in `lareci
 - **When**: the commit date.
 - **Who**: the commit's author.
 - **Which agent**: a `Co-Authored-By` trailer that names a coding agent (Claude, Codex, Copilot, Cursor, Gemini or Jules, Devin, Aider, Windsurf) marks the change as written by that agent, under the name in the trailer, and the commit's author is recorded as the person who approved it. An agent's own bot account as the commit author counts too.
-- **Which pull request**: `(#482)` at the end of the commit subject, as a squash merge writes it, or `Merge pull request #482`. With `repository.url` in `larecipe.json`, the reference becomes the pull request's URL. Without a pull request, the commit hash is the reference.
+- **Which pull request**: `(#482)` at the end of the commit subject, as a squash merge writes it, or `Merge pull request #482`. With `repository.url` in `larecipe.json` (or `repository.docsUrl`, when the docs live in their own repository), the reference becomes the pull request's URL. Without a pull request, the commit hash is the reference.
 
 For example, a squash-merged commit like this one:
 

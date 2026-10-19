@@ -12,7 +12,8 @@ One `larecipe.json` per doc set, at the root of its content. It holds presentati
 | `logo` | string or object | A logo URL, or one per color mode. |
 | `favicon` | string |  |
 | `repository` | object |  |
-| `repository.url` | string |  |
+| `repository.url` | string | The project's repository. The header's icon links to it. |
+| `repository.docsUrl` | string | The repository the docs files live in, when it is not url. Edit and commit links use it. |
 | `repository.branch` | string |  |
 | `repository.docsPath` | string |  |
 | `theme` | object |  |
